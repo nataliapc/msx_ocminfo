@@ -1,0 +1,12 @@
+.vscode/*.log
+*.lib
+obj
+assets
+bin/**/
+**/aux
+**/old
+dsk
+externals
+*.class
+_*
+

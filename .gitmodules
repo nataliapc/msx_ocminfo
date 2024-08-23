@@ -1,0 +1,3 @@
+[submodule "sdcc_msxconio"]
+	path = externals/sdcc_msxconio
+	url = https://github.com/nataliapc/sdcc_msxconio.git
