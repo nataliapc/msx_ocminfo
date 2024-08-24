@@ -1,9 +1,12 @@
 ## OCMINFO for MSX++ core (OCM-PLD)
 
 
-This program aims to be a helpful tool for configuring and maintaining MSX++ (OCM-PLD) FPGA-based systems.
+This program aims to be a helpful tool for configuring and maintaining MSX++ (OCM-PLD) FPGA-based systems.\
+Currently supported devices: 1ChipMSX, Zemmix Neo, SX-1, SM-X, MCP2, SX-2, SM-X Mini, SM-X HB, DE0CV, SX-E.
 
 The core can be found at the [official MSX++ repository](https://github.com/gnogni/ocm-pld-dev) maintained by [@KdL](https://github.com/gnogni).
+
+![F1 panel](.images/f1.png) ![F2 panel](.images/f3.png)
 
 ----
 
@@ -22,5 +25,4 @@ If you want to suggest improvements, feel free to create an issue here.
 
 Thanks to [@KdL](https://github.com/gnogni) and [@ducasp](https://github.com/ducasp) for their core developments and support, and to [@cayce-msx](https://github.com/cayce-msx) for his [Wiki](https://github.com/cayce-msx/msxpp-quick-ref/wiki).
 
-----
 
