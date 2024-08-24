@@ -580,7 +580,7 @@ static const Element_t elemDIPs[] = {
 };
 
 static const Element_t elemHelp[] = {
-	{ LABEL, 3,5,  "      --==[ OCMINFO.COM & CONIO.LIB ]==-- by NataliaPC (@ishwin) '2024      ",
+	{ LABEL, 3,5,  "     --==[ OCMINFO.COM & CONIO.LIB ]==-- by NataliaPC (@ishwin74) '2024     ",
 		0, 0, 0, 0, NULL, 0, NULL, 0, { 0x00 }, false, 
 		{ "Thanks to: @KdL, @Ducasp, and @Cayce-msx",
 			"",
@@ -591,7 +591,7 @@ static const Element_t elemHelp[] = {
 	{ LABEL, 3,10, "Use the function keys to navigate between different panels and the cursor" },
 	{ LABEL, 3,11, "keys to select the items. Information text will appear at bottom." },
 	{ LABEL, 3,12, "To modify an item, you can press SPACE, ENTER, or '+' to increase its value" },
-	{ LABEL, 3,13, "or '-' to decrease it." },
+	{ LABEL, 3,13, "or '-' to decrease it. TAB key to navigate to next panel." },
 	{ LABEL, 3,15, "If you want to suggest improvements, feel free to create an issue at the" },
 	{ LABEL, 3,16, "GitHub project page, the link is shown below." },
 	// END
@@ -900,25 +900,32 @@ static void selectPanel(Panel_t *panel)
 	selectCurrentElement(true);
 }
 
-// ========================================================
-void main(void)
+inline void redefineFunctionKeys()
 {
-	heap_top = (void*)0x8000;
-
-	//Platform system checks
-	checkPlatformSystem();
-
-	// Initialize screen 0[80]
-	textmode(BW80);
-	textattr(0xa1f4);
-	setcursortype(NOCURSOR);
-
-	// Redefine Function keys
 	char *fk = (char*)FNKSTR;
 	memset(fk, 0, 160);
 	for (uint8_t i='1'; i<='5'; i++,fk+=16) {
 		*fk = i;
 	}
+}
+
+// ========================================================
+void main(void)
+{
+	Panel_t *nextPanel;
+
+	// A way to avoid using low memory parameters for BIOS calls.
+	if (heap_top < (void*)0x8000)
+		heap_top = (void*)0x8000;
+
+	//Platform system checks
+//	checkPlatformSystem();
+
+	// Initialize screen 0[80]
+	textmode(BW80);
+	textattr(0xa1f4);
+	setcursortype(NOCURSOR);
+	redefineFunctionKeys();
 
 	// Get data from I/O extension ports
 	getOcmData();
@@ -938,30 +945,6 @@ void main(void)
 			}
 			// Manage pressed key
 			switch(getch()) {
-				case 'q':
-				case 'Q':
-				case KEY_ESC:
-					end++;
-					break;
-				case '1':
-					selectPanel(&pPanels[PANEL_SYSTEM]);
-					break;
-				case '2':
-					selectPanel(&pPanels[PANEL_VIDEO]);
-					break;
-				case '3':
-					selectPanel(&pPanels[PANEL_AUDIO]);
-					break;
-//				case '4':
-//					selectPanel(&pSlots);
-//					break;
-				case '5':
-					selectPanel(&pPanels[PANEL_DIPS]);
-					break;
-				case 'h':
-				case 'H':
-					selectPanel(&pPanels[PANEL_HELP]);
-					break;
 				case KEY_UP:
 					nextElement = currentElement + currentElement->goUp;
 					break;
@@ -986,6 +969,37 @@ void main(void)
 						drawElement(currentElement);
 					}
 					break;
+				case '1':
+					selectPanel(&pPanels[PANEL_SYSTEM]);
+					break;
+				case '2':
+					selectPanel(&pPanels[PANEL_VIDEO]);
+					break;
+				case '3':
+					selectPanel(&pPanels[PANEL_AUDIO]);
+					break;
+//				case '4':
+//					selectPanel(&pSlots);
+//					break;
+				case '5':
+					selectPanel(&pPanels[PANEL_DIPS]);
+					break;
+				case KEY_TAB:
+					nextPanel = currentPanel + 1;
+					if (nextPanel->elements == NULL) {
+						nextPanel = &pPanels[0];
+					}
+					selectPanel(nextPanel);
+					break;
+				case 'h':
+				case 'H':
+					selectPanel(&pPanels[PANEL_HELP]);
+					break;
+				case 'q':
+				case 'Q':
+				case KEY_ESC:
+					end++;
+					break;
 			}
 			if (currentElement != nextElement) {
 				selectCurrentElement(false);
@@ -994,6 +1008,7 @@ void main(void)
 			}
 		}
 		varPUTPNT = varGETPNT;
+		varREPCNT = 0;
 		ASM_EI;
 		ASM_HALT;
 	} while (!end);

@@ -201,7 +201,8 @@ volatile __at (H_TIMI) uint16_t varHTIMI;
 
 #define  KEY_TAB		 9		// CTRL+I - TAB key (tabulation)
 #define  KEY_HOME		11		// CTRL+K - HOME key. Places the cursor at top left
-#define  KEY_ENTER		13		// CTRL+M - RETURN key
+#define  KEY_RETURN		13		// CTRL+M - RETURN key
+#define  KEY_ENTER		13		//    "         "
 #define  KEY_INSERT		18		// CTRL+R - INSERT key
 #define  KEY_SELECT		24		// CTRL+X - SELECT key
 #define  KEY_ESC		27		// ESC key
@@ -211,5 +212,4 @@ volatile __at (H_TIMI) uint16_t varHTIMI;
 #define  KEY_DOWN		31		// DOWN cursor key
 #define  KEY_SPACE		32		// SPACE key
 #define  KEY_DELETE		127		// DELETE key
-
 #endif	//__VT_KEY_CODES__
