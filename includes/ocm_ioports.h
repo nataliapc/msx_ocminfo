@@ -286,17 +286,15 @@ typedef enum {
 */
 #define OCM_SMART_KBLayoutJP	0x15	// Set Japanese Keyboard Layout
 #define OCM_SMART_KBLayoutNJP	0x16	// Set Non-Japanese Keyboard Layout
-/*
-0x17	// Set Display Mode 15KHz Composite/S-Video
-0x18	// Set Display Mode 15KHz RGB w/ Audio Out
-0x19	// Set Display Mode 31Khz VGA for LED TV or LED Display (also HDMI AV on SM-X)
-0x1a	// Set Display Mode 31Khz VGA+ for CRT Monitor (legacy output) (also HDMI AV on SM-X)
-*/
+#define OCM_SMART_Disp15KhSvid	0x17	// Set Display Mode 15KHz Composite/S-Video
+#define OCM_SMART_Disp15KhRGB	0x18	// Set Display Mode 15KHz RGB w/ Audio Out
+#define OCM_SMART_Disp31KhVGA	0x19	// Set Display Mode 31Khz VGA for LED TV or LED Display (also HDMI AV on SM-X)
+#define OCM_SMART_Disp31KhVGAp	0x1a	// Set Display Mode 31Khz VGA+ for CRT Monitor (legacy output) (also HDMI AV on SM-X)
 #define OCM_SMART_VDPNormal		0x1b	// Set VDP Speed Normal Mode (default)
 #define OCM_SMART_VDPFast		0x1c	// Set VDP Speed Fast Mode (V9958 only)
+#define OCM_SMART_MegaSDOFF		0x1d	// Reserve MegaSD OFF (warm reset to go: 0xfd)
+#define OCM_SMART_MegaSDON		0x1e	// Reserve MegaSD ON (warm reset to go: 0xfd)
 /*
-0x1d	// Reserve MegaSD OFF (warm reset to go)
-0x1e	// Reserve MegaSD ON (warm reset to go)
 0x1f	// Set MegaSD Blink OFF
 0x20	// Set MegaSD Blink ON (default)
 0x21	// Set Lights Mode OFF w/ Auto LEDs Control (default)
@@ -355,9 +353,9 @@ typedef enum {
 #define OCM_SMART_Scanlines75	0x53	// Set VGA Scanlines 75% (only for SM-X / SX-2)
 #define OCM_SMART_IntPSG2OFF	0x54	// Set Internal PSG2 OFF (default) (only for SM-X / SX-2)
 #define OCM_SMART_IntPSG2ON		0x55	// Set Internal PSG2 ON (this second PSG acts as an external PSG) (only for SM-X / SX-2)
+#define OCM_SMART_Mapper4MbOFF	0x56	// Set Extra-Mapper 4096 KB OFF (default)
+#define OCM_SMART_Mapper4MbON	0x57	// Set Extra-Mapper 4096 KB ON (only available if SDRAM > 8 MB)
 /*
-0x56	// Set Extra-Mapper 4096 KB OFF (default)
-0x57	// Set Extra-Mapper 4096 KB ON (only available if SDRAM > 8 MB)
 0x58	// Set Extended MegaROM Reading OFF (default for compatibility)
 0x59	// Set Extended MegaROM Reading ON (ASCII-8K/16K max size playable)
 ...
