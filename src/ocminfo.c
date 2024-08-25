@@ -444,19 +444,19 @@ static const Element_t elemDIPs[] = {
 		3,9, " Video Output ",
 		-1, 1, 7, 7,
 		&(virtualDIPs.raw), 0b00000110, dipVideoStr, 20, 
-		{ 0x00 }, false,
+		{ OCM_SMART_Disp15KhSvid, OCM_SMART_Disp31KhVGA, OCM_SMART_Disp15KhRGB, OCM_SMART_Disp31KhVGAp }, false,
 		{ "Virtual DIP-Switch #2-#3: Video Output",
 			"OFF/OFF: Composite/S-Video w/mono audio     OFF/ON: RGB 15khz",
-			"ON/OFF:  VGA Mode Pixel 1:1                 ON/ON:  VGA+ Mode for CRT", (char*)NULL },
+			"ON/OFF:  VGA Mode w/Pixel 1:1               ON/ON:  VGA+ Mode for CRT", (char*)NULL },
 		IOREV_ALL, M_ALL
 	},
 	// 3
 	{
-		SLIDER,
+/*REV*/	VALUE,
 		3,11, " Cartridge Slot 1 ",
 		-1, 1, 7, 7,
-		&(virtualDIPs.raw), 0b00001000, dipSlot1Str, 22, 
-		{ 0x00 }, false,
+		&(virtualDIPs.raw), 0b00001000, dipSlot1Str, 30, 
+/*REV*/	{ 0x00 }, false,
 		{ "Virtual DIP-Switch #4: Cartridge Slot 1 Configuration",
 			"OFF: External Slot-1 / Optional Slot-3 (shared)",
 			"ON:  Internal ESE-MegaSCC+ 1Mb (shared w/2nd half ESE-MegaSCC+ Slot-2)", (char*)NULL },
@@ -464,11 +464,11 @@ static const Element_t elemDIPs[] = {
 	},
 	// 4
 	{
-		SLIDER,
+/*REV*/	VALUE,
 		3,13, " Cartridge Slot 2 ",
 		-1, 1, 7, 7,
-		&(virtualDIPs.raw), 0b00110000, dipSlot2Str, 20, 
-		{ 0x00 }, false,
+		&(virtualDIPs.raw), 0b00110000, dipSlot2Str, 30, 
+/*REV*/	{ 0x00 }, false,
 		{ "Virtual DIP-Switch #5-#6: Cartridge Slot 2 Configuration",
 			"OFF/OFF: External Slot-2           OFF/ON: Internal ESE-MegaRAM ASCII-8 1Mb",
 			"ON/OFF:  Internal ESE-MegaSCC+ 2Mb ON/ON:  Internal ESE-MegaRAM ASCII-16 2Mb", (char*)NULL },
@@ -480,7 +480,7 @@ static const Element_t elemDIPs[] = {
 		3,15, " RAM Mapper ",
 		-1, 1, 7, 7,
 		&(virtualDIPs.raw), 0b01000000, dipMapperStr, 22, 
-		{ 0x00 }, false,
+/*REV*/	{ OCM_SMART_Mapper4MbOFF, OCM_SMART_Mapper4MbON }, false,	// Need warm reset? 0xfc 0xfe
 		{ "Virtual DIP-Switch #7: RAM Mapper",
 			"OFF: Internal 2048Kb RAM / 1st EPBIOS",
 			"ON:  Internal 4096Kb RAM / Optional 2nd EPBIOS", (char*)NULL },
@@ -492,7 +492,7 @@ static const Element_t elemDIPs[] = {
 		3,17, " Internal MegaSD ",
 		-1, -5, 7, 7,
 		&(virtualDIPs.raw), 0b10000000, onOffStr, 22, 
-		{ 0x00 }, false,
+/*REV*/	{ OCM_SMART_MegaSDOFF, OCM_SMART_MegaSDON }, false,			// Need warm reset? 0xfd
 		{ "Virtual DIP-Switch #8: SD Card Slot",
 			"OFF: Disabled",
 			"ON:  Enabled", (char*)NULL },
