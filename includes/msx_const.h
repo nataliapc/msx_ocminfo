@@ -1,7 +1,7 @@
 /*
 #####################################################################
 	MSX Constants & structs 
-	[2024-08-23]
+	[2024-08-25]
 #####################################################################
 */
 #pragma once
@@ -108,11 +108,11 @@ __sfr __at (0x99) IO_VDP2;
 #define LOCK    0x77		// Lock/unlock a drive, or get lock state for a drive
 #define GDRVR   0x78		// Get information about a device driver
 #define GDLI    0x79		// Get information about a drive letter
-#define GPART   0x7A		// Get information about a device partition
-#define CDRVR   0x7B		// Call a routine in a device driver
-#define MAPDRV  0x7C		// Map a drive letter to a driver and device
-#define Z80MODE 0x7D		// Enable or disable the Z80 access mode for a driver
-#define GETCLUS 0x7E		// Get information for a cluster on a FAT drive
+#define GPART   0x7a		// Get information about a device partition
+#define CDRVR   0x7b		// Call a routine in a device driver
+#define MAPDRV  0x7c		// Map a drive letter to a driver and device
+#define Z80MODE 0x7d		// Enable or disable the Z80 access mode for a driver
+#define GETCLUS 0x7e		// Get information for a cluster on a FAT drive
 
 
 
@@ -144,7 +144,8 @@ __sfr __at (0x99) IO_VDP2;
 #define CSRX		0xf3dd	// (BYTE) X-coordinate of text cursor
 #define RG0SAV		0xf3df	// (BYTE) Mirror of VDP Register 0 (R#0)
 #define FORCLR		0xf3e9	// (BYTE) Foreground colour
-#define BAKCLR		0xf3eA	// (BYTE) Background colour
+#define BAKCLR		0xf3ea	// (BYTE) Background colour
+#define BDRCLR		0xf3eb	// (BYTE) Border colour
 #define REPCNT		0xf3f7	// (BYTE) Delay until the auto-repeat of the key begins. (50 by default)
 #define PUTPNT		0xf3f8	// (WORD) Address in the keyboard buffer where a character will be written
 #define GETPNT		0xf3fa	// (WORD) Address in the keyboard buffer where the next character is read
@@ -172,6 +173,9 @@ volatile __at (GETPNT) uint16_t varGETPNT;
 volatile __at (MODE)   uint8_t  varMODE;
 volatile __at (JIFFY)  uint16_t varJIFFY;
 volatile __at (H_TIMI) uint16_t varHTIMI;
+volatile __at (FORCLR) uint16_t varFORCLR;
+volatile __at (BAKCLR) uint16_t varBAKCLR;
+volatile __at (BDRCLR) uint16_t varBDRCLR;
 
 
 
@@ -199,10 +203,11 @@ volatile __at (H_TIMI) uint16_t varHTIMI;
 #define  VT_CURHALF		"\x1B""y4"	// Cursor to half size
 #define  VT_CURSHOW		"\x1B""y5"	// Shows the cursor
 
+#define  KEY_BS			 8		// CTRL+H - BS key (back space). Moves cursos to the left
 #define  KEY_TAB		 9		// CTRL+I - TAB key (tabulation)
 #define  KEY_HOME		11		// CTRL+K - HOME key. Places the cursor at top left
 #define  KEY_RETURN		13		// CTRL+M - RETURN key
-#define  KEY_ENTER		13		//    "         "
+#define  KEY_ENTER		13		//    "        "
 #define  KEY_INSERT		18		// CTRL+R - INSERT key
 #define  KEY_SELECT		24		// CTRL+X - SELECT key
 #define  KEY_ESC		27		// ESC key

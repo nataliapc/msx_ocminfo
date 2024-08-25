@@ -7,6 +7,16 @@
 
 #define VERSION		"0.9.1"
 
+#define SETSMART_X	34
+#define SETSMART_Y	19
+
+
+// ========================================================
+// External hidden functions
+
+void setByteVRAM(uint16_t vram, uint8_t value) __sdcccall(0);
+void _fillVRAM(uint16_t vram, uint16_t len, uint8_t value) __sdcccall(0);
+
 
 // ========================================================
 // Structs & Enums
@@ -458,7 +468,7 @@ static const Element_t elemDIPs[] = {
 		3,15, " RAM Mapper ",
 		-1, 1, 7, 7,
 		&(virtualDIPs.raw), 0b01000000, dipMapperStr, 22, 
-/*REV*/	{ OCM_SMART_Mapper4MbOFF, OCM_SMART_Mapper4MbON }, false,	// Need warm reset? 0xfc 0xfe
+/*REV*/	{ OCM_SMART_Mapper4MbOFF, OCM_SMART_Mapper4MbON }, false,	// Need warm reset? 0xfc 0xfe / sysInfo1.resetReqFlag
 		{ "Virtual DIP-Switch #7: RAM Mapper",
 			"OFF: Internal 2048Kb RAM / 1st EPBIOS",
 			"ON:  Internal 4096Kb RAM / Optional 2nd EPBIOS", (char*)NULL },
@@ -470,7 +480,7 @@ static const Element_t elemDIPs[] = {
 		3,17, " Internal MegaSD ",
 		-1, -5, 7, 7,
 		&(virtualDIPs.raw), 0b10000000, onOffStr, 22, 
-/*REV*/	{ OCM_SMART_MegaSDOFF, OCM_SMART_MegaSDON }, false,			// Need warm reset? 0xfd
+/*REV*/	{ OCM_SMART_MegaSDOFF, OCM_SMART_MegaSDON }, false,			// Need warm reset? 0xfd / sysInfo1.resetReqFlag
 		{ "Virtual DIP-Switch #8: SD Card Slot",
 			"OFF: Disabled",
 			"ON:  Enabled", (char*)NULL },

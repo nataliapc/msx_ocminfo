@@ -41,7 +41,6 @@ static Element_t *nextElement;
 
 // ========================================================
 static void drawCurrentPanel();
-void _fillVRAM(uint16_t vram, uint16_t len, uint8_t value) __sdcccall(0);
 
 
 // ========================================================
@@ -184,7 +183,7 @@ static bool changeCurrentValue(int8_t increase)
 		char digit0[] = "0";
 		if (currentElement->cmd[value] >= 16) *digit0 = '\0';
 		csprintf(heap_top, "setsmart -%s%x", digit0, currentElement->cmd[value]);
-		putlinexy(34,19, strlen(heap_top), heap_top);
+		putlinexy(SETSMART_X,SETSMART_Y, strlen(heap_top), heap_top);
 		isVisibleSetSmartText = true;
 		
 		return true;
@@ -349,6 +348,9 @@ void main(void)
 	textattr(0xa1f4);
 	setcursortype(NOCURSOR);
 	redefineFunctionKeys();
+	// Redefine '=' pattern character
+	setByteVRAM(0x1000+61*8+2, 255);
+	setByteVRAM(0x1000+61*8+4, 255);
 
 	// Get data from I/O extension ports
 	getOcmData();
@@ -363,7 +365,7 @@ void main(void)
 		if (kbhit()) {
 			// Clear last setsmart text
 			if (isVisibleSetSmartText) {
-				putlinexy(34,19, 12, "            ");
+				putlinexy(SETSMART_X,SETSMART_Y, 12, "            ");
 				isVisibleSetSmartText = false;
 			}
 			// Manage pressed key
@@ -401,9 +403,6 @@ void main(void)
 				case '3':
 					selectPanel(&pPanels[PANEL_AUDIO]);
 					break;
-//				case '4':
-//					selectPanel(&pSlots);
-//					break;
 				case '5':
 					selectPanel(&pPanels[PANEL_DIPS]);
 					break;
@@ -442,6 +441,8 @@ void main(void)
 	_fillVRAM(0x1b00, 240, 0);
 	__asm
 		push ix
+		ld ix, #INITXT
+		BIOSCALL
 		ld ix, #INIFNK
 		BIOSCALL
 		pop ix
