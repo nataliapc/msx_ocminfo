@@ -15,7 +15,7 @@ The core can be found at the [official MSX++ repository](https://github.com/gnog
 
 ### Usage
 
-Use the function keys (_F1-F5_) to navigate between the different panels and the cursor keys to select the items. A description/information text will appear at bottom.
+Use the function keys (_F1-F5_) or _TAB_ to navigate the different panels, and the cursor keys to select the items. A description/information text will appear at bottom.
 
 To modify an item, you can press _SPACE_, _ENTER_, or _'+'_ to increase its value or _'-'_ to decrease it.
 

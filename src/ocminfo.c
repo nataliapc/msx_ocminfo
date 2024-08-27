@@ -6,17 +6,18 @@
 */
 #include <string.h>
 #include "conio.h"
+#include "dialogs.h"
 #include "heap.h"
 #include "msx_const.h"
 #include "utils.h"
 #include "ocm_ioports.h"
-#include "ocminfo.h"
 
 #pragma opt_code_size
 
 
 // ========================================================
 static uint8_t msxVersionROM;
+static uint8_t kanjiMode;
 static char *emptyArea;
 static bool isVisibleSetSmartText = false;
 
@@ -74,6 +75,9 @@ static void getOcmData()
 	sysInfo5.raw = ocm_getPortValue(OCM_SYSINFO5_PORT);
 	pldVers0.raw = ocm_getPortValue(OCM_PLDVERS0_PORT);
 	pldVers1.raw = ocm_getPortValue(OCM_PLDVERS1_PORT);
+
+	customCpuSpeedValue = (!virtualDIPs.cpuClock ? 7 + sysInfo1.turboPana : sysInfo0.cpuCustomSpeed - 1 );
+	customCpuModeValue = (!virtualDIPs.cpuClock ? sysInfo1.turboPana : 2 );
 }
 
 // ========================================================
@@ -160,7 +164,9 @@ static bool changeCurrentValue(int8_t increase)
 {
 	if (!isIOrevisionSupported(currentElement) || 
 		!isMachineSupported(currentElement) ||
-		currentElement->cmd[0] == 0x00) {
+		currentElement->cmd[0] == 0x00 ||
+		currentElement->value == NULL)
+	{
 		putch('\x07');
 		return false;
 	}
@@ -168,6 +174,8 @@ static bool changeCurrentValue(int8_t increase)
 	uint8_t maxValue = getMaxValue(currentElement);
 	int8_t value = getValue(currentElement);
 	value += increase;
+	if (value < currentElement->minValue) value = currentElement->maxValue;
+	if (value > currentElement->maxValue) value = currentElement->minValue;
 	value &= maxValue;
 	if (currentElement->cmd[0] != 0x00) {		// if is RW
 		ocm_sendSmartCmd(currentElement->cmd[value]);
@@ -206,66 +214,88 @@ static void drawDescription(char **description)
 }
 
 // ========================================================
-static void drawSlider(Element_t *element, uint8_t posx, uint8_t value)
+static void drawWidget_slider(Element_t *element)
 {
+	uint8_t posx = wherex();
 	char sliderStr[] = "========";
-	uint16_t len = getMaxValue(element) + 1;
-	sliderStr[len] = '\0';
+	uint8_t value = getValue(element);
+
+	sliderStr[element->maxValue - element->minValue + 1] = '\0';
 	if (element->valueStr != NULL) {
 		csprintf(heap_top, "-[%s]+  %s", sliderStr, element->valueStr[value]);
 	} else {
 		csprintf(heap_top, "-[%s]+  %u  ", sliderStr, value);
 	}
+	*(heap_top+2+value-element->minValue) = '\x85';
 	putlinexy(posx, wherey(), strlen(heap_top), heap_top);
-	putlinexy(posx+2+value, wherey(), 1, "\x85");
+}
+
+static void drawWidget_value(Element_t *element)
+{
+	uint8_t value = getValue(element);
+	if (element->valueStr == NULL) {
+		csprintf(heap_top, "%u", value);
+	} else {
+		csprintf(heap_top, "%s", element->valueStr[value]);
+	}
+	putlinexy(wherex(), wherey(), strlen(heap_top), heap_top);
+}
+
+static void drawCustom_cpuSpeed(Element_t *element)
+{
+	Element_t *elemChange = &currentPanel->elements[3];
+	if (!virtualDIPs.cpuClock) {
+		// Standard / TurboPana speed
+		elemChange->supportedBy = M_NONE;		// Element 'Custom speed'
+		elemChange->valueOffsetX = 24;
+		putlinexy(elemChange->posX + strlen(elemChange->label), elemChange->posY, 12, emptyArea);
+	} else {
+		// Custom speed
+		elemChange->supportedBy = M_ALL;		// Element 'Custom speed'
+		elemChange->valueOffsetX = 14;
+	}
+	drawWidget_value(element);
 }
 
 static bool drawElement(Element_t *element)
 {
 	if (element->type == END) return false;
 
-	uint8_t value = getValue(element);
-	uint8_t posx = element->x;
-	uint8_t posy = element->y;
+	uint8_t posx = element->posX;
+	uint8_t posy = element->posY;
 
 	putlinexy(posx, posy, strlen(element->label), element->label);
 
 	if (element->type == LABEL) return true;
 
 	if (!isIOrevisionSupported(element) || !isMachineSupported(element)) {
-		putlinexy(posx+element->valueOffsetX+4, posy, 3, "n/a");
+		putlinexy(posx+element->valueOffsetX+4, posy, 7, "n/a    ");
 		return true;
 	}
 
-	posx += element->valueOffsetX;
+	posx += element->valueOffsetX + element->minValue;
 	gotoxy(posx, posy);
 
 	switch (element->type) {
 		case LABEL:
 			break;
 		case VALUE:
-			if (element->valueStr == NULL) {
-				csprintf(heap_top, "%u", value);
-			} else {
-				csprintf(heap_top, "%s", element->valueStr[value]);
-			}
-			putlinexy(wherex(), wherey(), strlen(heap_top), heap_top);
-			break;
-		case ONOFF:
-			putlinexy(wherex(), wherey(), strlen(element->valueStr[value]), element->valueStr[value]);
+			drawWidget_value(element);
 			break;
 		case SLIDER:
-			drawSlider(element, posx, value);
+			drawWidget_slider(element);
+			break;
+		case CUSTOM_CPUSPEED:
+			drawCustom_cpuSpeed(element);
 			break;
 	}
-
 	return true;
 }
 
 static void selectCurrentElement(bool enable)
 {
 	textblink(
-		currentElement->x, currentElement->y, 
+		currentElement->posX, currentElement->posY, 
 		strlen(currentElement->label), 
 		enable);
 	if (enable) {
@@ -291,7 +321,7 @@ static void selectPanel(Panel_t *panel)
 	// Clear blinks
 	if (currentPanel != NULL) {
 		textblink(currentPanel->titlex, currentPanel->titley, currentPanel->titlelen, false);
-		textblink(currentElement->x, currentElement->y, strlen(currentElement->label), false);
+		textblink(currentElement->posX, currentElement->posY, strlen(currentElement->label), false);
 	}
 
 	// Clear Panel zone
@@ -335,13 +365,18 @@ inline void redefineFunctionKeys()
 void main(void)
 {
 	Panel_t *nextPanel;
+	
+	kanjiMode = (detectKanjiDriver() ? getKanjiMode() : 0);
+	if (kanjiMode) {
+		setKanjiMode(0);
+	}
 
 	// A way to avoid using low memory parameters for BIOS calls.
 	if (heap_top < (void*)0x8000)
 		heap_top = (void*)0x8000;
 
 	//Platform system checks
-//	checkPlatformSystem();
+	checkPlatformSystem();
 
 	// Initialize screen 0[80]
 	textmode(BW80);
@@ -437,15 +472,19 @@ void main(void)
 
 	// Clean & restore screen
 	textattr(0x00f4);
-	clrscr();
 	_fillVRAM(0x1b00, 240, 0);
-	__asm
-		push ix
-		ld ix, #INITXT
-		BIOSCALL
-		ld ix, #INIFNK
-		BIOSCALL
-		pop ix
-	__endasm;
+	clrscr();
+	if (kanjiMode) {
+		setKanjiMode(kanjiMode);
+	} else {
+		__asm
+			push ix
+			ld ix, #INITXT
+			BIOSCALL
+			ld ix, #INIFNK
+			BIOSCALL
+			pop ix
+		__endasm;
+	}
 	exit();
 }

@@ -2,6 +2,7 @@
 // http://map.grauw.nl/resources/msx_io_ports.php#switch_io
 // https://github.com/gnogni/ocm-pld-dev/tree/master/docs <-- switched io ports revision 12.pdf
 // https://github.com/cayce-msx/msxpp-quick-ref/wiki
+#pragma once
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -360,8 +361,8 @@ typedef enum {
 0x59	// Set Extended MegaROM Reading ON (ASCII-8K/16K max size playable)
 ...
 0x7f	// Pixel Ratio 1:1 for LED Display (default is 0) (range 0-7) (60Hz only)
-0x80	// Null Command (useful for programming)
 */
+#define OCM_SMART_NullCommand	0x80	// Null Command (useful for programming)
 #define OCM_SMART_LegacyVGA		0x81	// Assign Legacy Output to VGA
 #define OCM_SMART_LegacyVGAplus	0x82	// Assign Legacy Output to VGA+ (default)
 /*

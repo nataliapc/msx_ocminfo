@@ -1,7 +1,7 @@
 /*
 #####################################################################
 	MSX Constants & structs 
-	[2024-08-25]
+	[2024-08-26]
 #####################################################################
 */
 #pragma once
@@ -151,12 +151,14 @@ __sfr __at (0x99) IO_VDP2;
 #define GETPNT		0xf3fa	// (WORD) Address in the keyboard buffer where the next character is read
 #define FNKSTR		0xf87f	// (10*16 bytes) Value of the function keys
 #define MODE		0xfafc	// (BYTE) Flags for VRAM
+#define HOKVLD		0xfb20	// (BYTE) Bit 0 indicates presence of extended Bios (EXTBIO) [0:No bios | 1:Exists at least one]
 #define KEYBUF		0xfbf0	// (40 bytes) Key code buffer [0xfbf0...0xfc17]
 #define JIFFY		0xfc9e	// (WORD) Internal time counter
 #define CSRSW		0xfca9	// (BYTE) Cursor display switch (0:hidden | 1:visible)
 #define CSTYLE		0xfcaa	// (BYTE) Cursor style (0:full cursor | other:halve cursor)
 #define EXPTBL		0xfcc1	// (BYTE) BIOS slot
 #define H_TIMI		0xfd9a	// (WORD) Interrupt Hook
+#define EXTBIO		0xffca	// (...) Extended BIOS call
 #define RG8SAV		0xffe7	// (BYTE) Mirror Of VDP Register 8 (R#8)
 
 // MSX-DOS system variables

@@ -59,6 +59,7 @@ REL_LIBS = $(addprefix $(OBJDIR)/, \
 				crt0msx_msxdos.rel \
 				heap.rel \
 				ocm_ioports.rel \
+				dialogs.rel \
 			) \
 			$(addprefix $(LIBDIR)/, $(LIBS))
 
@@ -99,10 +100,10 @@ $(OBJDIR)/%.s.rel: $(SRCLIB)/%.s
 	@$(DIR_GUARD)
 	@$(AS) -go $@ $^ ;
 
-$(OBJDIR)/$(PROGRAM): $(REL_LIBS) $(SRCDIR)/ocminfo.c
+$(OBJDIR)/$(PROGRAM): $(REL_LIBS) $(wildcard $(INCDIR)/*.h) $(SRCDIR)/ocminfo.c
 	@echo "$(COL_YELLOW)######## Compiling $@$(COL_RESET)"
 	@$(DIR_GUARD)
-	@$(CC) $(CCFLAGS) $(FULLOPT) -I$(INCDIR) -L$(LIBDIR) $(subst .com,.c,$^) -o $(subst .com,.ihx,$@) ;
+	@$(CC) $(CCFLAGS) $(FULLOPT) -I$(INCDIR) -L$(LIBDIR) $(REL_LIBS) $(subst .com,.c,$(SRCDIR)/ocminfo.c) -o $(subst .com,.ihx,$@) ;
 	@$(HEX2BIN) -e com $(subst .com,.ihx,$@) ;
 
 release:
@@ -148,12 +149,12 @@ test: all
 	; then \
 		echo "**** openmsx already running..." \
 	; else \
-#		$(OPEMNSX) -machine Philips_NMS_8245 $(EMUEXT2) -diska $(DSKDIR) $(EMUSCRIPTS) \
-#		$(OPEMNSX) -machine Toshiba_HX-10 $(EMUEXT1) -diska $(DSKDIR) $(EMUSCRIPTS) \
 #		$(OPEMNSX) -machine msx2plus $(EMUEXT2P) -diska $(DSKDIR) $(EMUSCRIPTS) \
-#		$(OPEMNSX) -machine turbor $(EMUEXT) -diska $(DSKDIR) $(EMUSCRIPTS) \
 #		$(OPEMNSX) -machine Sony_HB-F1XD $(EMUEXT2) -diska $(DSKDIR) $(EMUSCRIPTS) \
-		$(OPEMNSX) -machine Panasonic_FS-A1WSX $(EMUEXT2) -diska $(DSKDIR) $(EMUSCRIPTS) \
+#		$(OPEMNSX) -machine Toshiba_HX-10 $(EMUEXT1) -diska $(DSKDIR) $(EMUSCRIPTS) \
+#		$(OPEMNSX) -machine Philips_NMS_8245 $(EMUEXT2) -diska $(DSKDIR) $(EMUSCRIPTS) \
+#		$(OPEMNSX) -machine Panasonic_FS-A1WSX $(EMUEXT2) -diska $(DSKDIR) $(EMUSCRIPTS) \
+		$(OPEMNSX) -machine turbor $(EMUEXT) -diska $(DSKDIR) $(EMUSCRIPTS) \
 	; fi'
 
 testrom: rom
