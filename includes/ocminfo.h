@@ -54,7 +54,8 @@ typedef enum {
 	SLIDER,									// Slider with ranges of 0 to 2/4/8 values
 	END,									// **End of Elements array
 	// Custom widgets
-	CUSTOM_CPUSPEED,
+	CUSTOM_CPUSPEED_VALUE,
+	CUSTOM_VOLUME_SLIDER,
 } Widget_t;
 
 typedef enum {
@@ -150,6 +151,10 @@ static const char *legacyVgaStr[2] = {
 static const char *scanlinesStr[4] = {
 	"0% ", "25%", "50%", "75%"
 };
+static const char *audioPresetStr[7] = {
+	"#Custom         ", "#1 Mute Sound   ", "#2 Middle Sound ", "#3 High Sound   ",
+	"#4 Emphasis PSG ", "#5 Emphasis SCC+", "#6 Emphasis OPLL"
+};
 static const char *dipCpuStr[2] = {
 	"Standard", "Custom  "
 };
@@ -178,7 +183,7 @@ static const Element_t elemSystem[] = {
 	},
 	// 1
 	{
-		CUSTOM_CPUSPEED,
+		CUSTOM_CPUSPEED_VALUE,
 		3,7, " CPU Speed ",
 		5, 1, 7, 7,
 		&customCpuSpeedValue, 0b00001111, 0,10, cpuSpeedStr, 28,
@@ -368,64 +373,79 @@ static const Element_t elemVideo[] = {
 static const Element_t elemAudio[] = {
 	// 0
 	{
-		SLIDER,
-		3,6, " Master volume ",
-		5, 1, 6, 6,
-		&(audioVols0.raw), 0b01110000, 0,7, numbersStr, 18,
+		VALUE,
+		3,6, " Audio presets ",
+		6, 1, 7, 7,
+		&customAudioPresetValue, 0b00000111, 0,6, audioPresetStr, 18,
 		CMDTYPE_STANDARD,
-		{ OCM_SMART_MasterVol0, OCM_SMART_MasterVol1, OCM_SMART_MasterVol2, OCM_SMART_MasterVol3,
-		  OCM_SMART_MasterVol4, OCM_SMART_MasterVol5, OCM_SMART_MasterVol6, OCM_SMART_MasterVol7 },
-		false,
-		{ "Set Master volume level.",
-		  "Default is 7", (char*)NULL },
+		{ OCM_SMART_NullCommand, OCM_SMART_AudioPreset1, OCM_SMART_AudioPreset2, OCM_SMART_AudioPreset3,
+		  OCM_SMART_AudioPreset4, OCM_SMART_AudioPreset5, OCM_SMART_AudioPreset6 },
+		ATR_FORCEPANELRELOAD,
+		{ "Set audio presets (press +/- to change):",
+		  "#Custom preset, #1:Mute, #2:Middle Sound, #3:High Sound (default option),",
+		  "#4:Emphasis PSG Sound, #5:Emphasis SCC+ Sound, #6:Emphasis OPLL Sound.", (char*)NULL },
 		IOREV_ALL, M_ALL
 	},
 	// 1
 	{
-		SLIDER,
-		3,7, " PSG volume ",
-		-1, 1, 5, 5,
-		&(audioVols0.raw), 0b00000111, 0,7, numbersStr, 18,
+		CUSTOM_VOLUME_SLIDER,
+		3,8, " Master volume ",
+		-1, 1, 7, 7,
+		&(audioVols0.raw), 0b01110000, 0,7, numbersStr, 18,
 		CMDTYPE_STANDARD,
-		{ OCM_SMART_PSGVol0, OCM_SMART_PSGVol1, OCM_SMART_PSGVol2, OCM_SMART_PSGVol3,
-		  OCM_SMART_PSGVol4, OCM_SMART_PSGVol5, OCM_SMART_PSGVol6, OCM_SMART_PSGVol7 },
-		false,
-		{ "Set PSG volume level.",
-		  "Default is 4", (char*)NULL },
+		{ OCM_SMART_MasterVol0, OCM_SMART_MasterVol1, OCM_SMART_MasterVol2, OCM_SMART_MasterVol3,
+		  OCM_SMART_MasterVol4, OCM_SMART_MasterVol5, OCM_SMART_MasterVol6, OCM_SMART_MasterVol7 },
+		ATR_FORCEPANELRELOAD,
+		{ "Set Master volume level.",
+		  "Default is 7", (char*)NULL },
 		IOREV_ALL, M_ALL
 	},
 	// 2
 	{
-		SLIDER,
-		3,8, " SCC+ volume ",
-		-1, 1, 5, 5,
-		&(audioVols1.raw), 0b01110000, 0,7, numbersStr, 18,
+		CUSTOM_VOLUME_SLIDER,
+		3,9, " PSG volume ",
+		-1, 1, 6, 6,
+		&(audioVols0.raw), 0b00000111, 0,7, numbersStr, 18,
 		CMDTYPE_STANDARD,
-		{ OCM_SMART_SCCIVol0, OCM_SMART_SCCIVol1, OCM_SMART_SCCIVol2, OCM_SMART_SCCIVol3,
-		  OCM_SMART_SCCIVol4, OCM_SMART_SCCIVol5, OCM_SMART_SCCIVol6, OCM_SMART_SCCIVol7 },
-		false,
-		{ "Set SCC+ volume level.",
+		{ OCM_SMART_PSGVol0, OCM_SMART_PSGVol1, OCM_SMART_PSGVol2, OCM_SMART_PSGVol3,
+		  OCM_SMART_PSGVol4, OCM_SMART_PSGVol5, OCM_SMART_PSGVol6, OCM_SMART_PSGVol7 },
+		ATR_FORCEPANELRELOAD,
+		{ "Set PSG volume level.",
 		  "Default is 4", (char*)NULL },
 		IOREV_ALL, M_ALL
 	},
 	// 3
 	{
-		SLIDER,
-		3,9, " OPLL volume ",
-		-1, 1, 4, 4,
-		&(audioVols1.raw), 0b00000111, 0,7, numbersStr, 18,
+		CUSTOM_VOLUME_SLIDER,
+		3,10, " SCC+ volume ",
+		-1, 1, 5, 5,
+		&(audioVols1.raw), 0b01110000, 0,7, numbersStr, 18,
 		CMDTYPE_STANDARD,
-		{ OCM_SMART_OPLLVol0, OCM_SMART_OPLLVol1, OCM_SMART_OPLLVol2, OCM_SMART_OPLLVol3, 
-		  OCM_SMART_OPLLVol4, OCM_SMART_OPLLVol5, OCM_SMART_OPLLVol6, OCM_SMART_OPLLVol7 },
-		false,
-		{ "Set OPLL volume level.",
+		{ OCM_SMART_SCCIVol0, OCM_SMART_SCCIVol1, OCM_SMART_SCCIVol2, OCM_SMART_SCCIVol3,
+		  OCM_SMART_SCCIVol4, OCM_SMART_SCCIVol5, OCM_SMART_SCCIVol6, OCM_SMART_SCCIVol7 },
+		ATR_FORCEPANELRELOAD,
+		{ "Set SCC+ volume level.",
 		  "Default is 4", (char*)NULL },
 		IOREV_ALL, M_ALL
 	},
 	// 4
 	{
+		CUSTOM_VOLUME_SLIDER,
+		3,11, " OPLL volume ",
+		-1, 1, 4, 4,
+		&(audioVols1.raw), 0b00000111, 0,7, numbersStr, 18,
+		CMDTYPE_STANDARD,
+		{ OCM_SMART_OPLLVol0, OCM_SMART_OPLLVol1, OCM_SMART_OPLLVol2, OCM_SMART_OPLLVol3, 
+		  OCM_SMART_OPLLVol4, OCM_SMART_OPLLVol5, OCM_SMART_OPLLVol6, OCM_SMART_OPLLVol7 },
+		ATR_FORCEPANELRELOAD,
+		{ "Set OPLL volume level.",
+		  "Default is 4", (char*)NULL },
+		IOREV_ALL, M_ALL
+	},
+	// 5
+	{
 		SLIDER,
-		3,11, " PSG2 ",
+		3,13, " PSG2 ",
 		-1, 1, 3, 3,
 		&(sysInfo4.raw), 0b00000100, 0,1, onOffStr, 24,
 		CMDTYPE_STANDARD,
@@ -435,11 +455,11 @@ static const Element_t elemAudio[] = {
 		  "Default is OFF", (char*)NULL },
 		IOREV_11, M_SX2|M_SMX_MCP2_ID
 	},
-	// 5
+	// 6
 	{
 		SLIDER,
-		3,12, " OPL3 ",
-		-1, -5, 2, 2,
+		3,15, " OPL3 ",
+		-1, -6, 2, 2,
 		&(sysInfo1.raw), 0b00000100, 0,1, onOffStr, 24,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_OPL3OFF, OCM_SMART_OPL3ON },
@@ -448,11 +468,11 @@ static const Element_t elemAudio[] = {
 		  "Default is OFF", (char*)NULL },
 		IOREV_10, M_SX2|M_SMX_MCP2_ID
 	},
-	// 6
+	// 7
 	{
 		SLIDER,
 		40,6, " Pseudo stereo ",
-		1, 1, -6, -6,
+		1, 1, -7, -7,
 		&(sysInfo2.raw), 0b00000001, 0,1, onOffStr, 24,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_PseudSterOFF, OCM_SMART_PseudSterON },
@@ -461,11 +481,11 @@ static const Element_t elemAudio[] = {
 		  "Default is OFF", (char*)NULL },
 		IOREV_3, M_ALL
 	},
-	// 7
+	// 8
 	{
 		SLIDER,
 		40,8, " Right Inverse Audio ",
-		-1, -1, -5, -5,
+		-1, -1, -7, -7,
 		&(sysInfo3.raw), 0b00000001, 0,1, onOffStr, 24,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_RightInvAud0, OCM_SMART_RightInvAud1 },

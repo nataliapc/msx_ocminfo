@@ -306,9 +306,11 @@ typedef enum {
 0x21	// Set Lights Mode OFF w/ Auto LEDs Control (default)
 0x22	// Set Lights Mode ON + Red Led OFF
 0x23	// Set Lights Mode ON + Red Led ON
-0x24	// Internal Audio Preset #1 "Mute Sound"
-0x25	// Internal Audio Preset #2 "Middle Sound"
-0x26	// Internal Audio Preset #3 "High Sound" (default)
+*/
+#define OCM_SMART_AudioPreset1	0x24	// Internal Audio Preset #1 "Mute Sound"
+#define OCM_SMART_AudioPreset2	0x25	// Internal Audio Preset #2 "Middle Sound"
+#define OCM_SMART_AudioPreset3	0x26	// Internal Audio Preset #3 "High Sound" (default)
+/*
 0x27	// Set CMT OFF (default) (disabled w/ MSXtR BIOS) (n/a on SM-X / SX-2)
 0x28	// Set CMT ON (needs a cassette recorder) (disabled w/ MSXtR BIOS) (n/a on SM-X / SX-2)
 0x29	// Lock Turbo Toggles
@@ -342,10 +344,11 @@ typedef enum {
 
 #define OCM_SMART_RightInvAud0	0x42	// Set Right Inverse Audio OFF (default)
 #define OCM_SMART_RightInvAud1	0x43	// Set Right Inverse Audio ON
+
+#define OCM_SMART_AudioPreset4	0x44	// Internal Audio Preset #4 "Emphasis PSG Sound" (since IO7)
+#define OCM_SMART_AudioPreset5	0x45	// Internal Audio Preset #5 "Emphasis SCC-I Sound" (since IO7)
+#define OCM_SMART_AudioPreset6	0x46	// Internal Audio Preset #6 "Emphasis OPLL Sound" (since IO7)
 /*
-0x44	// Internal Audio Preset #4 "Emphasis PSG Sound" (since IO7)
-0x45	// Internal Audio Preset #5 "Emphasis SCC-I Sound" (since IO7)
-0x46	// Internal Audio Preset #6 "Emphasis OPLL Sound" (since IO7)
 0x47	// Vertical Offset 16 (useful for Ark-A-Noah)
 0x48	// Vertical Offset 17
 0x49	// Vertical Offset 18

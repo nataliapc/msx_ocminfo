@@ -16,10 +16,11 @@
 
 
 // ========================================================
-uint8_t customCpuSpeedValue;
-uint8_t customCpuModeValue;
-uint8_t customVideoModeValue;
-uint8_t customSlots12Value;
+static uint8_t customCpuSpeedValue;
+static uint8_t customCpuModeValue;
+static uint8_t customVideoModeValue;
+static uint8_t customSlots12Value;
+static uint8_t customAudioPresetValue = 0;
 
 #include "ocminfo.h"
 
@@ -28,7 +29,7 @@ static uint8_t msxVersionROM;
 static uint8_t kanjiMode;
 static char *emptyArea;
 static bool isVisibleSetSmartText = false;
-static uint8_t lastCmdSent;
+static uint8_t lastCmdSent = 0;
 
 static OCM_P42_VirtualDIP_t virtualDIPs;
 static OCM_P43_LockToggles_t lockToggles;
@@ -50,8 +51,9 @@ static Element_t *nextElement;
 
 
 // ========================================================
-void sendCommands(Element_t *elem);
+bool sendCommands(Element_t *elem);
 static void drawCurrentPanel();
+static bool drawElement(Element_t *element);
 
 
 // ========================================================
@@ -184,19 +186,21 @@ static bool changeCurrentValue(int8_t increase)
 	if (value > currentElement->maxValue) value = currentElement->minValue;
 	if (currentElement->cmdType != CMDTYPE_NONE) {		// if is RW
 		setValue(currentElement, value);
-		sendCommands(currentElement);
+		
+		if (sendCommands(currentElement)) {
+			// Display setsmart text
+			char digit0[] = "0";
+			if (lastCmdSent >= 16) *digit0 = '\0';
+			csprintf(heap_top, "setsmart -%s%x", digit0, lastCmdSent);
+			putlinexy(SETSMART_X,SETSMART_Y, strlen(heap_top), heap_top);
+			isVisibleSetSmartText = true;
+		}
+
 		getOcmData();
 		if (currentElement->forcePanelReload) {
 			drawCurrentPanel();
 			value = getValue(currentElement);
 		}
-
-		// Display setsmart text
-		char digit0[] = "0";
-		if (lastCmdSent >= 16) *digit0 = '\0';
-		csprintf(heap_top, "setsmart -%s%x", digit0, lastCmdSent);
-		putlinexy(SETSMART_X,SETSMART_Y, strlen(heap_top), heap_top);
-		isVisibleSetSmartText = true;
 
 		// Requested Reset management
 		if (sysInfo1.resetReqFlag && currentElement->needResetToApply) {
@@ -211,20 +215,27 @@ static bool changeCurrentValue(int8_t increase)
 }
 
 // ========================================================
-void sendCommands(Element_t *elem)
+bool sendCommands(Element_t *elem)
 {
+	uint8_t value = getValue(elem);
+
+	// Do nothing
+	if (elem->cmd[value] == OCM_SMART_NullCommand)
+		return false;
 	// Single Standard Command
 	if (elem->cmdType == CMDTYPE_STANDARD) {
 		lastCmdSent = elem->cmd[getValue(elem)];
 		ocm_sendSmartCmd(lastCmdSent);
-		return;
+		return true;
 	}
 	// Custom Command behaviours
 	if (elem->cmdType == CMDTYPE_CUSTOM_SLOTS12) {
 		lastCmdSent = elem->cmd[customSlots12Value];
 		ocm_sendSmartCmd(lastCmdSent);
-		return;
+		return true;
 	}
+
+	return false;
 }
 
 
@@ -286,6 +297,15 @@ static void drawCustom_cpuSpeed(Element_t *element)
 	drawWidget_value(element);
 }
 
+static void drawCustom_volume(Element_t *element)
+{
+	drawWidget_slider(element);
+	if (currentElement != &elemAudio[0]) {
+		customAudioPresetValue = 0;
+		drawElement(&elemAudio[0]);
+	}
+}
+
 static bool drawElement(Element_t *element)
 {
 	if (element->type == END) return false;
@@ -314,8 +334,11 @@ static bool drawElement(Element_t *element)
 		case SLIDER:
 			drawWidget_slider(element);
 			break;
-		case CUSTOM_CPUSPEED:
+		case CUSTOM_CPUSPEED_VALUE:
 			drawCustom_cpuSpeed(element);
+			break;
+		case CUSTOM_VOLUME_SLIDER:
+			drawCustom_volume(element);
 			break;
 	}
 	return true;
@@ -405,7 +428,7 @@ void main(void)
 		heap_top = (void*)0x8000;
 
 	//Platform system checks
-//	checkPlatformSystem();
+	checkPlatformSystem();
 
 	// Initialize screen 0[80]
 	textmode(BW80);
