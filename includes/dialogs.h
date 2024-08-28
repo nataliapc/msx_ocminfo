@@ -25,6 +25,7 @@ typedef struct {
 	char *text[6];				// Dialog text lines (max: 5) [NULL for last line]
 	char *buttons[4];			// Button texts (max:3) [NULL for last button]
 	uint8_t defaultButton;		// Index for default button
+	uint8_t cancelButton;		// Index for cancel button
 	DlgAttrib_t attrib;			// Attributes bitmask
 } Dialog_t;
 

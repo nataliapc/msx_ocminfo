@@ -16,10 +16,19 @@
 
 
 // ========================================================
+uint8_t customCpuSpeedValue;
+uint8_t customCpuModeValue;
+uint8_t customVideoModeValue;
+uint8_t customSlots12Value;
+
+#include "ocminfo.h"
+
+// ========================================================
 static uint8_t msxVersionROM;
 static uint8_t kanjiMode;
 static char *emptyArea;
 static bool isVisibleSetSmartText = false;
+static uint8_t lastCmdSent;
 
 static OCM_P42_VirtualDIP_t virtualDIPs;
 static OCM_P43_LockToggles_t lockToggles;
@@ -41,6 +50,7 @@ static Element_t *nextElement;
 
 
 // ========================================================
+void sendCommands(Element_t *elem);
 static void drawCurrentPanel();
 
 
@@ -78,6 +88,8 @@ static void getOcmData()
 
 	customCpuSpeedValue = (!virtualDIPs.cpuClock ? 7 + sysInfo1.turboPana : sysInfo0.cpuCustomSpeed - 1 );
 	customCpuModeValue = (!virtualDIPs.cpuClock ? sysInfo1.turboPana : 2 );
+	customVideoModeValue = (sysInfo2.videoType ? 0 : sysInfo2.videoForcedMode + 1);
+	customSlots12Value = (virtualDIPs.raw >> 3) & 0b111;
 }
 
 // ========================================================
@@ -141,11 +153,6 @@ static uint8_t getValueOffset(uint8_t mask)
 	return offset;
 }
 
-static uint8_t getMaxValue(Element_t *elem)
-{
-	return elem->valueMask >> getValueOffset(elem->valueMask);
-}
-
 static void setValue(Element_t *elem, uint8_t value)
 {
 	value <<= getValueOffset(elem->valueMask);
@@ -164,40 +171,62 @@ static bool changeCurrentValue(int8_t increase)
 {
 	if (!isIOrevisionSupported(currentElement) || 
 		!isMachineSupported(currentElement) ||
-		currentElement->cmd[0] == 0x00 ||
+		currentElement->cmdType == CMDTYPE_NONE ||
 		currentElement->value == NULL)
 	{
 		putch('\x07');
 		return false;
 	}
 
-	uint8_t maxValue = getMaxValue(currentElement);
 	int8_t value = getValue(currentElement);
 	value += increase;
 	if (value < currentElement->minValue) value = currentElement->maxValue;
 	if (value > currentElement->maxValue) value = currentElement->minValue;
-	value &= maxValue;
-	if (currentElement->cmd[0] != 0x00) {		// if is RW
-		ocm_sendSmartCmd(currentElement->cmd[value]);
+	if (currentElement->cmdType != CMDTYPE_NONE) {		// if is RW
+		setValue(currentElement, value);
+		sendCommands(currentElement);
+		getOcmData();
 		if (currentElement->forcePanelReload) {
-			getOcmData();
 			drawCurrentPanel();
 			value = getValue(currentElement);
-		} else {
-			setValue(currentElement, value);
 		}
 
 		// Display setsmart text
 		char digit0[] = "0";
-		if (currentElement->cmd[value] >= 16) *digit0 = '\0';
-		csprintf(heap_top, "setsmart -%s%x", digit0, currentElement->cmd[value]);
+		if (lastCmdSent >= 16) *digit0 = '\0';
+		csprintf(heap_top, "setsmart -%s%x", digit0, lastCmdSent);
 		putlinexy(SETSMART_X,SETSMART_Y, strlen(heap_top), heap_top);
 		isVisibleSetSmartText = true;
-		
+
+		// Requested Reset management
+		if (sysInfo1.resetReqFlag && currentElement->needResetToApply) {
+			if (showDialog(&dlg_reset) == 0) {
+				ocm_sendSmartCmd(sysInfo1.lastResetFlag ? OCM_SMART_WarmReset : OCM_SMART_ColdReset);
+			}
+		}
+
 		return true;
 	}
 	return false;
 }
+
+// ========================================================
+void sendCommands(Element_t *elem)
+{
+	// Single Standard Command
+	if (elem->cmdType == CMDTYPE_STANDARD) {
+		lastCmdSent = elem->cmd[getValue(elem)];
+		ocm_sendSmartCmd(lastCmdSent);
+		return;
+	}
+	// Custom Command behaviours
+	if (elem->cmdType == CMDTYPE_CUSTOM_SLOTS12) {
+		lastCmdSent = elem->cmd[customSlots12Value];
+		ocm_sendSmartCmd(lastCmdSent);
+		return;
+	}
+}
+
 
 // ========================================================
 static void drawDescription(char **description)
@@ -376,7 +405,7 @@ void main(void)
 		heap_top = (void*)0x8000;
 
 	//Platform system checks
-	checkPlatformSystem();
+//	checkPlatformSystem();
 
 	// Initialize screen 0[80]
 	textmode(BW80);
@@ -438,7 +467,7 @@ void main(void)
 				case '3':
 					selectPanel(&pPanels[PANEL_AUDIO]);
 					break;
-				case '5':
+				case '4':
 					selectPanel(&pPanels[PANEL_DIPS]);
 					break;
 				case KEY_TAB:
@@ -455,7 +484,9 @@ void main(void)
 				case 'q':
 				case 'Q':
 				case KEY_ESC:
-					end++;
+					if (showDialog(&dlg_exit) == 0) {
+						end++;
+					}
 					break;
 			}
 			if (currentElement != nextElement) {

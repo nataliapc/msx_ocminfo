@@ -265,6 +265,7 @@ typedef enum {
 */
 #define OCM_SMART_TPanaRedOFF	0x01	// Set Turbo Pana Redirection OFF (default)
 #define OCM_SMART_TPanaRedON	0x02	// Set Turbo Pana Redirection ON
+
 #define OCM_SMART_CPU358MHz		0x03	// Set Standard Speed 3.58 MHz
 #define OCM_SMART_CPU410MHz		0x04	// Set Custom Speed 4.10 MHz
 #define OCM_SMART_CPU448MHz		0x05	// Set Custom Speed 4.48 MHz
@@ -273,26 +274,30 @@ typedef enum {
 #define OCM_SMART_CPU610MHz		0x08	// Set Custom Speed 6.10 MHz
 #define OCM_SMART_CPU696MHz		0x09	// Set Custom Speed 6.96 MHz
 #define OCM_SMART_CPU806MHz		0x0a	// Set Custom Speed 8.06 MHz (aka "Turbo 10 MHz")
+
 #define OCM_SMART_TMegaSDOFF	0x0b	// Set Turbo MegaSD OFF
 #define OCM_SMART_TMegaSDON		0x0c	// Set Turbo MegaSD ON (default)
-/*
-0x0d	// Set External Slot-1 + External Slot-2
-0x0e	// Set Internal SCC-I Slot-1 + External Slot-2
-0x0f	// Set External Slot-1 + Internal SCC-I Slot-2
-0x10	// Set Internal SCC-I Slot-1 + Internal SCC-I Slot-2
-0x11	// Set External Slot-1 + Internal ASCII-8K Slot-2
-0x12	// Set Internal SCC-I Slot-1 + Internal ASCII-8K Slot-2
-0x13	// Set External Slot-1 + Internal ASCII-16K Slot-2
-0x14	// Set Internal SCC-I Slot-1 + Internal ASCII-16K Slot-2
-*/
+
+#define OCM_SMART_S1extS2ext	0x0d	// Set External Slot-1 + External Slot-2
+#define OCM_SMART_S1sccS2ext	0x0e	// Set Internal SCC-I Slot-1 + External Slot-2
+#define OCM_SMART_S1extS2scc	0x0f	// Set External Slot-1 + Internal SCC-I Slot-2
+#define OCM_SMART_S1sccS2scc	0x10	// Set Internal SCC-I Slot-1 + Internal SCC-I Slot-2
+#define OCM_SMART_S1extS2a8		0x11	// Set External Slot-1 + Internal ASCII-8K Slot-2
+#define OCM_SMART_S1sccS2a8		0x12	// Set Internal SCC-I Slot-1 + Internal ASCII-8K Slot-2
+#define OCM_SMART_S1extS2a16	0x13	// Set External Slot-1 + Internal ASCII-16K Slot-2
+#define OCM_SMART_S1sccS2a16	0x14	// Set Internal SCC-I Slot-1 + Internal ASCII-16K Slot-2
+
 #define OCM_SMART_KBLayoutJP	0x15	// Set Japanese Keyboard Layout
 #define OCM_SMART_KBLayoutNJP	0x16	// Set Non-Japanese Keyboard Layout
+
 #define OCM_SMART_Disp15KhSvid	0x17	// Set Display Mode 15KHz Composite/S-Video
 #define OCM_SMART_Disp15KhRGB	0x18	// Set Display Mode 15KHz RGB w/ Audio Out
 #define OCM_SMART_Disp31KhVGA	0x19	// Set Display Mode 31Khz VGA for LED TV or LED Display (also HDMI AV on SM-X)
 #define OCM_SMART_Disp31KhVGAp	0x1a	// Set Display Mode 31Khz VGA+ for CRT Monitor (legacy output) (also HDMI AV on SM-X)
+
 #define OCM_SMART_VDPNormal		0x1b	// Set VDP Speed Normal Mode (default)
 #define OCM_SMART_VDPFast		0x1c	// Set VDP Speed Fast Mode (V9958 only)
+
 #define OCM_SMART_MegaSDOFF		0x1d	// Reserve MegaSD OFF (warm reset to go: 0xfd)
 #define OCM_SMART_MegaSDON		0x1e	// Reserve MegaSD ON (warm reset to go: 0xfd)
 /*
@@ -329,9 +334,12 @@ typedef enum {
 */
 #define OCM_SMART_PseudSterOFF	0x3d	// Set Pseudo-Stereo OFF (default)
 #define OCM_SMART_PseudSterON	0x3e	// Set Pseudo-Stereo ON (needs an external sound cartridge)
+
 #define OCM_SMART_ExtBusCPU		0x3f	// Sync External Bus Clock to CPU Speed (default)
 #define OCM_SMART_ExtBus358		0x40	// Set External Bus Clock 3.58 MHz
+
 #define OCM_SMART_TurboPana		0x41	// Set Turbo Pana 5.37MHz mode
+
 #define OCM_SMART_RightInvAud0	0x42	// Set Right Inverse Audio OFF (default)
 #define OCM_SMART_RightInvAud1	0x43	// Set Right Inverse Audio ON
 /*
@@ -352,8 +360,10 @@ typedef enum {
 #define OCM_SMART_Scanlines25	0x51	// Set VGA Scanlines 25% (only for SM-X / SX-2)
 #define OCM_SMART_Scanlines50	0x52	// Set VGA Scanlines 50% (only for SM-X / SX-2)
 #define OCM_SMART_Scanlines75	0x53	// Set VGA Scanlines 75% (only for SM-X / SX-2)
+
 #define OCM_SMART_IntPSG2OFF	0x54	// Set Internal PSG2 OFF (default) (only for SM-X / SX-2)
 #define OCM_SMART_IntPSG2ON		0x55	// Set Internal PSG2 ON (this second PSG acts as an external PSG) (only for SM-X / SX-2)
+
 #define OCM_SMART_Mapper4MbOFF	0x56	// Set Extra-Mapper 4096 KB OFF (default)
 #define OCM_SMART_Mapper4MbON	0x57	// Set Extra-Mapper 4096 KB ON (only available if SDRAM > 8 MB)
 /*
@@ -363,6 +373,7 @@ typedef enum {
 0x7f	// Pixel Ratio 1:1 for LED Display (default is 0) (range 0-7) (60Hz only)
 */
 #define OCM_SMART_NullCommand	0x80	// Null Command (useful for programming)
+
 #define OCM_SMART_LegacyVGA		0x81	// Assign Legacy Output to VGA
 #define OCM_SMART_LegacyVGAplus	0x82	// Assign Legacy Output to VGA+ (default)
 /*
@@ -385,6 +396,7 @@ typedef enum {
 #define OCM_SMART_MasterVol5	0xb5	// Set Master Volume 5
 #define OCM_SMART_MasterVol6	0xb6	// Set Master Volume 6
 #define OCM_SMART_MasterVol7	0xb7	// Set Master Volume 7 (default)
+
 #define OCM_SMART_PSGVol0		0xb8	// Set PSG Volume 0
 #define OCM_SMART_PSGVol1		0xb9	// Set PSG Volume 1
 #define OCM_SMART_PSGVol2		0xba	// Set PSG Volume 2
@@ -393,6 +405,7 @@ typedef enum {
 #define OCM_SMART_PSGVol5		0xbd	// Set PSG Volume 5
 #define OCM_SMART_PSGVol6		0xbe	// Set PSG Volume 6
 #define OCM_SMART_PSGVol7		0xbf	// Set PSG Volume 7
+
 #define OCM_SMART_SCCIVol0		0xc0	// Set SCC-I Volume 0
 #define OCM_SMART_SCCIVol1		0xc1	// Set SCC-I Volume 1
 #define OCM_SMART_SCCIVol2		0xc2	// Set SCC-I Volume 2
@@ -401,6 +414,7 @@ typedef enum {
 #define OCM_SMART_SCCIVol5		0xc5	// Set SCC-I Volume 5
 #define OCM_SMART_SCCIVol6		0xc6	// Set SCC-I Volume 6
 #define OCM_SMART_SCCIVol7		0xc7	// Set SCC-I Volume 7
+
 #define OCM_SMART_OPLLVol0		0xc8	// Set OPLL Volume 0
 #define OCM_SMART_OPLLVol1		0xc9	// Set OPLL Volume 1
 #define OCM_SMART_OPLLVol2		0xca	// Set OPLL Volume 2
@@ -409,6 +423,7 @@ typedef enum {
 #define OCM_SMART_OPLLVol5		0xcd	// Set OPLL Volume 5
 #define OCM_SMART_OPLLVol6		0xce	// Set OPLL Volume 6
 #define OCM_SMART_OPLLVol7		0xcf	// Set OPLL Volume 7
+
 #define OCM_SMART_ForceNTSC		0xd0	// Force NTSC Mode
 #define OCM_SMART_VideoAuto		0xd1	// Standard NTSC/PAL Mode (bound by Control Register 9) (default)
 #define OCM_SMART_ForcePAL		0xd2	// Force PAL Mode
@@ -417,6 +432,7 @@ typedef enum {
 0xd4	// Null Command (reserved)
 */
 #define OCM_SMART_RestoreTurbo	0xd5	// Restore Default Turbo Mode
+
 #define OCM_SMART_CenterYJKOFF	0xd6	// Set Centering YJK Modes/R25 Mask OFF (default)
 #define OCM_SMART_CenterYJKON	0xd7	// Set Centering YJK Modes/R25 Mask ON
 /*
@@ -424,9 +440,13 @@ typedef enum {
 0xf8	// Reserve OCM-BIOS Reloading (cold reset or warm reset to go)
 0xf9	// Reserve Slot-0 Primary Mode (warm reset to go) (internal OPLL disabled) (C-BIOS support)
 0xfa	// Reserve System Logo ON (warm reset only)
-0xfb	// Cold Reset
+*/
+#define OCM_SMART_ColdReset		0xfb	// Cold Reset
+/*
 0xfc	// Warm Reset w/ Mapper 2048 KB (RAM size 6144 KB if Extra-Mapper is ON)
-0xfd	// Warm Reset
+*/
+#define OCM_SMART_WarmReset		0xfd	// Warm Reset
+/*
 0xfe	// Warm Reset w/ Mapper 4096 KB (RAM size 8192 KB if Extra-Mapper is ON)
 0xff	// Restore All Default + Reserve Default Mapper & MegaSD
 */

@@ -61,8 +61,7 @@ bool ocm_sendSmartCmd(uint8_t cmd) __naked __z88dk_fastcall
 		cpl
 		push af
 
-		ld h, l							; Store Param cmd
-		ld c, l
+		ld b, l							; Store Param cmd
 		ld l, #0xd4						; DEVID_OCMPLD
 		call .detectExtIODevice
 
@@ -70,7 +69,7 @@ bool ocm_sendSmartCmd(uint8_t cmd) __naked __z88dk_fastcall
 		jr z, .odv_end
 
 		ld l, a							; Returns L = 0:fail 1:success
-		ld a, h							; Restore Param cmd
+		ld a, b							; Restore Param cmd
 		out (0x41), a					; send smart command to OCM_SMARTCMD_PORT
 
 		jr .odv_end

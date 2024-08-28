@@ -96,7 +96,10 @@ uint8_t showDialog(Dialog_t *dlg)
 				selectedBtn++;
 				selectedBtn %= numBtn;
 				break;
+			case KEY_ESC:
+				selectedBtn = dlg->cancelButton;
 			case KEY_ENTER:
+			case KEY_SELECT:
 				end++;
 				break;
 		}
