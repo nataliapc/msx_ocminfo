@@ -44,10 +44,9 @@ EMUEXT2P = $(EMUEXT)
 EMUSCRIPTS = -script ./emulation/boot.tcl
 
 
-DEFINES := -DMSXDOS1 -DMSX1 -DIMGX_DISABLE_V9958 -DCOMP_DISABLE_ZX7 -DCOMP_DISABLE_RLE
-# -DCOMP_DISABLE_ZX0
-#DEBUG := -DDEBUG
-FULLOPT :=  --max-allocs-per-node 2000000
+DEFINES :=
+#DEBUG := -D_DEBUG_
+FULLOPT :=  --max-allocs-per-node 200000
 LDFLAGS = -rc
 OPFLAGS = --std-sdcc2x --less-pedantic --opt-code-size -pragma-define:CRT_ENABLE_STDIO=0
 WRFLAGS = --disable-warning 196 --disable-warning 84

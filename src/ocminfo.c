@@ -431,7 +431,9 @@ void main(void)
 		heap_top = (void*)0x8000;
 
 	//Platform system checks
-	checkPlatformSystem();
+	#ifndef _DEBUG_
+		checkPlatformSystem();
+	#endif
 
 	// Initialize screen 0[80]
 	textmode(BW80);
@@ -450,79 +452,78 @@ void main(void)
 
 	bool end = false;
 	do {
-		if (kbhit()) {
-			// Clear last setsmart text
-			if (isVisibleSetSmartText) {
-				putlinexy(SETSMART_X,SETSMART_Y, 12, "            ");
-				isVisibleSetSmartText = false;
-			}
-			// Manage pressed key
-			switch(getch()) {
-				case KEY_UP:
-					nextElement = currentElement + currentElement->goUp;
-					break;
-				case KEY_DOWN:
-					nextElement = currentElement + currentElement->goDown;
-					break;
-				case KEY_LEFT:
-					nextElement = currentElement + currentElement->goLeft;
-					break;
-				case KEY_RIGHT:
-					nextElement = currentElement + currentElement->goRight;
-					break;
-				case KEY_SPACE:
-				case KEY_ENTER:
-				case '+':
-					if (changeCurrentValue(1)) {
-						drawElement(currentElement);
-					}
-					break;
-				case '-':
-					if (changeCurrentValue(-1)) {
-						drawElement(currentElement);
-					}
-					break;
-				case '1':
-					selectPanel(&pPanels[PANEL_SYSTEM]);
-					break;
-				case '2':
-					selectPanel(&pPanels[PANEL_VIDEO]);
-					break;
-				case '3':
-					selectPanel(&pPanels[PANEL_AUDIO]);
-					break;
-				case '4':
-					selectPanel(&pPanels[PANEL_DIPS]);
-					break;
-				case KEY_TAB:
-					nextPanel = currentPanel + 1;
-					if (nextPanel->elements == NULL) {
-						nextPanel = &pPanels[0];
-					}
-					selectPanel(nextPanel);
-					break;
-				case 'h':
-				case 'H':
-					selectPanel(&pPanels[PANEL_HELP]);
-					break;
-				case 'q':
-				case 'Q':
-				case KEY_ESC:
-					if (showDialog(&dlg_exit) == 0) {
-						end++;
-					}
-					break;
-			}
-			if (currentElement != nextElement) {
-				selectCurrentElement(false);
-				currentElement = nextElement;
-				selectCurrentElement(true);
-			}
+		while (!kbhit()) { ASM_EI; ASM_HALT; }
+
+		// Clear last setsmart text
+		if (isVisibleSetSmartText) {
+			putlinexy(SETSMART_X,SETSMART_Y, 12, "            ");
+			isVisibleSetSmartText = false;
+		}
+
+		// Manage pressed key
+		switch(getch()) {
+			case KEY_UP:
+				nextElement = currentElement + currentElement->goUp;
+				break;
+			case KEY_DOWN:
+				nextElement = currentElement + currentElement->goDown;
+				break;
+			case KEY_LEFT:
+				nextElement = currentElement + currentElement->goLeft;
+				break;
+			case KEY_RIGHT:
+				nextElement = currentElement + currentElement->goRight;
+				break;
+			case KEY_SPACE:
+			case KEY_ENTER:
+			case '+':
+				if (changeCurrentValue(1)) {
+					drawElement(currentElement);
+				}
+				break;
+			case '-':
+				if (changeCurrentValue(-1)) {
+					drawElement(currentElement);
+				}
+				break;
+			case '1':
+				selectPanel(&pPanels[PANEL_SYSTEM]);
+				break;
+			case '2':
+				selectPanel(&pPanels[PANEL_VIDEO]);
+				break;
+			case '3':
+				selectPanel(&pPanels[PANEL_AUDIO]);
+				break;
+			case '4':
+				selectPanel(&pPanels[PANEL_DIPS]);
+				break;
+			case KEY_TAB:
+				nextPanel = currentPanel + 1;
+				if (nextPanel->elements == NULL) {
+					nextPanel = &pPanels[0];
+				}
+				selectPanel(nextPanel);
+				break;
+			case 'h':
+			case 'H':
+				selectPanel(&pPanels[PANEL_HELP]);
+				break;
+			case 'q':
+			case 'Q':
+			case KEY_ESC:
+				if (showDialog(&dlg_exit) == 0) {
+					end++;
+				}
+				break;
+		}
+		if (currentElement != nextElement) {
+			selectCurrentElement(false);
+			currentElement = nextElement;
+			selectCurrentElement(true);
 		}
 		varPUTPNT = varGETPNT;
 		varREPCNT = 0;
-		ASM_EI;
-		ASM_HALT;
 	} while (!end);
 
 	// Clean & restore screen
