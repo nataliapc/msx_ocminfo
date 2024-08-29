@@ -4,6 +4,7 @@
 
 	See LICENSE file.
 */
+#pragma opt_code_size
 #include <string.h>
 #include "conio.h"
 #include "dialogs.h"
@@ -11,18 +12,9 @@
 #include "msx_const.h"
 #include "utils.h"
 #include "ocm_ioports.h"
-
-#pragma opt_code_size
-
-
-// ========================================================
-static uint8_t customCpuSpeedValue;
-static uint8_t customCpuModeValue;
-static uint8_t customVideoModeValue;
-static uint8_t customSlots12Value;
-static uint8_t customAudioPresetValue = 0;
-
 #include "ocminfo.h"
+#include "patterns.h"
+
 
 // ========================================================
 static uint8_t msxVersionROM;
@@ -51,6 +43,12 @@ static Element_t *nextElement;
 
 
 // ========================================================
+// Function declarations
+
+void setByteVRAM(uint16_t vram, uint8_t value) __sdcccall(0);
+void _fillVRAM(uint16_t vram, uint16_t len, uint8_t value) __sdcccall(0);
+void _copyRAMtoVRAM(uint16_t memory, uint16_t vram, uint16_t size) __sdcccall(0);
+
 bool sendCommands(Element_t *elem);
 static void drawCurrentPanel();
 static bool drawElement(Element_t *element);
@@ -257,16 +255,16 @@ static void drawDescription(char **description)
 static void drawWidget_slider(Element_t *element)
 {
 	uint8_t posx = wherex();
-	char sliderStr[] = "========";
+	char sliderStr[] = "\x81\x81\x81\x81\x81\x81\x81\x81";
 	uint8_t value = getValue(element);
 
 	sliderStr[element->maxValue - element->minValue + 1] = '\0';
+	sliderStr[value - element->minValue] = '\x83';
 	if (element->valueStr != NULL) {
-		csprintf(heap_top, "-[%s]+  %s", sliderStr, element->valueStr[value]);
+		csprintf(heap_top, "-\x80%s\x82+  %s", sliderStr, element->valueStr[value]);
 	} else {
-		csprintf(heap_top, "-[%s]+  %u  ", sliderStr, value);
+		csprintf(heap_top, "-\x80%s\x82+  %u  ", sliderStr, value);
 	}
-	*(heap_top+2+value-element->minValue) = '\x85';
 	putlinexy(posx, wherey(), strlen(heap_top), heap_top);
 }
 
@@ -300,7 +298,7 @@ static void drawCustom_cpuSpeed(Element_t *element)
 static void drawCustom_volume(Element_t *element)
 {
 	drawWidget_slider(element);
-	if (currentElement != &elemAudio[0]) {
+	if (currentElement == element) {
 		customAudioPresetValue = 0;
 		drawElement(&elemAudio[0]);
 	}
@@ -413,6 +411,11 @@ inline void redefineFunctionKeys()
 	}
 }
 
+inline void redefineCharPatterns()
+{
+	_copyRAMtoVRAM((uint16_t)charPatters, 0x1000+0x80*8, 4*8);
+}
+
 // ========================================================
 void main(void)
 {
@@ -423,7 +426,7 @@ void main(void)
 		setKanjiMode(0);
 	}
 
-	// A way to avoid using low memory parameters for BIOS calls.
+	// A way to avoid using low memory when using BIOS calls from DOS
 	if (heap_top < (void*)0x8000)
 		heap_top = (void*)0x8000;
 
@@ -435,9 +438,7 @@ void main(void)
 	textattr(0xa1f4);
 	setcursortype(NOCURSOR);
 	redefineFunctionKeys();
-	// Redefine '=' pattern character
-	setByteVRAM(0x1000+61*8+2, 255);
-	setByteVRAM(0x1000+61*8+4, 255);
+	redefineCharPatterns();
 
 	// Get data from I/O extension ports
 	getOcmData();
