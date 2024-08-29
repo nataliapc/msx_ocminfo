@@ -8,7 +8,7 @@ The program is using the [sdcc_msxconio](https://github.com/nataliapc/sdcc_msxco
 
 The core can be found at the [official MSX++ repository](https://github.com/gnogni/ocm-pld-dev) maintained by [@KdL](https://github.com/gnogni).
 
-![F1 panel](.images/f1.png) ![F2 panel](.images/f3.png)
+![F1 panel](.images/f1.jpg) ![F2 panel](.images/f3.jpg)
 
 ----
 
