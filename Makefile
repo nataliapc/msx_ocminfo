@@ -36,9 +36,9 @@ JAVA = java
 DSKTOOL = $(BINDIR)/dsktool
 OPEMNSX = openmsx
 
-EMUEXT = -ext debugdevice -ext gfx9000
-EMUEXT1 = $(EMUEXT) -ext fmpac -ext Mitsubishi_ML-30DC_ML-30FD
-EMUEXT2 = $(EMUEXT) -ext fmpac
+EMUEXT = -ext debugdevice
+EMUEXT1 = $(EMUEXT) -ext Mitsubishi_ML-30DC_ML-30FD
+EMUEXT2 = $(EMUEXT)
 EMUEXT2P = $(EMUEXT)
 # -ext msxdos2
 EMUSCRIPTS = -script ./emulation/boot.tcl
