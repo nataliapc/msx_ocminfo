@@ -512,9 +512,11 @@ void main(void)
 			case 'q':
 			case 'Q':
 			case KEY_ESC:
+				selectCurrentElement(false);
 				if (showDialog(&dlg_exit) == 0) {
 					end++;
 				}
+				selectCurrentElement(true);
 				break;
 		}
 		if (currentElement != nextElement) {
