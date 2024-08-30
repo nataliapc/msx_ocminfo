@@ -22,6 +22,9 @@ static uint8_t kanjiMode;
 static char *emptyArea;
 static bool isVisibleSetSmartText = false;
 static uint8_t lastCmdSent = 0;
+static uint16_t lastExtraKeys;
+static uint16_t currentExtraKeys;
+static bool end = false;
 
 static OCM_P42_VirtualDIP_t virtualDIPs;
 static OCM_P43_LockToggles_t lockToggles;
@@ -40,6 +43,7 @@ static OCM_P4F_Version1_t pldVers1;
 static Panel_t *currentPanel;
 static Element_t *currentElement;
 static Element_t *nextElement;
+static Panel_t *nextPanel;
 
 
 // ========================================================
@@ -424,8 +428,6 @@ inline bool isShiftKeyPressed()
 // ========================================================
 void main(void)
 {
-	Panel_t *nextPanel;
-	
 	kanjiMode = (detectKanjiDriver() ? getKanjiMode() : 0);
 	if (kanjiMode) {
 		setKanjiMode(0);
@@ -455,9 +457,21 @@ void main(void)
 	currentPanel = NULL;
 	selectPanel(&pPanels[PANEL_FIRST]);
 
-	bool end = false;
+	lastExtraKeys = getExtraKeysOCM().raw;
+	currentExtraKeys = lastExtraKeys;
 	do {
-		while (!kbhit()) { ASM_EI; ASM_HALT; }
+		while (!kbhit() && lastExtraKeys == currentExtraKeys) {
+			ASM_EI; ASM_HALT;
+			currentExtraKeys = getExtraKeysOCM().raw;
+		}
+
+		// If OCM extra key pressed/realeased the panel is updated
+		if (lastExtraKeys != currentExtraKeys) {
+			getOcmData();
+			drawCurrentPanel();
+			lastExtraKeys = currentExtraKeys;
+			continue;
+		}
 
 		// Clear last setsmart text
 		if (isVisibleSetSmartText) {

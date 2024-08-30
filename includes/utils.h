@@ -22,4 +22,24 @@ char getKanjiMode() __sdcccall(1);
 void setKanjiMode(uint8_t mode) __z88dk_fastcall;
 
 
+typedef union {
+	uint16_t raw;
+	struct {
+		// ROW E (14)
+		unsigned unused0_6: 7;
+		unsigned scrLk : 1;		// Scroll Lock key
+		// ROW F (15)
+		unsigned f12: 1;
+		unsigned f11: 1;
+		unsigned f10: 1;
+		unsigned f9:  1;
+		unsigned pgDn:  1;		// Page Down key
+		unsigned pgUp:  1;		// Page Up key
+		unsigned prtSc: 1;		// Print Screen key
+		unsigned unused15: 1;
+	};
+} ExtraKeysOCM_t;
+ExtraKeysOCM_t getExtraKeysOCM() __naked __sdcccall(1);
+
+
 #endif//__UTILS_H__
