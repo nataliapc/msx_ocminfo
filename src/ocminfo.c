@@ -108,7 +108,7 @@ static void printHeader()
 
 	// Function keys panel
 	drawFrame(1,2, 80,24);
-	Panel_t *panel = pPanels;
+	Panel_t *panel = &pPanels[PANEL_FIRST];
 	while (panel->title != NULL) {
 		putlinexy(panel->titlex,panel->titley, panel->titlelen, panel->title);
 		panel++;
@@ -416,6 +416,11 @@ inline void redefineCharPatterns()
 	_copyRAMtoVRAM((uint16_t)charPatters, 0x1000+0x80*8, 4*8);
 }
 
+inline bool isShiftKeyPressed()
+{
+	return varNEWKEY_row6.shift == 0;
+}
+
 // ========================================================
 void main(void)
 {
@@ -448,7 +453,7 @@ void main(void)
 	// Initialize header & panel
 	printHeader();
 	currentPanel = NULL;
-	selectPanel(&pPanels[PANEL_SYSTEM]);
+	selectPanel(&pPanels[PANEL_FIRST]);
 
 	bool end = false;
 	do {
@@ -498,16 +503,24 @@ void main(void)
 			case '4':
 				selectPanel(&pPanels[PANEL_DIPS]);
 				break;
-			case KEY_TAB:
-				nextPanel = currentPanel + 1;
-				if (nextPanel->elements == NULL) {
-					nextPanel = &pPanels[0];
-				}
-				selectPanel(nextPanel);
-				break;
 			case 'h':
 			case 'H':
 				selectPanel(&pPanels[PANEL_HELP]);
+				break;
+			case KEY_TAB:
+				nextPanel = currentPanel;
+				if (!isShiftKeyPressed()) {
+					nextPanel++;
+					if (nextPanel->elements == NULL) {
+						nextPanel = &pPanels[PANEL_FIRST];
+					}
+				} else {
+					nextPanel--;
+					if (nextPanel->title == NULL) {
+						nextPanel = &pPanels[PANEL_LAST];
+					}
+				}
+				selectPanel(nextPanel);
 				break;
 			case 'q':
 			case 'Q':

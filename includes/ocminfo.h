@@ -626,13 +626,17 @@ static const Element_t elemHelp[] = {
 // Panel constants
 
 enum {
-	PANEL_SYSTEM,
+	PANEL_SYSTEM = 1,
 	PANEL_VIDEO,
 	PANEL_AUDIO,
 	PANEL_DIPS,
 	PANEL_HELP
 };
+#define PANEL_FIRST		PANEL_SYSTEM
+#define PANEL_LAST		PANEL_HELP
+
 static const Panel_t pPanels[] = {
+	{ NULL },
 	{ " F1:System ",	3,3, 	11, elemSystem },
 	{ " F2:Video ",		14,3, 	10, elemVideo },
 	{ " F3:Audio ",		24,3,	10, elemAudio },

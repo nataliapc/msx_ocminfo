@@ -1,7 +1,7 @@
 /*
 #####################################################################
 	MSX Constants & structs 
-	[2024-08-26]
+	[2024-08-30]
 #####################################################################
 */
 #pragma once
@@ -152,6 +152,8 @@ __sfr __at (0x99) IO_VDP2;
 #define FNKSTR		0xf87f	// (10*16 bytes) Value of the function keys
 #define MODE		0xfafc	// (BYTE) Flags for VRAM
 #define HOKVLD		0xfb20	// (BYTE) Bit 0 indicates presence of extended Bios (EXTBIO) [0:No bios | 1:Exists at least one]
+#define NEWKEY		0xfbe5	// (11 bytes) Status of each keyboard matrix row. The status is updated by the KEYINT interrupt routine.
+							//            https://www.msx.org/wiki/Keyboard
 #define KEYBUF		0xfbf0	// (40 bytes) Key code buffer [0xfbf0...0xfc17]
 #define JIFFY		0xfc9e	// (WORD) Internal time counter
 #define CSRSW		0xfca9	// (BYTE) Cursor display switch (0:hidden | 1:visible)
@@ -178,7 +180,72 @@ volatile __at (H_TIMI) uint16_t varHTIMI;
 volatile __at (FORCLR) uint16_t varFORCLR;
 volatile __at (BAKCLR) uint16_t varBAKCLR;
 volatile __at (BDRCLR) uint16_t varBDRCLR;
-
+volatile __at (NEWKEY+0) uint16_t varNEWKEY_row0;
+volatile __at (NEWKEY+1) uint16_t varNEWKEY_row1;
+volatile __at (NEWKEY+2) uint16_t varNEWKEY_row2;
+volatile __at (NEWKEY+3) uint16_t varNEWKEY_row3;
+volatile __at (NEWKEY+4) uint16_t varNEWKEY_row4;
+volatile __at (NEWKEY+5) uint16_t varNEWKEY_row5;
+volatile __at (NEWKEY+6) struct {
+	unsigned shift: 1;
+	unsigned ctrl:  1;
+	unsigned graph: 1;
+	unsigned capsl: 1;	// Caps Lock
+	unsigned code:  1;	// Code/Kana/Hangul/Rus
+	unsigned f1: 1;
+	unsigned f2: 1;
+	unsigned f3: 1;
+} varNEWKEY_row6;
+volatile __at (NEWKEY+7) struct {
+	unsigned f4: 1;
+	unsigned f5: 1;
+	unsigned esc:  1;
+	unsigned tab:  1;
+	unsigned stop: 1;
+	unsigned bs:   1;
+	unsigned select: 1;
+	unsigned enter:  1;
+} varNEWKEY_row7;
+volatile __at (NEWKEY+8) struct {
+	unsigned space: 1;
+	unsigned home:  1;
+	unsigned ins:   1;
+	unsigned del:   1;
+	unsigned curLeft:  1;
+	unsigned curUp:    1;
+	unsigned curDown:  1;
+	unsigned curRight: 1;
+} varNEWKEY_row8;
+volatile __at (NEWKEY+9) struct {
+	unsigned numAst: 1;	// Asterisk
+	unsigned numAdd: 1;	// Addition
+	unsigned numDiv: 1;	// Division
+	unsigned num0: 1;
+	unsigned num1: 1;
+	unsigned num2: 1;
+	unsigned num3: 1;
+	unsigned num4: 1;
+} varNEWKEY_row9;
+volatile __at (NEWKEY+10) struct {
+	unsigned num5: 1;
+	unsigned num6: 1;
+	unsigned num7: 1;
+	unsigned num8: 1;
+	unsigned num9: 1;
+	unsigned numSub: 1;	// Substraction
+	unsigned numCom: 1;	// Comma
+	unsigned numDot: 1;	// Dot
+} varNEWKEY_row10;
+volatile __at (NEWKEY+11) struct {
+	unsigned unused0: 1;
+	unsigned execute: 1;	// extra key on a few machines
+	unsigned unused2: 1;
+	unsigned cancel:  1;	// extra key on a few machines
+	unsigned unused4: 1;
+	unsigned unused5: 1;
+	unsigned unused6: 1;
+	unsigned unused7: 1;
+} varNEWKEY_row11;
 
 
 // ========================================================
