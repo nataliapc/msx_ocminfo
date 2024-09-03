@@ -1,3 +1,9 @@
+/*
+	Copyright (c) 2024 Natalia Pujol Cremades
+	info@abitwitches.com
+
+	See LICENSE file.
+*/
 // Expanded Switched I/O ports
 // http://map.grauw.nl/resources/msx_io_ports.php#switch_io
 // https://github.com/gnogni/ocm-pld-dev/tree/master/docs <-- switched io ports revision 12.pdf
@@ -48,11 +54,11 @@ __sfr __at OCM_PLDVERS1_PORT ocm_pldVersion1;	// [OCM] Get OCM-PLD Version #1 (r
 typedef union {							// [OCM] Virtual DIPs           (read / write_n)
 	struct {
 		unsigned cpuClock: 1;			// bit 0    CPU Clock                      | Virtual DIP-SW1
-		unsigned videoOutput_1: 1;		// bit 1    Video Output (MSB)             | Virtual DIP-SW2
-		unsigned videoOutput_0: 1;		// bit 2    Video Output (LSB)             | Virtual DIP-SW3
+		unsigned videoOutput_raw: 2;	// bit 1    Video Output (MSB)             | Virtual DIP-SW2
+										// bit 2    Video Output (LSB)             | Virtual DIP-SW3
 		unsigned cartSlot1: 1;			// bit 3    Cartridge slot 1               | Virtual DIP-SW4
-		unsigned cartSlot2_1: 1;		// bit 4    Cartridge slot 2 (MSB)         | Virtual DIP-SW5
-		unsigned cartSlot2_0: 1;		// bit 5    Cartridge slot 2 (LSB)         | Virtual DIP-SW6
+		unsigned cartSlot2_raw: 2;		// bit 4    Cartridge slot 2 (MSB)         | Virtual DIP-SW5
+										// bit 5    Cartridge slot 2 (LSB)         | Virtual DIP-SW6
 		unsigned internalMapper: 1;		// bit 6    Internal Mapper                | Virtual DIP-SW7
 		unsigned internalMegaSD: 1;		// bit 7    Internal MegaSD                | Virtual DIP-SW8
 	};

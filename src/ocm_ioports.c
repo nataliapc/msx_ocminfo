@@ -1,3 +1,9 @@
+/*
+	Copyright (c) 2024 Natalia Pujol Cremades
+	info@abitwitches.com
+
+	See LICENSE file.
+*/
 #include "ocm_ioports.h"
 
 

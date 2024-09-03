@@ -1,3 +1,9 @@
+/*
+	Copyright (c) 2024 Natalia Pujol Cremades
+	info@abitwitches.com
+
+	See LICENSE file.
+*/
 #pragma once
 
 #ifndef __UTILS_H__

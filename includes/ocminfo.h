@@ -1,3 +1,9 @@
+/*
+	Copyright (c) 2024 Natalia Pujol Cremades
+	info@abitwitches.com
+
+	See LICENSE file.
+*/
 #include <stdint.h>
 #include <stdbool.h>
 #include "types.h"
@@ -6,20 +12,25 @@
 // ========================================================
 // Defines
 
-#define VERSION		"0.9.4"
+#define VERSION		"0.9.5b2"
 
-#define SETSMART_X	34
-#define SETSMART_Y	19
+#define SETSMART_X		34
+#define SETSMART_Y		19
+#define SETSMART_SIZE	12
 
 
 // ========================================================
-// Global variables
+// Custom virtual variables
 
 static uint8_t customCpuSpeedValue;
 static uint8_t customCpuModeValue;
 static uint8_t customVideoModeValue;
-static uint8_t customSlots12Value;
+static uint8_t customVideoOutputValue;
 static uint8_t customAudioPresetValue = 0;
+static uint8_t customSlots12Value;
+
+static const uint8_t customVideoOutputMap[4] = { 0, 2, 1, 3 };
+static const uint8_t customSlots12Map[8] = { 0, 1, 4, 5, 2, 3, 6, 7 };
 
 
 // ========================================================
@@ -56,8 +67,11 @@ static const char *extBusStr[2] = {
 static const char *keyboardStr[2] = {
 	"JP    ", "Non-JP"
 };
+static const char *vdpSpeedStr[2] = {
+	"Normal", "Fast  "
+};
 static const char *videoModeStr[3] = {
-	"Auto      ", "NTSC(60Hz)", "PAL(50Hz) "
+	"PAL(50Hz) ", "Auto      ", "NTSC(60Hz)"
 };
 static const char *legacyVgaStr[2] = {
 	"VGA ", "VGA+"
@@ -72,14 +86,20 @@ static const char *audioPresetStr[7] = {
 static const char *dipCpuStr[2] = {
 	"Standard", "Custom  "
 };
+static const char *virtualDipVideoStr[4] = {
+	"Cmp/S-Vid", "RGB 15KHz", "VGA 1:1  ", "VGA+     "
+};
 static const char *dipVideoStr[4] = {
 	"Cmp/S-Vid", "VGA 1:1  ", "RGB 15KHz", "VGA+     "
 };
 static const char *dipSlot1Str[2] = {
 	"External", "Int.SCC+"
 };
+static const char *virtualDipSlot2Str[4] = {
+	"External", "Int.A8K ", "Int.SCC+", "Int.A16K"		// for Mapped value
+};
 static const char *dipSlot2Str[4] = {
-	"External", "Int.SCC+", "Int.A8K ", "Int.A16K"
+	"External", "Int.SCC+", "Int.A8K ", "Int.A16K"		// for Raw value
 };
 static const char *dipMapperStr[2] = {
 	"2048Kb", "4096Kb"
@@ -117,9 +137,9 @@ static const Element_t elemSystem[] = {
 		CMDTYPE_STANDARD, 
 		{ OCM_SMART_CPU358MHz, OCM_SMART_TurboPana, OCM_SMART_CPU806MHz }, 
 		ATR_FORCEPANELRELOAD,
-		{ "Standard:   Standard CPU Speed mode (3.58MHz)",
-		  "Turbo Pana: Panasonic turbo mode (aka tPANA, 5.37MHz)",
-		  "Custom:     Custom CPU Speed mode (4.10MHz to 8.06MHz)", (char*)NULL },
+		{ "Standard: Standard CPU Speed mode (3.58MHz)",
+		  "tPANA:    Panasonic turbo mode (aka Turbo Pana, 5.37MHz)",
+		  "Custom:   Custom CPU Speed mode (4.10MHz to 8.06MHz)", (char*)NULL },
 		IOREV_ALL, M_ALL
 	},
 	// 4
@@ -173,7 +193,7 @@ static const Element_t elemSystem[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_TMegaSDOFF, OCM_SMART_TMegaSDON },
 		false,
-		{ "Turbo MegaSD sets SDCard speed access at loading time activating 8.06MHz,",
+		{ "Turbo MegaSD sets SD card speed access at loading time activating 8.06MHz,",
 		  "so you get fast load even with CPU to 3.58/5.37MHz. It can adversely affect",
 		  "external cartridges that do not support 8.06MHz.", (char*)NULL },
 		IOREV_1, M_ALL
@@ -219,14 +239,14 @@ static const Element_t elemVideo[] = {
 	// 0
 	{
 		SLIDER,
-		3,6, " VDP Fast ",
+		3,6, " VDP Speed ",
 		4, 1, 0, 0,
-		&(sysInfo0.raw), 0b00100000, 0,1, onOffStr, 24,
+		&(sysInfo0.raw), 0b00100000, 0,1, vdpSpeedStr, 24,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_VDPNormal, OCM_SMART_VDPFast },
 		false,
-		{ "OFF: Works like real hardware (default).",
-		  "ON:  The VDP works faster (V9958 only).", (char*)NULL },
+		{ "Normal: Works like real hardware (default).",
+		  "Fast:   The VDP works faster (V9958 only).", (char*)NULL },
 		IOREV_ALL, M_ALL
 	},
 	// 1
@@ -236,11 +256,11 @@ static const Element_t elemVideo[] = {
 		-1, 1, 0, 0,
 		&customVideoModeValue, 0b00000011, 0,2, videoModeStr, 23,
 		CMDTYPE_STANDARD,
-		{ OCM_SMART_VideoAuto, OCM_SMART_ForceNTSC, OCM_SMART_ForcePAL },
+		{ OCM_SMART_ForcePAL, OCM_SMART_VideoAuto, OCM_SMART_ForceNTSC },
 		ATR_FORCEPANELRELOAD,
 		{ "Video output mode (Auto/PAL/NTSC)", 
 		  "Auto:     set to auto (default) that is bound by VDP Control Register #9.",
-		  "NTSC/PAL: force video output to NTSC(60Hz) or PAL(50Hz).", (char*)NULL },
+		  "PAL/NTSC: force video output to PAL(50Hz) or NTSC(60Hz).", (char*)NULL },
 		IOREV_1, M_ALL
 	},
 	// 2
@@ -438,9 +458,9 @@ static const Element_t elemDIPs[] = {
 		SLIDER,
 		3,9, " Video Output ",
 		-1, 1, 7, 7,
-		&(virtualDIPs.raw), 0b00000110, 0,3, dipVideoStr, 20, 
+		&customVideoOutputValue, 0b00000011, 0,3, virtualDipVideoStr, 20, 
 		CMDTYPE_STANDARD,
-		{ OCM_SMART_Disp15KhSvid, OCM_SMART_Disp31KhVGA, OCM_SMART_Disp15KhRGB, OCM_SMART_Disp31KhVGAp },
+		{ OCM_SMART_Disp15KhSvid, OCM_SMART_Disp15KhRGB, OCM_SMART_Disp31KhVGA, OCM_SMART_Disp31KhVGAp },
 		ATR_FORCEPANELRELOAD,
 		{ "Virtual DIP-Switch #2-#3: Video Output",
 		  "OFF/OFF: Composite/S-Video w/mono audio     OFF/ON: RGB 15khz",
@@ -449,14 +469,14 @@ static const Element_t elemDIPs[] = {
 	},
 	// 3
 	{
-/*REV*/	SLIDER,
+		SLIDER,
 		3,11, " Cartridge Slot 1 ",
 		-1, 1, 7, 7,
 		&customSlots12Value, 0b00000001, 0,1, dipSlot1Str, 22, 
 		CMDTYPE_CUSTOM_SLOTS12,
 		{ OCM_SMART_S1extS2ext, OCM_SMART_S1sccS2ext,
-		  OCM_SMART_S1extS2scc, OCM_SMART_S1sccS2scc,
 		  OCM_SMART_S1extS2a8,  OCM_SMART_S1sccS2a8,
+		  OCM_SMART_S1extS2scc, OCM_SMART_S1sccS2scc,
 		  OCM_SMART_S1extS2a16, OCM_SMART_S1sccS2a16 },
 		ATR_FORCEPANELRELOAD,
 		{ "Virtual DIP-Switch #4: Cartridge Slot 1 Configuration",
@@ -466,14 +486,14 @@ static const Element_t elemDIPs[] = {
 	},
 	// 4
 	{
-/*REV*/	SLIDER,
+		SLIDER,
 		3,13, " Cartridge Slot 2 ",
 		-1, 1, 7, 7,
-		&customSlots12Value, 0b00000110, 0,3, dipSlot2Str, 20, 
+		&customSlots12Value, 0b00000110, 0,3, virtualDipSlot2Str, 20, 
 		CMDTYPE_CUSTOM_SLOTS12,
 		{ OCM_SMART_S1extS2ext, OCM_SMART_S1sccS2ext,
-		  OCM_SMART_S1extS2scc, OCM_SMART_S1sccS2scc,
 		  OCM_SMART_S1extS2a8,  OCM_SMART_S1sccS2a8,
+		  OCM_SMART_S1extS2scc, OCM_SMART_S1sccS2scc,
 		  OCM_SMART_S1extS2a16, OCM_SMART_S1sccS2a16 },
 		ATR_FORCEPANELRELOAD,
 		{ "Virtual DIP-Switch #5-#6: Cartridge Slot 2 Configuration",
@@ -504,7 +524,7 @@ static const Element_t elemDIPs[] = {
 		CMDTYPE_NONE,
 /*REV*/	/*{ OCM_SMART_MegaSDOFF, OCM_SMART_MegaSDON },
 		ATR_FORCEPANELRELOAD | ATR_NEEDRESETTOAPPLY,*/ {0x00}, false,
-		{ "Virtual DIP-Switch #8: SD Card Slot",
+		{ "Virtual DIP-Switch #8: SD card Slot",
 		  "OFF: Disabled",
 		  "ON:  Enabled", (char*)NULL },
 		IOREV_ALL, M_ALL
@@ -512,7 +532,7 @@ static const Element_t elemDIPs[] = {
 	// 7
 	{
 		LABEL, 
-		44,5, "\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x13 Hard DIPs \x14\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17"
+		44,5, "\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x13 HW DIPs \x14\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17"
 	},
 	// 8
 	{
@@ -593,7 +613,7 @@ static const Element_t elemDIPs[] = {
 		CMDTYPE_NONE,
 		{ 0x00 },
 		false,
-		{ "Hardware DIP-Switch #8: SD Card Slot",
+		{ "Hardware DIP-Switch #8: SD card Slot",
 		  "OFF: Disabled",
 		  "ON:  Enabled", (char*)NULL },
 		IOREV_ALL, M_ALL
@@ -637,12 +657,12 @@ enum {
 
 static const Panel_t pPanels[] = {
 	{ NULL },
-	{ " F1:System ",	3,3, 	11, elemSystem },
-	{ " F2:Video ",		14,3, 	10, elemVideo },
-	{ " F3:Audio ",		24,3,	10, elemAudio },
-	{ " F4:DIP-SW ",	34,3,	11, elemDIPs },
-	{ " H:Help ",		63,3,	8, elemHelp },
-	{ " Q:Exit ",		71,3,	8, NULL },
+	{ " F1:System ",	3,3, 	11,	elemSystem },
+	{ " F2:Video ",		14,3, 	10,	elemVideo },
+	{ " F3:Audio ",		24,3,	10,	elemAudio },
+	{ " F4:DIP-SW ",	34,3,	11,	elemDIPs },
+	{ " H:Help ",		63,3,	8,	elemHelp },
+	{ " Q:Exit ",		71,3,	8,	NULL },
 	{ NULL }
 };
 

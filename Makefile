@@ -44,7 +44,7 @@ EMUEXT2P = $(EMUEXT)
 EMUSCRIPTS = -script ./emulation/boot.tcl
 
 
-DEFINES :=
+DEFINES := -D_DOSLIB_
 #DEBUG := -D_DEBUG_
 FULLOPT :=  --max-allocs-per-node 200000
 LDFLAGS = -rc
@@ -53,12 +53,13 @@ WRFLAGS = --disable-warning 196 --disable-warning 84
 CCFLAGS = --code-loc 0x0108 --data-loc 0 -mz80 --no-std-crt0 --out-fmt-ihx $(OPFLAGS) $(WRFLAGS) $(DEFINES) $(DEBUG)
 
 
-LIBS = conio.lib utils.lib
+LIBS = conio.lib dos.lib utils.lib
 REL_LIBS = $(addprefix $(OBJDIR)/, \
 				crt0msx_msxdos.rel \
 				heap.rel \
 				ocm_ioports.rel \
 				dialogs.rel \
+				profiles.rel \
 			) \
 			$(addprefix $(LIBDIR)/, $(LIBS))
 
@@ -74,10 +75,17 @@ $(LIBDIR)/conio.lib:
 	@cp $(EXTERNALS)/sdcc_msxconio/include/conio.h $(INCDIR)
 #	@sdar -d $@ dos_cputs.c.rel
 
+$(LIBDIR)/dos.lib:
+	$(MAKE) -C $(EXTERNALS)/sdcc_msxdos all SDCC_VER=$(SDCC_VER) DEFINES=-DDISABLE_CONIO
+	@cp $(EXTERNALS)/sdcc_msxdos/lib/dos.lib $@
+	@cp $(EXTERNALS)/sdcc_msxdos/include/dos.h $(INCDIR)
+	@sdar -d $@ dos_cputs.c.rel dos_kbhit.c.rel
+
 $(LIBDIR)/utils.lib: $(patsubst $(SRCLIB)/%, $(OBJDIR)/%.rel, $(wildcard $(SRCLIB)/utils_*))
 	@echo "$(COL_WHITE)######## Compiling $@$(COL_RESET)"
 	@$(LIB_GUARD)
 	@$(AR) $(LDFLAGS) $@ $^ ;
+	@sdar -d $@ utils_exit.c.rel
 
 $(OBJDIR)/%.rel: $(SRCDIR)/%.s
 	@echo "$(COL_BLUE)#### ASM $@$(COL_RESET)"
@@ -139,6 +147,7 @@ cleanlibs:
 	@echo "$(COL_ORANGE)##  Cleaning libs$(COL_RESET)"
 	@rm -f $(addprefix $(LIBDIR)/, $(LIBS))
 	@$(MAKE) -C $(EXTERNALS)/sdcc_msxconio clean
+	@$(MAKE) -C $(EXTERNALS)/sdcc_msxdos clean
 
 
 ###################################################################################################

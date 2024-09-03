@@ -1,6 +1,7 @@
 /*
 #####################################################################
 	MSX Constants & structs 
+	by NataliaPC
 	[2024-08-30]
 #####################################################################
 */
@@ -108,12 +109,13 @@ __sfr __at (0x99) IO_VDP2;
 #define LOCK    0x77		// Lock/unlock a drive, or get lock state for a drive
 #define GDRVR   0x78		// Get information about a device driver
 #define GDLI    0x79		// Get information about a drive letter
+#ifndef _DOSLIB_
 #define GPART   0x7a		// Get information about a device partition
 #define CDRVR   0x7b		// Call a routine in a device driver
 #define MAPDRV  0x7c		// Map a drive letter to a driver and device
 #define Z80MODE 0x7d		// Enable or disable the Z80 access mode for a driver
 #define GETCLUS 0x7e		// Get information for a cluster on a FAT drive
-
+#endif//_DOSLIB_
 
 
 // ========================================================

@@ -1,5 +1,5 @@
 /*
-	Copyright (c) 2022 Natalia Pujol Cremades
+	Copyright (c) 2024 Natalia Pujol Cremades
 	info@abitwitches.com
 
 	See LICENSE file.
@@ -7,7 +7,9 @@
 #pragma opt_code_size
 #include <string.h>
 #include "conio.h"
+#include "dos.h"
 #include "dialogs.h"
+#include "profiles.h"
 #include "heap.h"
 #include "msx_const.h"
 #include "utils.h"
@@ -63,19 +65,28 @@ static void checkPlatformSystem()
 {
 	msxVersionROM = getRomByte(MSXVER);
 
-	// Check for OCM-PLD Device
-	if (!ocm_detectDevice(DEVID_OCMPLD)) {
-		die("ERROR: OCM-PLD not detected!\n\r");
-	}
+	#ifndef _DEBUG_
+		// Check for OCM-PLD Device
+		if (!ocm_detectDevice(DEVID_OCMPLD)) {
+			die("ERROR: OCM-PLD not detected!\n\r");
+		}
+	#endif
 
+	// Check MSX2 ROM or higher
 	if (!msxVersionROM) {
 		die("This don't works on MSX1!");
+	}
+
+	// Check MSX-DOS 2 or higher
+	if (dosVersion() < VER_MSXDOS2x) {
+		die("MSX-DOS 2.x or higher required!");
 	}
 }
 
 // ========================================================
 static void getOcmData()
 {
+	// Hardware ports values
 	virtualDIPs.raw = ocm_getPortValue(OCM_VIRTDIPS_PORT);
 	lockToggles.raw = ocm_getPortValue(OCM_LOCKTOGG_PORT);
 	ledLights.raw = ocm_getPortValue(OCM_LEDLIGHT_PORT);
@@ -90,10 +101,12 @@ static void getOcmData()
 	pldVers0.raw = ocm_getPortValue(OCM_PLDVERS0_PORT);
 	pldVers1.raw = ocm_getPortValue(OCM_PLDVERS1_PORT);
 
+	// Custom virtual values
 	customCpuSpeedValue = (!virtualDIPs.cpuClock ? 7 + sysInfo1.turboPana : sysInfo0.cpuCustomSpeed - 1 );
 	customCpuModeValue = (!virtualDIPs.cpuClock ? sysInfo1.turboPana : 2 );
-	customVideoModeValue = (sysInfo2.videoType ? 0 : sysInfo2.videoForcedMode + 1);
-	customSlots12Value = (virtualDIPs.raw >> 3) & 0b111;
+	customVideoModeValue = (sysInfo2.videoType ? 1 : (sysInfo2.videoForcedMode ? 0 : 2));
+	customVideoOutputValue = customVideoOutputMap[virtualDIPs.videoOutput_raw];
+	customSlots12Value = customSlots12Map[virtualDIPs.raw >> 3 & 0b111 ];
 }
 
 // ========================================================
@@ -194,7 +207,7 @@ static bool changeCurrentValue(int8_t increase)
 			char digit0[] = "0";
 			if (lastCmdSent >= 16) *digit0 = '\0';
 			csprintf(heap_top, "setsmart -%s%x", digit0, lastCmdSent);
-			putlinexy(SETSMART_X,SETSMART_Y, strlen(heap_top), heap_top);
+			putlinexy(SETSMART_X,SETSMART_Y, SETSMART_SIZE, heap_top);
 			isVisibleSetSmartText = true;
 		}
 
@@ -438,9 +451,7 @@ void main(void)
 		heap_top = (void*)0x8000;
 
 	//Platform system checks
-	#ifndef _DEBUG_
-		checkPlatformSystem();
-	#endif
+	checkPlatformSystem();
 
 	// Initialize screen 0[80]
 	textmode(BW80);
@@ -475,7 +486,7 @@ void main(void)
 
 		// Clear last setsmart text
 		if (isVisibleSetSmartText) {
-			putlinexy(SETSMART_X,SETSMART_Y, 12, "            ");
+			putlinexy(SETSMART_X,SETSMART_Y, SETSMART_SIZE, emptyArea);
 			isVisibleSetSmartText = false;
 		}
 

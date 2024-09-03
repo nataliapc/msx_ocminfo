@@ -1,3 +1,10 @@
+/*
+	Copyright (c) 2022 Natalia Pujol Cremades
+	info@abitwitches.com
+
+	See LICENSE file.
+*/
+#pragma opt_code_size
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
