@@ -6,12 +6,12 @@
 */
 #pragma opt_code_size
 #include <string.h>
+#include "msx_const.h"
 #include "conio.h"
 #include "dos.h"
 #include "dialogs.h"
-#include "profiles.h"
+#include "profiles_ui.h"
 #include "heap.h"
-#include "msx_const.h"
 #include "utils.h"
 #include "ocm_ioports.h"
 #include "ocminfo.h"
@@ -21,26 +21,27 @@
 // ========================================================
 static uint8_t msxVersionROM;
 static uint8_t kanjiMode;
-static char *emptyArea;
 static bool isVisibleSetSmartText = false;
 static uint8_t lastCmdSent = 0;
 static uint16_t lastExtraKeys;
 static uint16_t currentExtraKeys;
 static bool end = false;
+char *emptyArea;
 
-static OCM_P42_VirtualDIP_t virtualDIPs;
-static OCM_P43_LockToggles_t lockToggles;
-static OCM_P44_LedLights_t ledLights;
-static OCM_P45_AudioVol0_t audioVols0;
-static OCM_P46_AudioVol1_t audioVols1;
-static OCM_P47_SysInfo0_t sysInfo0;
-static OCM_P48_SysInfo1_t sysInfo1;
-static OCM_P49_SysInfo2_t sysInfo2;
-static OCM_P4A_SysInfo3_t sysInfo3;
-static OCM_P4B_SysInfo4_t sysInfo4;
-static OCM_P4C_SysInfo5_t sysInfo5;
-static OCM_P4E_Version0_t pldVers0;
-static OCM_P4F_Version1_t pldVers1;
+OCM_P42_VirtualDIP_t virtualDIPs;
+OCM_P43_LockToggles_t lockToggles;
+OCM_P44_LedLights_t  ledLights;
+OCM_P45_AudioVol0_t  audioVols0;
+OCM_P46_AudioVol1_t  audioVols1;
+OCM_P47_SysInfo0_t   sysInfo0;
+OCM_P48_SysInfo1_t   sysInfo1;
+OCM_P49_SysInfo2_t   sysInfo2;
+OCM_P4A_SysInfo3_t   sysInfo3;
+OCM_P4B_SysInfo4_0_t sysInfo4_0;
+OCM_P4B_SysInfo4_1_t sysInfo4_1;
+OCM_P4C_SysInfo5_t   sysInfo5;
+OCM_P4E_Version0_t   pldVers0;
+OCM_P4F_Version1_t   pldVers1;
 
 static Panel_t *currentPanel;
 static Element_t *currentElement;
@@ -55,7 +56,7 @@ void setByteVRAM(uint16_t vram, uint8_t value) __sdcccall(0);
 void _fillVRAM(uint16_t vram, uint16_t len, uint8_t value) __sdcccall(0);
 void _copyRAMtoVRAM(uint16_t memory, uint16_t vram, uint16_t size) __sdcccall(0);
 
-bool sendCommands(Element_t *elem);
+bool sendCommand(Element_t *elem);
 static void drawCurrentPanel();
 static bool drawElement(Element_t *element);
 
@@ -96,34 +97,40 @@ static void getOcmData()
 	sysInfo1.raw = ocm_getPortValue(OCM_SYSINFO1_PORT);
 	sysInfo2.raw = ocm_getPortValue(OCM_SYSINFO2_PORT);
 	sysInfo3.raw = ocm_getPortValue(OCM_SYSINFO3_PORT);
-	sysInfo4.raw = ocm_getPortValue(OCM_SYSINFO4_PORT);
+	sysInfo4_0.raw = ocm_getDynamicPortValue(0);
+	sysInfo4_1.raw = ocm_getDynamicPortValue(1);
 	sysInfo5.raw = ocm_getPortValue(OCM_SYSINFO5_PORT);
 	pldVers0.raw = ocm_getPortValue(OCM_PLDVERS0_PORT);
 	pldVers1.raw = ocm_getPortValue(OCM_PLDVERS1_PORT);
 
 	// Custom virtual values
-	customCpuSpeedValue = (!virtualDIPs.cpuClock ? 7 + sysInfo1.turboPana : sysInfo0.cpuCustomSpeed - 1 );
+	customCpuClockValue = (!virtualDIPs.cpuClock ? 7 + sysInfo1.turboPana : sysInfo0.cpuCustomSpeed - 1 );
 	customCpuModeValue = (!virtualDIPs.cpuClock ? sysInfo1.turboPana : 2 );
 	customVideoModeValue = (sysInfo2.videoType ? 1 : (sysInfo2.videoForcedMode ? 0 : 2));
 	customVideoOutputValue = customVideoOutputMap[virtualDIPs.videoOutput_raw];
 	customSlots12Value = customSlots12Map[virtualDIPs.raw >> 3 & 0b111 ];
+	if (sysInfo4_1.raw & 0xf0 != 0xf0) customVerticalOffsetValue = sysInfo4_1.verticalOffset - 4;
 }
 
 // ========================================================
 static void printHeader()
 {
+	char *sdram = sysInfo4_0.sdramSize != 3 || sysInfo4_1.errorFlag ? 
+		sdramSizeStr[sysInfo4_0.sdramSize] : 
+		sdramSizeAuxStr[sysInfo4_1.sdramSizeAux];
+
 	textblink(1,1, 80, true);
 
 	csprintf(heap_top, "Model: %s     SDRAM: %sMb     PLD v%u.%u.%u     I/O rev.%u",
 		machineTypeStr[sysInfo2.machineTypeId], 
-		sdramSizeStr[sysInfo4.sdramSize], 
+		sdram, 
 		pldVers0.pldVersion / 10, 
 		pldVers0.pldVersion % 10, 
 		pldVers1.pldSubversion, 
 		pldVers1.ioRevision);
 	putlinexy(5,1, strlen(heap_top), heap_top);
 
-	// Function keys panel
+	// Function keys topbar
 	drawFrame(1,2, 80,24);
 	Panel_t *panel = &pPanels[PANEL_FIRST];
 	while (panel->title != NULL) {
@@ -133,8 +140,6 @@ static void printHeader()
 
 	// Elements panel
 	chlinexy(2,4, 78);
-	emptyArea = malloc(78*15);
-	memset(emptyArea, ' ', 78*15);
 
 	// Info panel
 	chlinexy(2,20, 78);
@@ -202,7 +207,7 @@ static bool changeCurrentValue(int8_t increase)
 	if (currentElement->cmdType != CMDTYPE_NONE) {		// if is RW
 		setValue(currentElement, value);
 		
-		if (sendCommands(currentElement)) {
+		if (sendCommand(currentElement)) {
 			// Display setsmart text
 			char digit0[] = "0";
 			if (lastCmdSent >= 16) *digit0 = '\0';
@@ -230,7 +235,7 @@ static bool changeCurrentValue(int8_t increase)
 }
 
 // ========================================================
-bool sendCommands(Element_t *elem)
+bool sendCommand(Element_t *elem)
 {
 	uint8_t value = getValue(elem);
 
@@ -272,7 +277,7 @@ static void drawDescription(char **description)
 static void drawWidget_slider(Element_t *element)
 {
 	uint8_t posx = wherex();
-	char sliderStr[] = "\x81\x81\x81\x81\x81\x81\x81\x81";
+	char sliderStr[] = "\x81\x81\x81\x81\x81\x81\x81\x81\x81";
 	uint8_t value = getValue(element);
 
 	sliderStr[element->maxValue - element->minValue + 1] = '\0';
@@ -349,7 +354,7 @@ static bool drawElement(Element_t *element)
 		case SLIDER:
 			drawWidget_slider(element);
 			break;
-		case CUSTOM_CPUSPEED_VALUE:
+		case CUSTOM_CPUCLOCK_VALUE:
 			drawCustom_cpuSpeed(element);
 			break;
 		case CUSTOM_VOLUME_SLIDER:
@@ -450,6 +455,10 @@ void main(void)
 	if (heap_top < (void*)0x8000)
 		heap_top = (void*)0x8000;
 
+	// Initialize empty panel
+	emptyArea = malloc(78*21);
+	memset(emptyArea, ' ', 78*21);
+
 	//Platform system checks
 	checkPlatformSystem();
 
@@ -462,12 +471,16 @@ void main(void)
 
 	// Get data from I/O extension ports
 	getOcmData();
+	// Set default Vertical offset for < 3.9.2
+	if (sysInfo4_1.raw & 0xf0 == 0xf0)
+		ocm_sendSmartCmd(OCM_SMART_VertOffset19);
 
 	// Initialize header & panel
 	printHeader();
 	currentPanel = NULL;
 	selectPanel(&pPanels[PANEL_FIRST]);
 
+	// Main loop panels
 	lastExtraKeys = getExtraKeysOCM().raw;
 	currentExtraKeys = lastExtraKeys;
 	do {
@@ -547,8 +560,16 @@ void main(void)
 				}
 				selectPanel(nextPanel);
 				break;
-			case 'q':
-			case 'Q':
+			case 'p':
+			case 'P':
+				selectCurrentElement(false);
+				profiles_menu();
+				printHeader();
+				selectPanel(currentPanel);
+				selectCurrentElement(true);
+				break;
+			case 'x':
+			case 'X':
 			case KEY_ESC:
 				selectCurrentElement(false);
 				if (showDialog(&dlg_exit) == 0) {

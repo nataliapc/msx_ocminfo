@@ -39,22 +39,29 @@ typedef struct {
 
 typedef struct {
 	uint8_t  itemsCount;			// Number of profiles stored
+	uint16_t itemLength;			// Length of each profile item
 } ProfileHeaderData_t;
 
 typedef struct {
 	char    description[60];		// StringZ
-	uint8_t modifYear;				// Modification date: Year
+	uint16_t modifYear;				// Modification date: Year
 	uint8_t modifMonth;				// Modification date: Month
 	uint8_t modifDay;				// Modification date: Day
 	uint8_t cmd[40];				// SetSmart commands
+	uint8_t reserved[24];			// Reserved
 } ProfileItem_t;
 
 
 // ========================================================
 // Functions
 
+void profile_init();
 bool profile_loadFile();
 bool profile_saveFile();
+void profile_release();
 ProfileHeader_t* profile_getHeader();
 ProfileHeaderData_t* profile_getHeaderData();
+uint8_t profile_newItem(char *description);
 ProfileItem_t* profile_getItem(uint8_t idx);
+bool profile_updateItem(uint8_t idx);
+bool profile_deleteItem(uint8_t idx);

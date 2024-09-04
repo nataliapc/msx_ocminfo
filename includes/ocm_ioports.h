@@ -170,21 +170,31 @@ typedef union {							// [OCM] Get System Info #4     (read only) [if port 0x44 
 	struct {
 		unsigned scanlinesLvl: 2;		// bit 0-1 VGA Scanlines Level (SM-X/SX-2) | 0=0%, 1=25%, 2=50%, 3=75%
 		unsigned intPSG2: 1;			// bit 2   Internal PSG2       (SM-X/SX-2) | Status
-		unsigned sdramSize: 2;			// bit 3   SDRAM Size                      | 0=8Mb, 1=16Mb, 2=32Mb, 3=reserved
+		unsigned sdramSize: 2;			// bit 3   SDRAM Size                      | 
+										//            0=8Mb, 1=16Mb, 2=32Mb, 3=Use sdramSizeAux
 		unsigned ocmBiosReloadReq: 1;	// bit 5   OCM-BIOS Reloading Req          | Status
 		unsigned extraMapperReq: 1;		// bit 6   Extra-Mapper 4096 KB Req        | Status
 		unsigned slot0ModeReq: 1;		// bit 7   Slot-0 Mode Req                 | 0=Primaty, 1=Expanded
 	};
-	uint8_t raw;
-} OCM_P4B_SysInfo4_t;
+	struct {
+		uint8_t raw;
+		uint8_t errorFlag;
+	};
+} OCM_P4B_SysInfo4_0_t;
 
 typedef union {							// [OCM] Get System Info #4(b)  (read only) [if port 0x44 == 1]
 	struct {
-		unsigned extMegaRomReading: 1;	//  bit 0    Extended MegaROM Reading      | Status
-		unsigned free: 7;				//  bit 1-7                                | Free (bits set to 1)
+		unsigned extMegaRomReading: 1;	// bit 0   Extended MegaROM Reading        | Status
+		unsigned sdramSizeAux: 3;		// bit 1-3 SDRAM Size > 32Mb               |
+										//            0=64Mb, 1=128Mb, 2=192Mb, 3=256Mb, 4=320Mb,
+										//            5=384Mb, 6=448Mb, 7=512Mb
+		unsigned verticalOffset: 4;		// bit 4-7 Vertical screen offset          | [4-12] -> [16-24]
 	};
-	uint8_t raw;
-} OCM_P4B_1_SysInfo4_t;
+	struct {
+		uint8_t raw;
+		uint8_t errorFlag;
+	};
+} OCM_P4B_SysInfo4_1_t;
 
 typedef union {							// [OCM] Get System Info #5     (read only)
 	struct {
@@ -354,17 +364,17 @@ typedef enum {
 #define OCM_SMART_AudioPreset4	0x44	// Internal Audio Preset #4 "Emphasis PSG Sound" (since IO7)
 #define OCM_SMART_AudioPreset5	0x45	// Internal Audio Preset #5 "Emphasis SCC-I Sound" (since IO7)
 #define OCM_SMART_AudioPreset6	0x46	// Internal Audio Preset #6 "Emphasis OPLL Sound" (since IO7)
-/*
-0x47	// Vertical Offset 16 (useful for Ark-A-Noah)
-0x48	// Vertical Offset 17
-0x49	// Vertical Offset 18
-0x4a	// Vertical Offset 19 (default)
-0x4b	// Vertical Offset 20
-0x4c	// Vertical Offset 21
-0x4d	// Vertical Offset 22
-0x4e	// Vertical Offset 23
-0x4f	// Vertical Offset 24 (useful for Space Manbow)
-*/
+
+#define OCM_SMART_VertOffset16	0x47	// Vertical Offset 16 (useful for Ark-A-Noah)
+#define OCM_SMART_VertOffset17	0x48	// Vertical Offset 17
+#define OCM_SMART_VertOffset18	0x49	// Vertical Offset 18
+#define OCM_SMART_VertOffset19	0x4a	// Vertical Offset 19 (default)
+#define OCM_SMART_VertOffset20	0x4b	// Vertical Offset 20
+#define OCM_SMART_VertOffset21	0x4c	// Vertical Offset 21
+#define OCM_SMART_VertOffset22	0x4d	// Vertical Offset 22
+#define OCM_SMART_VertOffset23	0x4e	// Vertical Offset 23
+#define OCM_SMART_VertOffset24	0x4f	// Vertical Offset 24 (useful for Space Manbow)
+
 #define OCM_SMART_Scanlines00	0x50	// Set VGA Scanlines 0% (default) (only for SM-X / SX-2)
 #define OCM_SMART_Scanlines25	0x51	// Set VGA Scanlines 25% (only for SM-X / SX-2)
 #define OCM_SMART_Scanlines50	0x52	// Set VGA Scanlines 50% (only for SM-X / SX-2)
@@ -466,4 +476,5 @@ typedef enum {
 
 bool ocm_detectDevice(DeviceId_t devId) __z88dk_fastcall;
 uint8_t ocm_getPortValue(uint8_t port) __z88dk_fastcall;
+uint16_t ocm_getDynamicPortValue(uint8_t index) __z88dk_fastcall;
 bool ocm_sendSmartCmd(uint8_t cmd) __z88dk_fastcall;

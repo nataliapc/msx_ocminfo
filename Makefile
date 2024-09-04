@@ -59,7 +59,8 @@ REL_LIBS = $(addprefix $(OBJDIR)/, \
 				heap.rel \
 				ocm_ioports.rel \
 				dialogs.rel \
-				profiles.rel \
+				profiles_api.rel \
+				profiles_ui.rel \
 			) \
 			$(addprefix $(LIBDIR)/, $(LIBS))
 

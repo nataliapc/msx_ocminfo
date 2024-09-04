@@ -4,6 +4,9 @@
 
 	See LICENSE file.
 */
+#include <stdint.h>
+#include <stdbool.h>
+
 
 // ========================================================
 // Structs & Enums
@@ -41,7 +44,7 @@ typedef enum {
 	SLIDER,									// Slider with ranges of 0 to 2/4/8 values
 	END,									// **End of Elements array
 	// Custom widgets
-	CUSTOM_CPUSPEED_VALUE,
+	CUSTOM_CPUCLOCK_VALUE,
 	CUSTOM_VOLUME_SLIDER,
 } Widget_t;
 
@@ -74,7 +77,7 @@ typedef struct {
 	uint8_t **valueStr;						// Array with labels for each value
 	uint8_t valueOffsetX;					// Offset X for value widget
 	CmdType_t cmdType;						// OCM Smart Cmd type mode
-	uint8_t cmd[8];							// OCM Smart Cmd to set each value
+	uint8_t cmd[9];							// OCM Smart Cmd to set each value
 	union {
 		uint8_t attribs_raw;
 		struct {

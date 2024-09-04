@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- *  CONIO Library port for MSX2 (SCREEN 0) [2024-07-15]
+ *  CONIO Library port for MSX2 (SCREEN 0) [2024-08-31]
  *  Borland (mostly) compatibility
  *  by NataliaPC
  *  https://web.archive.org/web/20090225093706/http://c.conclase.net/Borland/funcion.php?fun=cgets
