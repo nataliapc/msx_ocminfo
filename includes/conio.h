@@ -171,7 +171,7 @@ void textmode(int8_t mode) __z88dk_fastcall;
  *     NORMALCURSOR Normal cursor: the underscore character
  *     SOLIDCURSOR  Cursor is a filled square
  */
-void setcursortype(uint8_t cursor_type) __z88dk_fastcall;
+void setcursortype(uint8_t cursor_type);
 
 /**
  * TODO highvideo

@@ -563,7 +563,7 @@ void main(void)
 			case 'p':
 			case 'P':
 				selectCurrentElement(false);
-				profiles_menu();
+				profiles_menu(&pPanels[PANEL_PROFILES]);
 				printHeader();
 				selectPanel(currentPanel);
 				selectCurrentElement(true);

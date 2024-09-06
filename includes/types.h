@@ -4,6 +4,7 @@
 
 	See LICENSE file.
 */
+#pragma once
 #include <stdint.h>
 #include <stdbool.h>
 

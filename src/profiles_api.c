@@ -23,6 +23,7 @@ static void *original_heaptop = NULL;
 static ProfileHeader_t _header = { PROF_MAGIC, PROF_REV, sizeof(ProfileHeaderData_t), 0x00 };
 static ProfileHeaderData_t _headerData = { 0, sizeof(ProfileItem_t) };
 static ProfileItem_t *_profiles = NULL;
+static SYSTEMDATE_t date;
 
 
 // ========================================================
@@ -164,19 +165,17 @@ inline ProfileHeaderData_t* profile_getHeaderData()
 	return &_headerData;
 }
 
-uint8_t profile_newItem(char *description)
+uint8_t profile_newItem()
 {
 	ProfileItem_t *newProfile = malloc(sizeof(ProfileItem_t));
 	memset(newProfile, 0, sizeof(ProfileItem_t));
+	getSystemDate(&date);
 	_headerData.itemsCount++;
 
-	//TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! do it correctly
-
-	csprintf(newProfile->description, "%s %u  ", description, _headerData.itemsCount);
-	newProfile->cmd[0] = 0x00;						// !!!!! add the commands
-	newProfile->modifYear = 2024;					// !!!!! get the current date
-	newProfile->modifMonth = 9;
-	newProfile->modifDay = 3;
+	newProfile->cmd[0] = 0x00;						// TODO !!!!! add the commands
+	newProfile->modifYear = date.year;
+	newProfile->modifMonth = date.month;
+	newProfile->modifDay = date.day;
 
 	return newProfile - _profiles;
 }
@@ -189,7 +188,15 @@ ProfileItem_t* profile_getItem(uint8_t idx)
 
 bool profile_updateItem(uint8_t idx)
 {
-	//TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	ProfileItem_t *profile = profile_getItem(idx);
+	getSystemDate(&date);
+
+	profile->cmd[0] = 0x00;						// TODO !!!!! add the commands
+	profile->modifYear = date.year;
+	profile->modifMonth = date.month;
+	profile->modifDay = date.day;
+
+	return true;
 }
 
 bool profile_deleteItem(uint8_t idx)

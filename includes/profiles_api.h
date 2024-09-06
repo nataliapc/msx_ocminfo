@@ -16,6 +16,7 @@
 	--- ProfileItem_t n
 
 */
+#pragma once
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -23,8 +24,8 @@
 // ========================================================
 // Defines
 
-#define PROF_MAGIC	{ 0x464f5250 }	//"PROF"
-#define PROF_REV	1
+#define PROF_MAGIC		{ 0x464f5250 }	//"PROF"
+#define PROF_REV		1
 
 
 // ========================================================
@@ -61,7 +62,7 @@ bool profile_loadFile();
 bool profile_saveFile();
 ProfileHeader_t* profile_getHeader();
 ProfileHeaderData_t* profile_getHeaderData();
-uint8_t profile_newItem(char *description);
+uint8_t profile_newItem();
 ProfileItem_t* profile_getItem(uint8_t idx);
 bool profile_updateItem(uint8_t idx);
 bool profile_deleteItem(uint8_t idx);

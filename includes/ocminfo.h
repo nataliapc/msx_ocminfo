@@ -691,7 +691,8 @@ enum {
 	PANEL_VIDEO,
 	PANEL_AUDIO,
 	PANEL_DIPS,
-	PANEL_HELP
+	PANEL_HELP,
+	PANEL_PROFILES
 };
 #define PANEL_FIRST		PANEL_SYSTEM
 #define PANEL_LAST		PANEL_HELP
@@ -702,9 +703,9 @@ static const Panel_t pPanels[] = {
 	{ " F2:Video ",		14,3, 	10,	elemVideo },
 	{ " F3:Audio ",		24,3,	10,	elemAudio },
 	{ " F4:DIP-SW ",	34,3,	11,	elemDIPs },
-	{ " [H]elp ",		51,3,	8,	elemHelp },
-	{ " [P]rofiles ",	59,3,	12,	NULL },
-	{ " E[x]it ",		71,3,	8,	NULL },
+	{ " [H]elp ",		52,3,	8,	elemHelp },
+	{ " [P]rofiles ",	60,3,	12,	NULL },
+	{ " E[x]it ",		72,3,	8,	NULL },
 	{ NULL }
 };
 

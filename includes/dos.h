@@ -90,6 +90,8 @@ typedef uint8_t  FILEH;
 #define FSIZE   0x23		// Get file size (FCB)			CPM MSX1
 #define WRBLK   0x26		// Random block read (FCB)		    MSX1
 #define RDBLK   0x27		// Random block write (FCB)		    MSX1
+#define GDATE   0x2A		// Get date						    MSX1
+#define GTIME   0x2C		// Get time						    MSX1
 #define RDABS   0x2F		// Absolute sector read			    MSX1
 #define WRABS   0x30		// Absolute sector write		    MSX1
 
@@ -298,6 +300,18 @@ typedef struct {
 	char     unused[4];		// +12-+15: Unused, always zero
 } CLUSTER_info;	// Used by GETCLUS function (Nextor only)
 
+typedef struct {
+	uint16_t year;
+	uint8_t  month;
+	uint8_t  day;
+} SYSTEMDATE_t;
+
+typedef struct {
+	uint8_t hours;
+	uint8_t minutes;
+	uint8_t seconds;
+} SYSTEMTIME_t;
+
 typedef union {
 	uint16_t raw;
 	struct {
@@ -403,9 +417,14 @@ typedef struct {
 #endif
 
 // MSX-DOS 1.x
+void  dos_initializeFCB(void);
+RETB  dosVersion(void) __sdcccall(1);
+void  exit(void);
 RETB  getCurrentDrive(void) __sdcccall(1);
 char* getProgramPath(char *path);
 RETW  availableDrives() __sdcccall(0);
+void  getSystemDate(SYSTEMDATE_t *date) __sdcccall(1);
+void  getSystemTime(SYSTEMTIME_t *time) __sdcccall(1);
 
 bool  fopen(char *filename) __sdcccall(1);
 bool  fcreate(char *filename) __sdcccall(1);
@@ -421,10 +440,6 @@ RETDW ftell(void);
 RETDW filesize(char *filename);
 bool  fileexists(char* filename);
 
-void dos_initializeFCB(void);
-RETB dosVersion(void) __sdcccall(1);
-void exit(void);
-
 void setTransferAddress(void *memaddress) __sdcccall(1);
 ERRB readAbsoluteSector(uint8_t drive, uint16_t startsec, uint8_t nsec);
 ERRB writeAbsoluteSector(uint8_t drive, uint16_t startsec, uint8_t nsec);
@@ -439,6 +454,8 @@ FILEH dos2_fcreate(char *filename, char mode, char attributes) __sdcccall(0);
 FILEH dos2_fflush(FILEH fh) __sdcccall(1);
 ERRB  dos2_fclose(FILEH fh) __naked __sdcccall(1);
 ERRB  dos2_remove(char *filename) __sdcccall(1);
+//ERRB  dos2_rename(char *oldname, char *newname) __sdcccall(1);
+//ERRB  dos2_move(char *filename, char *newpath) __sdcccall(1);
 RETW  dos2_fread(char* buf, uint16_t size, FILEH fh) __sdcccall(0);
 RETW  dos2_fwrite(char* buf, uint16_t size, FILEH fh) __sdcccall(0);
 RETW  dos2_fputs(char* str, FILEH fh);
@@ -449,6 +466,8 @@ RETDW dos2_ftell(FILEH fh);
 ERRB dos2_findfirst(const char *pathname, FFBLK *ffblk, uint8_t attrib) __sdcccall(0);
 ERRB dos2_findnext(FFBLK *ffblk ) __sdcccall(1);
 
+//RETB  dos2_setAttrib(char *filename, uint8_t attrib) __sdcccall(1);
+//RETB  dos2_getAttrib(char *filename) __sdcccall(1);
 void dos2_setAbortRoutine(void *routine) __sdcccall(1);
 RETW dos2_getScreenSize(void) __sdcccall(1);
 ERRB dos2_getEnv(char* name, char* buffer, uint8_t buffer_size) __sdcccall(0);

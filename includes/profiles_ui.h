@@ -4,9 +4,10 @@
 
 	See LICENSE file.
 */
+#pragma once
 #include "profiles_api.h"
+#include "types.h"
 
 
-void profiles_menu();
-
+void profiles_menu(Panel_t *panel);
 
