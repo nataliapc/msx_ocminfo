@@ -83,21 +83,21 @@ Dialog_t dlg_errorSaving = {
 	DLG_DEFAULT
 };
 
-Dialog_t dlg_saveChanges = {
-	0,0,
-	{ "Profiles modified.", "Do you want to save changes?" },
-	{ "  Yes  ", "  No   ", NULL },
-	0,	//defaultButton
-	1,	//cancelButton
-	DLG_DEFAULT
-};
-
 Dialog_t dlg_noProfiles = {
 	0,0,
 	{ "Profile list is empty!" },
 	{ "  Close  ", NULL },
 	0,	//defaultButton
 	0,	//cancelButton
+	DLG_DEFAULT
+};
+
+Dialog_t dlg_saveChanges = {
+	0,0,
+	{ "Profiles modified.", "Do you want to save changes?" },
+	{ "  Yes  ", "  No   ", NULL },
+	0,	//defaultButton
+	1,	//cancelButton
 	DLG_DEFAULT
 };
 
@@ -170,9 +170,9 @@ void editText(uint8_t itemNum)
 	bool end = false;
 	uint8_t pos = strlen(item->description);
 
-	putlinexy(6,newCurrentLine+5, 1, "[");
-	putlinexy(6+sizeof(item->description),newCurrentLine+5, 1, "]");
-	
+	putlinexy(5,newCurrentLine+5, 2, "<<");
+	putlinexy(6+sizeof(item->description),newCurrentLine+5, 2, ">>");
+
 	gotoxy(7+pos, newCurrentLine + 5);
 	setcursortype(SOLIDCURSOR);
 
@@ -253,17 +253,23 @@ void deleteProfile()
 void drawProfiles()
 {
 	ProfileItem_t *profile = profile_getItem(topLine);
-	uint8_t count = profile_getHeaderData()->itemsCount;
-	char lineStr[80];
+	uint8_t count = *itemsCount;
 	uint8_t i, num;
 
 	if (count > MAX_LINES) count = MAX_LINES;
 	num = topLine + 1;
 	for (i = 0; i < count; i++, num++) {
-		csprintf(lineStr, "%s%u  %s ", num<10?" ":"", num, profile->description);
-		putlinexy(3,5+i, strlen(lineStr), lineStr);
-		csprintf(lineStr, "%u-%u-%u", profile->modifYear, profile->modifMonth, profile->modifDay);
-		putlinexy(69,5+i, strlen(lineStr), lineStr);
+		memset(heap_top, ' ', 78);					// Fill with spaces
+		heap_top[0] = num < 10 ? ' ' : '0'+num/10;	// Order number
+		heap_top[1] = '0'+num%10;
+		memcpy(heap_top+4, 							// Profile description
+			profile->description, 
+			strlen(profile->description));
+		csprintf(heap_top+66, "%u-%s%u-%s%u", 		// Date
+			profile->modifYear,
+			profile->modifMonth<10 ? "0":"", profile->modifMonth,
+			profile->modifDay<10 ? "0":"", profile->modifDay);
+		putlinexy(3,5+i, 76, heap_top);
 		profile++;
 	}
 
