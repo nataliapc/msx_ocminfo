@@ -56,9 +56,9 @@ typedef struct {
 // Functions
 
 void profile_init();
+void profile_release();
 bool profile_loadFile();
 bool profile_saveFile();
-void profile_release();
 ProfileHeader_t* profile_getHeader();
 ProfileHeaderData_t* profile_getHeaderData();
 uint8_t profile_newItem(char *description);

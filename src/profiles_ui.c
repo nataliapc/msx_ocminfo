@@ -21,8 +21,8 @@
 extern char *emptyArea;
 
 static uint8_t *itemsCount;
-static uint8_t topLine = 0;
-static uint8_t currentLine = 0;
+static uint8_t topLine = 0, currentLine = 0;
+static uint8_t newTopLine = 0, newCurrentLine = 0;
 static bool end;
 
 
@@ -31,7 +31,7 @@ static bool end;
 
 Dialog_t dlg_fileNotFound = {
 	0,0,
-	{ "Profiles file not found", "or with bad format...", "", "Create a new file?" },
+	{ "Profiles file not found", "or unreadable...", "", "Create a new file?" },
 	{ "  Yes  ", "  No   ", NULL },
 	0,	//defaultButton
 	1,	//cancelButton
@@ -93,12 +93,17 @@ void printHeader()
 
 void newProfile()
 {
+
+
 	//TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! editDialog to get description
 	
-	currentLine = profile_newItem("Test profile name");
-	if (currentLine >= MAX_LINES) {
-		topLine++;
-		currentLine -= topLine;
+	if (!*itemsCount) {
+		currentLine--;
+	}
+	newCurrentLine = profile_newItem("Test profile name");
+	if (newCurrentLine >= MAX_LINES) {
+		newTopLine = newCurrentLine - MAX_LINES + 1;
+		newCurrentLine -= newTopLine;
 	}
 }
 
@@ -112,13 +117,13 @@ deleteProfile()
 	profile_deleteItem(topLine + currentLine);
 	if (!currentLine) {
 		if (topLine) {
-			topLine--;
+			newTopLine--;
 		}
 	} else {
 		if (topLine && topLine+(MAX_LINES-1) == *itemsCount) {
-			topLine--;
+			newTopLine--;
 		} else {
-			currentLine--;
+			newCurrentLine--;
 		}
 	}
 }
@@ -155,6 +160,7 @@ void profiles_menu()
 	// Checking for profile file & ask for creation if missing
 	if (!profile_loadFile()) {
 		if (showDialog(&dlg_fileNotFound) == 0) {
+			profile_init();
 			if (!profile_saveFile()) {
 				showDialog(&dlg_errorSaving);
 				return;
@@ -165,7 +171,7 @@ void profiles_menu()
 	}
 
 	// Initialize header & profiles
-	topLine = currentLine = 0;
+	newTopLine = newCurrentLine = topLine = currentLine = 0;
 	printHeader();
 	drawProfiles();
 	if (*itemsCount) {
@@ -182,64 +188,52 @@ void profiles_menu()
 		switch(getch()) {
 			case KEY_UP:
 				if (*itemsCount && topLine + currentLine > 0) {
-					selectCurrentLine(false);
 					if (currentLine) {
-						currentLine--;
+						newCurrentLine--;
 					} else {
 						if (topLine) {
-							topLine--;
+							newTopLine--;
 						}
 					}
-					drawProfiles();
-					selectCurrentLine(true);
 				} else {
 					putch('\x07');
 				}
 				break;
 			case KEY_DOWN:
 				if (*itemsCount && topLine + currentLine < *itemsCount - 1) {
-					selectCurrentLine(false);
 					if (currentLine < MAX_LINES-1) {
-						currentLine++;
+						newCurrentLine++;
 					} else {
-						topLine++;
+						newTopLine++;
 					}
-					drawProfiles();
-					selectCurrentLine(true);
 				} else {
 					putch('\x07');
 				}
 				break;
 			case KEY_LEFT:
-				selectCurrentLine(false);
 				if (topLine >= MAX_LINES) {
-					topLine -= MAX_LINES;
+					newTopLine -= MAX_LINES;
 				} else {
-					topLine = 0;
-					currentLine = 0;
+					newTopLine = 0;
+					newCurrentLine = 0;
+					putch('\x07');
 				}
-				drawProfiles();
-				selectCurrentLine(true);
 				break;
 			case KEY_RIGHT:
-				selectCurrentLine(false);
 				if (*itemsCount > MAX_LINES) {
-					topLine += MAX_LINES;
-					if (topLine + MAX_LINES > *itemsCount) {
-						topLine = *itemsCount - MAX_LINES;
-						currentLine = MAX_LINES - 1;
+					newTopLine += MAX_LINES;
+					if (newTopLine + MAX_LINES > *itemsCount) {
+						newTopLine = *itemsCount - MAX_LINES;
+						newCurrentLine = MAX_LINES - 1;
+						putch('\x07');
 					}
 				} else {
-					currentLine = *itemsCount - 1;
+					newCurrentLine = *itemsCount - 1;
+					putch('\x07');
 				}
-				drawProfiles();
-				selectCurrentLine(true);
 				break;
 			case '1':
-				selectCurrentLine(false);
 				newProfile();
-				drawProfiles();
-				selectCurrentLine(true);
 				break;
 			case '2':
 				updateProfile();
@@ -249,18 +243,22 @@ void profiles_menu()
 					showDialog(&dlg_noProfiles);
 				} else {
 					if (showDialog(&dlg_deleteProfile) == 0) {
-						selectCurrentLine(false);
 						deleteProfile();
-						drawProfiles();
 					}
 				}
-				selectCurrentLine(true);
 				break;
 			case KEY_ESC:
 			case KEY_BS:
 				selectCurrentLine(false);
 				end++;
 				break;
+		}
+		if (topLine!=newTopLine || currentLine!=newCurrentLine) {
+			selectCurrentLine(false);
+			topLine = newTopLine;
+			currentLine = newCurrentLine;
+			drawProfiles();
+			selectCurrentLine(true);
 		}
 		varPUTPNT = varGETPNT;
 		varREPCNT = 0;
