@@ -27,7 +27,9 @@ static SYSTEMDATE_t date;
 
 
 // ========================================================
-// Private functions
+// Private & external functions
+
+extern void getPanelsCmds(uint8_t *cmd);
 
 static bool _setFilenameWithBootDrive()
 {
@@ -165,33 +167,39 @@ inline ProfileHeaderData_t* profile_getHeaderData()
 	return &_headerData;
 }
 
-uint8_t profile_newItem()
-{
-	ProfileItem_t *newProfile = malloc(sizeof(ProfileItem_t));
-	memset(newProfile, 0, sizeof(ProfileItem_t));
-	getSystemDate(&date);
-	_headerData.itemsCount++;
-
-	newProfile->cmd[0] = 0x00;						// TODO !!!!! add the commands
-	newProfile->modifYear = date.year;
-	newProfile->modifMonth = date.month;
-	newProfile->modifDay = date.day;
-
-	return newProfile - _profiles;
-}
-
 ProfileItem_t* profile_getItem(uint8_t idx)
 {
 	if (idx >= _headerData.itemsCount) return NULL;
 	return &_profiles[idx];
 }
 
+uint8_t profile_newItem()
+{
+	// Allocate & clean new profile
+	ProfileItem_t *newProfile = malloc(sizeof(ProfileItem_t));
+	memset(newProfile, 0, sizeof(ProfileItem_t));
+
+	// Set values
+	getSystemDate(&date);
+	getPanelsCmds(newProfile->cmd);
+	newProfile->cmd[0];
+	newProfile->modifYear = date.year;
+	newProfile->modifMonth = date.month;
+	newProfile->modifDay = date.day;
+
+	_headerData.itemsCount++;
+	return newProfile - _profiles;
+}
+
 bool profile_updateItem(uint8_t idx)
 {
+	// Get profile to update
 	ProfileItem_t *profile = profile_getItem(idx);
-	getSystemDate(&date);
+	if (profile == NULL) return false;
 
-	profile->cmd[0] = 0x00;						// TODO !!!!! add the commands
+	// Update values
+	getSystemDate(&date);
+	getPanelsCmds(profile->cmd);
 	profile->modifYear = date.year;
 	profile->modifMonth = date.month;
 	profile->modifDay = date.day;
@@ -202,7 +210,7 @@ bool profile_updateItem(uint8_t idx)
 bool profile_deleteItem(uint8_t idx)
 {
 	if (_headerData.itemsCount) {
-		if (idx+2 < _headerData.itemsCount) {
+		if (idx+1 < _headerData.itemsCount) {
 			memcpy(
 				&_profiles[idx],
 				&_profiles[idx+1],

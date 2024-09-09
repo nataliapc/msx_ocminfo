@@ -17,6 +17,8 @@ void exit(void);
 
 uint8_t getRomByte(uint16_t address) __sdcccall(1);
 
+void basic_play(void *parameters) __sdcccall(1);
+
 
 #define MODE_ANK		0
 #define MODE_KANJI0		1

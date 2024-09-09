@@ -58,7 +58,7 @@ typedef enum {
 enum {										// Masks for Element_t.attribs.raw
 	ATR_FORCEPANELRELOAD = 1,
 	ATR_NEEDRESETTOAPPLY = 2,
-	ATR_UNUSED6          = 8,
+	ATR_SAVEINPROFILE    = 4,
 	ATR_UNUSED5          = 8,
 	ATR_UNUSED4          = 16,
 	ATR_UNUSED3          = 32,
@@ -84,7 +84,8 @@ typedef struct {
 		struct {
 			unsigned forcePanelReload: 1;	// Force panel reload when value changes
 			unsigned needResetToApply: 1;	// Need a Cold/Warm reset to apply
-			unsigned reserved: 6;			// Not used flags [reserved]
+			unsigned saveToProfile:1;		// Elegible to be saved to profile
+			unsigned reserved: 5;			// Not used flags [reserved]
 		};
 	};
 	char *description[4];					// Description lines

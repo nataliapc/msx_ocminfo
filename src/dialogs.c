@@ -31,7 +31,7 @@ uint8_t showDialog(Dialog_t *dlg)
 	uint8_t numBtn, totalBtnLen = 0;
 	uint8_t btnLen[sizeof(dlg->buttons)], btnX[sizeof(dlg->buttons)];
 	uint8_t selectedBtn = dlg->defaultButton;
-	uint8_t i, auxX, auxY;
+	uint8_t key, i, auxX, auxY;
 	bool end = false;
 
 	// Calculate dialog sizes
@@ -45,22 +45,20 @@ uint8_t showDialog(Dialog_t *dlg)
 		btnLen[numBtn] = strlen(dlg->buttons[numBtn]);
 		totalBtnLen += btnLen[numBtn] + 1;
 	}
-	totalBtnLen--;
+	if (numBtn) totalBtnLen--;
 
 	dlgWidth = maxLineLen;
 	if (dlgWidth < totalBtnLen) dlgWidth = totalBtnLen;
 	dlgWidth += 6;	// Add borders & margin
 
-	dlgHeight = numLines + 1 + 1 + 2;	// lines + margin + buttons + borders
+	dlgHeight = numLines + (numBtn ? 2 : 0) + 2;	// lines + (margin + buttons) + borders
 
 	// Calculate dialog position
 	uint8_t dx1 = dlg->posX,
 			dy1 = dlg->posY,
 			dx2, dy2;
-	if (!dx1 || !dy1) {
-		dx1 = (80 - dlgWidth) / 2 + 1;
-		dy1 = (24 - dlgHeight) / 2 + 1;
-	}
+	if (!dx1) dx1 = (80 - dlgWidth) / 2 + 1;
+	if (!dy1) dy1 = (24 - dlgHeight) / 2 + 1;
 	dx2 = dx1 + dlgWidth - 1;
 	dy2 = dy1 + dlgHeight - 1;
 	uint16_t dlgBytes = (dx2 - dx1 + 1) * (dy2 - dy1 + 1);
@@ -92,24 +90,23 @@ uint8_t showDialog(Dialog_t *dlg)
 	while (!end) {
 		while (!kbhit()) { ASM_EI; ASM_HALT; }
 		textblink(btnX[selectedBtn],auxY, btnLen[selectedBtn], true);
-		switch (getch()) {
-			case KEY_LEFT:
-			case KEY_UP:
-				selectedBtn = (selectedBtn ? --selectedBtn : numBtn-1);
-				break;
-			case KEY_RIGHT:
-			case KEY_DOWN:
-			case KEY_TAB:
-				selectedBtn++;
-				selectedBtn %= numBtn;
-				break;
-			case KEY_ESC:
-				selectedBtn = dlg->cancelButton;
-			case KEY_ENTER:
-			case KEY_SELECT:
-			case KEY_SPACE:
-				end++;
-				break;
+		key = getch();
+		if (dlg->buttons[0] == NULL) {
+			end++;
+		} else
+		if (key == KEY_LEFT || key == KEY_UP) {
+			selectedBtn = (selectedBtn ? --selectedBtn : numBtn-1);
+		} else
+		if (key == KEY_RIGHT || key == KEY_DOWN || key ==KEY_TAB) {
+			selectedBtn++;
+			selectedBtn %= numBtn;
+		} else
+		if (key == KEY_ESC) {
+			selectedBtn = dlg->cancelButton;
+			end++;
+		} else
+		if (key == KEY_ENTER || key == KEY_SELECT || key == KEY_SPACE) {
+			end++;
 		}
 		textblink(btnX[selectedBtn],auxY, btnLen[selectedBtn], false);
 		varPUTPNT = varGETPNT;

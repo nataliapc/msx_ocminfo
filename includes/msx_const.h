@@ -2,7 +2,7 @@
 #####################################################################
 	MSX Constants & structs 
 	by NataliaPC
-	[2024-08-30]
+	[2024-09-08]
 #####################################################################
 */
 #pragma once
@@ -154,6 +154,9 @@ __sfr __at (0x99) IO_VDP2;
 #define FNKSTR		0xf87f	// (10*16 bytes) Value of the function keys
 #define MODE		0xfafc	// (BYTE) Flags for VRAM
 #define HOKVLD		0xfb20	// (BYTE) Bit 0 indicates presence of extended Bios (EXTBIO) [0:No bios | 1:Exists at least one]
+#define VCBA		0xfb41	// (37 bytes) Data for PSG voice A
+#define VCBB		0xfb66	// (37 bytes) Data for PSG voice B
+#define VCBC		0xfb8b	// (37 bytes) Data for PSG voice C
 #define NEWKEY		0xfbe5	// (11 bytes) Status of each keyboard matrix row. The status is updated by the KEYINT interrupt routine.
 							//            https://www.msx.org/wiki/Keyboard
 #define KEYBUF		0xfbf0	// (40 bytes) Key code buffer [0xfbf0...0xfc17]

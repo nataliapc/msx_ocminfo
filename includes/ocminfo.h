@@ -15,7 +15,7 @@
 // ========================================================
 // Defines & externals
 
-#define VERSION		"0.9.5b3"
+#define VERSION		"0.9.5b4"
 
 #define SETSMART_X		34
 #define SETSMART_Y		19
@@ -161,7 +161,7 @@ static const Element_t elemSystem[] = {
 		&customCpuModeValue, 0b00000011, 0,2, cpuModeStr, 19,
 		CMDTYPE_STANDARD, 
 		{ OCM_SMART_CPU358MHz, OCM_SMART_TurboPana, OCM_SMART_CPU806MHz }, 
-		ATR_FORCEPANELRELOAD,
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		{ "Standard: Standard CPU clock mode (3.58MHz)",
 		  "tPANA:    Panasonic turbo mode (aka Turbo Pana, 5.37MHz)",
 		  "Custom:   Custom CPU clock mode (4.10MHz to 8.06MHz)", (char*)NULL },
@@ -176,7 +176,7 @@ static const Element_t elemSystem[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_CPU410MHz, OCM_SMART_CPU410MHz, OCM_SMART_CPU448MHz, OCM_SMART_CPU490MHz, 
 		  OCM_SMART_CPU539MHz, OCM_SMART_CPU610MHz, OCM_SMART_CPU696MHz, OCM_SMART_CPU806MHz }, 
-		ATR_FORCEPANELRELOAD,
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		{ "Custom CPU speed. These are not real CPU frequencies but a simulation",
 		  "slowing down the 10.74MHz frequency. The values have been calculated and",
 		  "are purely indicative. The default is 8.06MHz.", (char*)NULL },
@@ -190,7 +190,7 @@ static const Element_t elemSystem[] = {
 		&(sysInfo2.raw), 0b00000010, 0,1, extBusStr, 20,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_ExtBusCPU, OCM_SMART_ExtBus358 },
-		ATR_FORCEPANELRELOAD,
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		{ "Synchronize external bus clock to CPU clock (default), or force it to",
 		  "3.58MHz.", (char*)NULL },
 		IOREV_3, M_ALL
@@ -203,7 +203,7 @@ static const Element_t elemSystem[] = {
 		&(sysInfo0.raw), 0b00010000, 0,1, onOffStr, 20,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_TPanaRedOFF, OCM_SMART_TPanaRedON },
-		false,
+		ATR_SAVEINPROFILE,
 		{ "Turbo Pana redirect mode sets Turbo Pana I/O to the current Custom Speed.",
 		  "This allows games to reach 8.06MHz or other frequencies using port 41h ID8,",
 		  "making them OCM-compatible without software patch.", (char*)NULL },
@@ -217,7 +217,7 @@ static const Element_t elemSystem[] = {
 		&(sysInfo0.raw), 0b00001000, 0,1, onOffStr, 20,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_TMegaSDOFF, OCM_SMART_TMegaSDON },
-		false,
+		ATR_SAVEINPROFILE,
 		{ "Turbo MegaSD sets SD card speed access at loading time activating 8.06MHz,",
 		  "so you get fast load even with CPU at 3.58/5.37MHz. It can adversely affect",
 		  "external cartridges that do not support 8.06MHz.", (char*)NULL },
@@ -250,7 +250,7 @@ static const Element_t elemSystem[] = {
 		&(sysInfo1.raw), 0b00000010, 0,1, keyboardStr, 20,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_KBLayoutJP, OCM_SMART_KBLayoutNJP },
-		false,
+		ATR_SAVEINPROFILE,
 		{ "Current active keyboard layout.",
 		  "Values can be Japanese or non-Japanese (international keyboard layout",
 		  "embedded inside the BIOS).", (char*)NULL },
@@ -269,7 +269,7 @@ static const Element_t elemVideo[] = {
 		&(sysInfo0.raw), 0b00100000, 0,1, vdpSpeedStr, 25,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_VDPNormal, OCM_SMART_VDPFast },
-		false,
+		ATR_SAVEINPROFILE,
 		{ "Normal: Works like real hardware (default).",
 		  "Fast:   The VDP works faster (V9958 only).", (char*)NULL },
 		IOREV_ALL, M_ALL
@@ -282,7 +282,7 @@ static const Element_t elemVideo[] = {
 		&customVideoModeValue, 0b00000011, 0,2, videoModeStr, 24,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_ForcePAL, OCM_SMART_VideoAuto, OCM_SMART_ForceNTSC },
-		ATR_FORCEPANELRELOAD,
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		{ "Video output mode (Auto/PAL/NTSC)", 
 		  "Auto:     Set to auto (default) that is bound by VDP Control Register #9.",
 		  "PAL/NTSC: Force video output to PAL(50Hz) or NTSC(60Hz).", (char*)NULL },
@@ -310,7 +310,7 @@ static const Element_t elemVideo[] = {
 		{ OCM_SMART_VertOffset16, OCM_SMART_VertOffset17, OCM_SMART_VertOffset18,
 		  OCM_SMART_VertOffset19, OCM_SMART_VertOffset20, OCM_SMART_VertOffset21,
 		  OCM_SMART_VertOffset22, OCM_SMART_VertOffset23, OCM_SMART_VertOffset24 },
-		false,
+		ATR_SAVEINPROFILE,
 		{ "Changes the vertical offset.",
 		  "Default is 19; value 16 is useful for Ark-A-Noah; value 24 is useful",
 		  "for Space Manbow.", (char*)NULL },
@@ -324,7 +324,7 @@ static const Element_t elemVideo[] = {
 		&(sysInfo3.raw), 0b00010000, 0,1, onOffStr, 25,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_CenterYJKOFF, OCM_SMART_CenterYJKON },
-		false,
+		ATR_SAVEINPROFILE,
 		{ "Allows forcing the centering of YJK modes and VDP R#25 mask, useful for",
 		  "MSX2+ games. Default is OFF.", (char*)NULL },
 		IOREV_7, M_ALL
@@ -337,7 +337,7 @@ static const Element_t elemVideo[] = {
 		&(sysInfo4_0.raw), 0b00000011, 0,3, scanlinesStr, 23,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_Scanlines00, OCM_SMART_Scanlines25, OCM_SMART_Scanlines50, OCM_SMART_Scanlines75 },
-		false,
+		ATR_SAVEINPROFILE,
 		{ "Visualization of scanlines for VGA/VGA+ (mainly for 2nd Gen machines).", (char*)NULL },
 		IOREV_ALL, M_SX2|M_SMX_MCP2_ID
 	},
@@ -370,7 +370,7 @@ static const Element_t elemAudio[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_MasterVol0, OCM_SMART_MasterVol1, OCM_SMART_MasterVol2, OCM_SMART_MasterVol3,
 		  OCM_SMART_MasterVol4, OCM_SMART_MasterVol5, OCM_SMART_MasterVol6, OCM_SMART_MasterVol7 },
-		ATR_FORCEPANELRELOAD,
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		{ "Set Master volume level.",
 		  "Default is 7.", (char*)NULL },
 		IOREV_ALL, M_ALL
@@ -384,7 +384,7 @@ static const Element_t elemAudio[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_PSGVol0, OCM_SMART_PSGVol1, OCM_SMART_PSGVol2, OCM_SMART_PSGVol3,
 		  OCM_SMART_PSGVol4, OCM_SMART_PSGVol5, OCM_SMART_PSGVol6, OCM_SMART_PSGVol7 },
-		ATR_FORCEPANELRELOAD,
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		{ "Set PSG volume level.",
 		  "Default is 4.", (char*)NULL },
 		IOREV_ALL, M_ALL
@@ -398,7 +398,7 @@ static const Element_t elemAudio[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_SCCIVol0, OCM_SMART_SCCIVol1, OCM_SMART_SCCIVol2, OCM_SMART_SCCIVol3,
 		  OCM_SMART_SCCIVol4, OCM_SMART_SCCIVol5, OCM_SMART_SCCIVol6, OCM_SMART_SCCIVol7 },
-		ATR_FORCEPANELRELOAD,
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		{ "Set SCC+ volume level.",
 		  "Default is 4.", (char*)NULL },
 		IOREV_ALL, M_ALL
@@ -412,7 +412,7 @@ static const Element_t elemAudio[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_OPLLVol0, OCM_SMART_OPLLVol1, OCM_SMART_OPLLVol2, OCM_SMART_OPLLVol3, 
 		  OCM_SMART_OPLLVol4, OCM_SMART_OPLLVol5, OCM_SMART_OPLLVol6, OCM_SMART_OPLLVol7 },
-		ATR_FORCEPANELRELOAD,
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		{ "Set OPLL volume level.",
 		  "Default is 4.", (char*)NULL },
 		IOREV_ALL, M_ALL
@@ -425,7 +425,7 @@ static const Element_t elemAudio[] = {
 		&(sysInfo4_0.raw), 0b00000100, 0,1, onOffStr, 24,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_IntPSG2OFF, OCM_SMART_IntPSG2ON },
-		false,
+		ATR_SAVEINPROFILE,
 		{ "Enable/disable an additional internal PSG (acting as an external PSG).",
 		  "Default is OFF.", (char*)NULL },
 		IOREV_11, M_SX2|M_SMX_MCP2_ID
@@ -438,7 +438,7 @@ static const Element_t elemAudio[] = {
 		&(sysInfo1.raw), 0b00000100, 0,1, onOffStr, 24,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_OPL3OFF, OCM_SMART_OPL3ON },
-		false,
+		ATR_SAVEINPROFILE,
 		{ "Enable/disable the OPL3 sound chipset.",
 		  "Default is OFF.", (char*)NULL },
 		IOREV_10, M_SX2|M_SMX_MCP2_ID
@@ -451,7 +451,7 @@ static const Element_t elemAudio[] = {
 		&(sysInfo2.raw), 0b00000001, 0,1, onOffStr, 24,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_PseudSterOFF, OCM_SMART_PseudSterON },
-		false,
+		ATR_SAVEINPROFILE,
 		{ "Enable/disable the Pseudo-Stereo mode (needs an external sound cartridge).",
 		  "Default is OFF.", (char*)NULL },
 		IOREV_3, M_ALL
@@ -464,7 +464,7 @@ static const Element_t elemAudio[] = {
 		&(sysInfo3.raw), 0b00000001, 0,1, onOffStr, 24,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_RightInvAud0, OCM_SMART_RightInvAud1 },
-		false,
+		ATR_SAVEINPROFILE,
 		{ "Enable/disable the Right Inverse Audio, which is a good solution for",
 		  "recording really clean balanced audio.",
 		  "Default is OFF.", (char*)NULL },
@@ -502,7 +502,7 @@ static const Element_t elemDIPs[] = {
 		&customVideoOutputValue, 0b00000011, 0,3, virtualDipVideoStr, 20, 
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_Disp15KhSvid, OCM_SMART_Disp15KhRGB, OCM_SMART_Disp31KhVGA, OCM_SMART_Disp31KhVGAp },
-		ATR_FORCEPANELRELOAD,
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		{ "Virtual DIP-Switch #2-#3: Video Output",
 		  "OFF/OFF: Composite/S-Video w/mono audio     OFF/ON: RGB 15khz",
 		  "ON/OFF:  VGA Mode w/Pixel 1:1               ON/ON:  VGA+ Mode for CRT", (char*)NULL },
@@ -519,7 +519,7 @@ static const Element_t elemDIPs[] = {
 		  OCM_SMART_S1extS2a8,  OCM_SMART_S1sccS2a8,
 		  OCM_SMART_S1extS2scc, OCM_SMART_S1sccS2scc,
 		  OCM_SMART_S1extS2a16, OCM_SMART_S1sccS2a16 },
-		ATR_FORCEPANELRELOAD,
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		{ "Virtual DIP-Switch #4: Cartridge Slot 1 Configuration",
 		  "OFF: External Slot-1 / Optional Slot-3 (shared)",
 		  "ON:  Internal ESE-MegaSCC+", (char*)NULL },
@@ -536,7 +536,7 @@ static const Element_t elemDIPs[] = {
 		  OCM_SMART_S1extS2a8,  OCM_SMART_S1sccS2a8,
 		  OCM_SMART_S1extS2scc, OCM_SMART_S1sccS2scc,
 		  OCM_SMART_S1extS2a16, OCM_SMART_S1sccS2a16 },
-		ATR_FORCEPANELRELOAD,
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		{ "Virtual DIP-Switch #5-#6: Cartridge Slot 2 Configuration",
 		  "OFF/OFF: External Slot-2          OFF/ON: Internal ESE-MegaRAM ASCII-8K",
 		  "ON/OFF:  Internal ESE-MegaSCC+    ON/ON:  Internal ESE-MegaRAM ASCII-16K", (char*)NULL },
@@ -692,7 +692,8 @@ enum {
 	PANEL_AUDIO,
 	PANEL_DIPS,
 	PANEL_HELP,
-	PANEL_PROFILES
+	PANEL_PROFILES,
+	PANEL_EXIT
 };
 #define PANEL_FIRST		PANEL_SYSTEM
 #define PANEL_LAST		PANEL_HELP

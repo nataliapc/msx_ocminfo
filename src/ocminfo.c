@@ -84,6 +84,31 @@ static void checkPlatformSystem()
 	}
 }
 
+char *play_fail = "\"v12l64o2b\"";
+char *play_error = "\"v12l64o2br64b\"";
+char *play_ok = "\"v12l64o4ar64o5c\"";
+char *play_advice = "\"v12l64o4a\"";
+
+void beep_ok()
+{
+	basic_play(play_ok);
+}
+
+void beep_advice()
+{
+	basic_play(play_advice);
+}
+
+void beep_fail()
+{
+	basic_play(play_fail);
+}
+
+void beep_error()
+{
+	basic_play(play_error);
+}
+
 // ========================================================
 static void getOcmData()
 {
@@ -196,7 +221,7 @@ static bool changeCurrentValue(int8_t increase)
 		currentElement->cmdType == CMDTYPE_NONE ||
 		currentElement->value == NULL)
 	{
-		putch('\x07');
+		beep_fail();
 		return false;
 	}
 
@@ -235,27 +260,56 @@ static bool changeCurrentValue(int8_t increase)
 }
 
 // ========================================================
-bool sendCommand(Element_t *elem)
+uint8_t getActiveCommand(Element_t *elem)
 {
-	uint8_t value = getValue(elem);
-
-	// Do nothing
-	if (elem->cmd[value] == OCM_SMART_NullCommand)
-		return false;
 	// Single Standard Command
 	if (elem->cmdType == CMDTYPE_STANDARD) {
-		lastCmdSent = elem->cmd[getValue(elem)];
-		ocm_sendSmartCmd(lastCmdSent);
-		return true;
-	}
+		return elem->cmd[getValue(elem)];
+	} else
 	// Custom Command behaviours
 	if (elem->cmdType == CMDTYPE_CUSTOM_SLOTS12) {
-		lastCmdSent = elem->cmd[customSlots12Value];
-		ocm_sendSmartCmd(lastCmdSent);
-		return true;
+		return elem->cmd[customSlots12Value];
 	}
 
+	return OCM_SMART_NullCommand;
+}
+
+bool sendCommand(Element_t *elem)
+{
+	uint8_t cmd = getActiveCommand(elem);
+
+	// Do nothing
+	if (cmd == OCM_SMART_NullCommand) return false;
+	lastCmdSent = cmd;
+	// Send Command
+	ocm_sendSmartCmd(cmd);
 	return false;
+}
+
+void getPanelsCmds(uint8_t *cmd)
+{
+	Panel_t *panel = &pPanels[PANEL_FIRST];
+	Element_t *element;
+	uint8_t *ptr, cmdToAdd;
+
+	*cmd = 0x00;
+	while (panel->title != NULL) {
+		element = panel->elements;
+		while (element->type != END) {
+			if (element->saveToProfile && 
+				isMachineSupported(element) && 
+				isIOrevisionSupported(element))
+			{
+				cmdToAdd = getActiveCommand(element);
+				ptr = cmd;
+				while (*ptr && *ptr != cmdToAdd) ptr++;
+				if (!*ptr) *ptr = cmdToAdd;
+				*++ptr = 0x00;
+			}
+			element++;
+		}
+		panel++;
+	}
 }
 
 
@@ -306,12 +360,12 @@ static void drawCustom_cpuSpeed(Element_t *element)
 	Element_t *elemChange = &currentPanel->elements[3];
 	if (!virtualDIPs.cpuClock) {
 		// Standard / TurboPana speed
-		elemChange->supportedBy = M_NONE;		// Element 'Custom speed'
+		elemChange->supportedBy = M_NONE;		// Element 'Custom speed' disabled
 		elemChange->valueOffsetX = 24;
 		putlinexy(elemChange->posX + strlen(elemChange->label), elemChange->posY, 12, emptyArea);
 	} else {
 		// Custom speed
-		elemChange->supportedBy = M_ALL;		// Element 'Custom speed'
+		elemChange->supportedBy = M_ALL;		// Element 'Custom speed' enabled
 		elemChange->valueOffsetX = 14;
 	}
 	drawWidget_value(element);
@@ -385,22 +439,27 @@ static void drawCurrentPanel()
 }
 
 // ========================================================
+static void selectPanelTitle(Panel_t *panel)
+{
+	if (currentPanel != NULL) {
+		textblink(1, panel->titley, 80, false);
+		selectCurrentElement(false);
+	}
+
+	// Set title blink
+	textblink(panel->titlex, panel->titley, panel->titlelen, true);
+}
+
 static void selectPanel(Panel_t *panel)
 {
 	ASM_EI;
 	ASM_HALT;
 
-	// Clear blinks
-	if (currentPanel != NULL) {
-		textblink(currentPanel->titlex, currentPanel->titley, currentPanel->titlelen, false);
-		textblink(currentElement->posX, currentElement->posY, strlen(currentElement->label), false);
-	}
+	// Update blinks
+	selectPanelTitle(panel);
 
 	// Clear Panel zone
 	puttext(2,5, 79,19, emptyArea);
-
-	// Set title blink
-	textblink(panel->titlex, panel->titley, panel->titlelen, true);
 
 	// Refresh I/O ext values
 	getOcmData();
@@ -410,7 +469,7 @@ static void selectPanel(Panel_t *panel)
 	drawCurrentPanel();
 
 	// Select first element as current
-	currentElement = nextElement = &(currentPanel->elements[0]);
+	currentElement = nextElement = &currentPanel->elements[0];
 	while (currentElement->type != END && currentElement->type == LABEL) {
 		currentElement++;
 	}
@@ -522,11 +581,13 @@ void main(void)
 			case '+':
 				if (changeCurrentValue(1)) {
 					drawElement(currentElement);
+					beep_advice();
 				}
 				break;
 			case '-':
 				if (changeCurrentValue(-1)) {
 					drawElement(currentElement);
+					beep_advice();
 				}
 				break;
 			case '1':
@@ -566,15 +627,16 @@ void main(void)
 				profiles_menu(&pPanels[PANEL_PROFILES]);
 				printHeader();
 				selectPanel(currentPanel);
-				selectCurrentElement(true);
 				break;
 			case 'x':
 			case 'X':
 			case KEY_ESC:
 				selectCurrentElement(false);
+				selectPanelTitle(&pPanels[PANEL_EXIT]);
 				if (showDialog(&dlg_exit) == 0) {
 					end++;
 				}
+				selectPanelTitle(currentPanel);
 				selectCurrentElement(true);
 				break;
 		}

@@ -9,7 +9,9 @@
 #include "msx_const.h"
 #include "conio.h"
 #include "heap.h"
+#include "utils.h"
 #include "types.h"
+#include "ocm_ioports.h"
 #include "profiles_api.h"
 #include "dialogs.h"
 
@@ -21,7 +23,7 @@
 #define str(a) #a
 
 #define MAX_PROFILES	50
-#define MAX_LINES		19
+#define MAX_LINES		15
 
 // ========================================================
 // Variables
@@ -32,10 +34,19 @@ static uint8_t *itemsCount;
 static uint8_t editPanelIdx;
 static uint8_t topLine = 0, currentLine = 0;
 static uint8_t newTopLine = 0, newCurrentLine = 0;
+static char *logIdx = NULL;
 static uint8_t key;
 static bool redrawList, redrawSelection, doEditText;
 static bool changedProfiles;
 static bool end;
+
+void beep_ok();
+void beep_advice();
+void beep_fail();
+void beep_error();
+
+void setByteVRAM(uint16_t vram, uint8_t value) __sdcccall(0);
+void _fillVRAM(uint16_t vram, uint16_t len, uint8_t value) __sdcccall(0);
 
 void drawProfiles();
 void selectCurrentLine(bool enabled);
@@ -57,7 +68,7 @@ static const Panel_t pPanels[] = {
 	{ " [DEL]ete ",		24,3,	10 },
 	{ " [H]elp ",		52,3,	8  },
 	{ " [P]rofiles ",	60,3,	12 },
-	{ " E[x]it ",		72,3,	8  },
+	{ " [B]ack ",		72,3,	8  },
 	{ NULL }
 };
 
@@ -77,7 +88,7 @@ Dialog_t dlg_fileNotFound = {
 Dialog_t dlg_errorSaving = {
 	0,0,
 	{ "Error saving profiles file!" },
-	{ "  Close  ", NULL },
+	{ "  Continue  ", NULL },
 	0,	//defaultButton
 	1,	//cancelButton
 	DLG_DEFAULT
@@ -86,7 +97,7 @@ Dialog_t dlg_errorSaving = {
 Dialog_t dlg_noProfiles = {
 	0,0,
 	{ "Profile list is empty!" },
-	{ "  Close  ", NULL },
+	{ "  Continue  ", NULL },
 	0,	//defaultButton
 	0,	//cancelButton
 	DLG_DEFAULT
@@ -110,16 +121,26 @@ Dialog_t dlg_deleteProfile = {
 	DLG_DEFAULT
 };
 
+Dialog_t dlg_profileApplied = {
+	0,0,
+	{ "    Profile applied    " },
+	{ "  Continue  ", NULL },
+	0,	//defaultButton
+	0,	//cancelButton
+	DLG_DEFAULT
+};
+
 Dialog_t dlg_help = {
 	0,0,
 	{ "Up/Down . . . . Move selection       ",
 	  "Right/Left. . . Next/Previous page   ",
+	  "RETURN. . . . . Apply current profile",
 	  "A . . . . . . . Add new profile      ",
 	  "U . . . . . . . Update name & values ",
 	  "DEL . . . . . . Delete selection     ",
 	  "Ctrl+Up/Down. . Move selected item   ",
 	  "H . . . . . . . Show this help       ",
-	  "ESC/X . . . . . Exit profiles        "
+	  "BS/B. . . . . . Go back to panels    "
 	},
 	{ "  Close  ", NULL },
 	0,	//defaultButton
@@ -155,15 +176,37 @@ void drawHeader()
 	// Elements panel
 	chlinexy(2,4, 78);
 
+	// Log panel
+	chlinexy(2,5+MAX_LINES, 78);
+	setByteVRAM(2+22*80, '>');
+
 	// Draw profiles counter
 	drawProfilesCounter();
 }
 
-void beep()
+void printLog(char *log)
 {
-	putch('\x07');
+	gettext(5,7+MAX_LINES, 79,23, heap_top);
+	puttext(5,6+MAX_LINES, 79,22, heap_top);
+	_fillVRAM(4+22*80, 75, ' ');
+	putlinexy(5,23, strlen(log), log);
 }
 
+void printLogIdx(char *logPattern)
+{
+	char *ptr = malloc(80);
+	csprintf(ptr, logPattern, topLine + currentLine + 1);
+	printLog(ptr);
+	free(80);
+}
+
+// ========================================================
+inline bool isCtrlKeyPressed()
+{
+	return varNEWKEY_row6.ctrl == 0;
+}
+
+// ========================================================
 void editText(uint8_t itemNum)
 {
 	ProfileItem_t *item = profile_getItem(itemNum);
@@ -195,11 +238,12 @@ void editText(uint8_t itemNum)
 		} else {
 			key = 0;
 		}
-		if (!key) beep();
+		if (!key) beep_fail();
 	} while (!end);
 	setcursortype(NOCURSOR);
 }
 
+// ========================================================
 void newProfile()
 {
 	if (!*itemsCount) {
@@ -250,6 +294,15 @@ void deleteProfile()
 	drawProfilesCounter();
 }
 
+void applyProfileCmds()
+{
+	uint8_t *cmd = profile_getItem(topLine+currentLine)->cmd;
+	while (*cmd) {
+		ocm_sendSmartCmd(*cmd++);
+	}
+}
+
+// ========================================================
 void drawProfiles()
 {
 	ProfileItem_t *profile = profile_getItem(topLine);
@@ -274,7 +327,7 @@ void drawProfiles()
 	}
 
 	if (i <= MAX_LINES) {
-		puttext(2,5+i, 79,23, emptyArea);
+		puttext(2,5+i, 79,4+MAX_LINES, emptyArea);
 	}
 }
 
@@ -290,77 +343,102 @@ void selectPanel(uint8_t idx, bool enabled)
 	textblink(panel->titlex,panel->titley, panel->titlelen, enabled);
 }
 
-inline bool isCtrlKeyPressed()
+void showDialogNoProfiles()
 {
-	return varNEWKEY_row6.ctrl == 0;
+	beep_error();
+	showDialog(&dlg_noProfiles);
 }
 
+// ========================================================
 void profiles_menu(Panel_t *panel)
 {
 	itemsCount = &(profile_getHeaderData()->itemsCount);
 	profile_init();
-
-	// Read profile file & ask for creation if missing or corrupted
-	if (!profile_loadFile()) {
-		if (showDialog(&dlg_fileNotFound) == 0) {
-			profile_init();
-			if (!profile_saveFile()) {
-				showDialog(&dlg_errorSaving);
-				return;
-			}
-		} else {
-			return;
-		}
-	}
 
 	// Initialize header & profiles
 	newTopLine = newCurrentLine = topLine = currentLine = 0;
 	changedProfiles = doEditText = false;
 	drawHeader();
 	textblink(panel->titlex, panel->titley, panel->titlelen, true);
+
+	// Read profile file & ask for creation if missing or corrupted
+	printLog("\x85 Reading profiles file...");
+	if (!profile_loadFile()) {
+		printLog("\x84 WARNING: Profiles file not found, unreadable, or corrupted.");
+		beep_fail();
+		if (showDialog(&dlg_fileNotFound) == 0) {
+			profile_init();
+			if (!profile_saveFile()) {
+				printLog("\x85 ERROR: Can't create a new profiles file!");
+				beep_error();
+				showDialog(&dlg_errorSaving);
+				goto end_profile_menu;
+			}
+		} else {
+			goto end_profile_menu;
+		}
+		printLog("\x84 New profiles file created.");
+	} else {
+		printLog("\x84 Profiles readed.");
+	}
+
+	// Draw profiles & select first line if any
 	drawProfiles();
+	drawProfilesCounter();
 	if (*itemsCount) {
 		selectCurrentLine(true);
 	}
 
-	// Main loop profiles
+	// Main loop profiles list
 	end = false;
 	do {
 		while (!kbhit()) { ASM_EI; ASM_HALT; }
 		// Manage pressed key
 		key = getch();
 		if (key == KEY_UP) {						// Move up selection
-			if (*itemsCount && topLine + currentLine > 0) {
-				if (currentLine) {
-					newCurrentLine--;
-					redrawSelection++;
-				} else {
-					if (topLine) {
-						newTopLine--;
-						redrawList++;
+			if (*itemsCount) {
+				if (topLine + currentLine > 0) {
+					if (currentLine) {
+						newCurrentLine--;
+						redrawSelection++;
+					} else {
+						if (topLine) {
+							newTopLine--;
+							redrawList++;
+						}
 					}
-				}
-				if (isCtrlKeyPressed()) {
-					moveCurrentProfile(-1);
-				}
+					if (isCtrlKeyPressed()) {
+						moveCurrentProfile(-1);
+						logIdx = "\x84 Profile moved up to #%u.";
+					}
+				} else beep_fail();
 			} else {
-				beep();
+				if (isCtrlKeyPressed())
+					showDialogNoProfiles();
+				else
+					beep_fail();
 			}
 		} else
 		if (key == KEY_DOWN) {						// Move down selection
-			if (*itemsCount && topLine + currentLine < *itemsCount - 1) {
-				if (currentLine < MAX_LINES-1) {
-					newCurrentLine++;
-					redrawSelection++;
-				} else {
-					newTopLine++;
-					redrawList++;
-				}
-				if (isCtrlKeyPressed()) {
-					moveCurrentProfile(1);
-				}
+			if (*itemsCount) {
+				if (topLine + currentLine < *itemsCount - 1) {
+					if (currentLine < MAX_LINES-1) {
+						newCurrentLine++;
+						redrawSelection++;
+					} else {
+						newTopLine++;
+						redrawList++;
+					}
+					if (isCtrlKeyPressed()) {
+						moveCurrentProfile(1);
+						logIdx = "\x84 Profile moved down to #%u.";
+					}
+				} else beep_fail();
 			} else {
-				beep();
+				if (isCtrlKeyPressed())
+					showDialogNoProfiles();
+				else
+					beep_fail();
 			}
 		} else
 		if (key == KEY_LEFT) { 						// Previous page
@@ -369,7 +447,7 @@ void profiles_menu(Panel_t *panel)
 			} else {
 				newTopLine = 0;
 				newCurrentLine = 0;
-				beep();
+				beep_fail();
 			}
 			redrawList++;
 		} else
@@ -379,11 +457,11 @@ void profiles_menu(Panel_t *panel)
 				if (newTopLine + MAX_LINES > *itemsCount) {
 					newTopLine = *itemsCount - MAX_LINES;
 					newCurrentLine = MAX_LINES - 1;
-					beep();
+					beep_fail();
 				}
 			} else {
 				newCurrentLine = *itemsCount - 1;
-				beep();
+				beep_fail();
 			}
 			redrawList++;
 		} else
@@ -391,25 +469,29 @@ void profiles_menu(Panel_t *panel)
 			if (*itemsCount < MAX_PROFILES) {
 				editPanelIdx = PANEL_ADD;
 				newProfile();
+				logIdx = "\x85 Added new profile #%u values.";
 			} else {
-				beep();
+				printLog("\x85 WARNING: Profiles limit reached ("xstr(MAX_PROFILES)").");
+				beep_error();
 			}
 		} else
 		if (key =='u' || key == 'U') {				// Update selection
 			if (*itemsCount == 0) {
-				showDialog(&dlg_noProfiles);
+				showDialogNoProfiles();
 			} else {
 				editPanelIdx = PANEL_UPDATE;
 				updateProfile();
+				logIdx = "\x85 Profile #%u values updated.";
 			}
 		} else 
 		if (key == KEY_DELETE) {					// Delete selection
 			if (*itemsCount == 0) {
-				showDialog(&dlg_noProfiles);
+				showDialogNoProfiles();
 			} else {
 				selectPanel(PANEL_DELETE, true);
 				if (showDialog(&dlg_deleteProfile) == 0) {
 					deleteProfile();
+					printLogIdx("\x85 Deleted profile at #%u.");
 					changedProfiles = true;
 				}
 				selectPanel(PANEL_DELETE, false);
@@ -417,30 +499,48 @@ void profiles_menu(Panel_t *panel)
 			redrawList++;
 		} else
 		if (key == KEY_ENTER) {						// Apply current profile
-			// TODO !!!!!!!!!!!!!!!!!!! apply current profile
-			beep();
+			if (*itemsCount == 0) {
+				showDialogNoProfiles();
+			} else {
+				applyProfileCmds();
+				beep_ok();
+				printLogIdx("\x85 Profile #%u values applied.");
+				showDialog(&dlg_profileApplied);
+				redrawSelection++;
+			}
 		} else
 		if (key == 'h' || key == 'H') {				// Show help dialog
 			showDialog(&dlg_help);
 			redrawSelection++;
 		} else
-		if (key == KEY_ESC || key == KEY_BS ||		// Exit profiles
-			key == 'x' || key == 'X') {
+		if (key == KEY_ESC || key == KEY_BS ||		// Go back to panels
+			key == 'b' || key == 'B') {
 			end++;
 		}
+		// Update selection or full list if necessary
 		if (redrawList || redrawSelection) {
+			ASM_EI; ASM_HALT;
 			selectCurrentLine(false);
 			topLine = newTopLine;
 			currentLine = newCurrentLine;
 			if (redrawList) drawProfiles();
 			if (*itemsCount) selectCurrentLine(true);
 			redrawList = redrawSelection = false;
+			if (logIdx != NULL) {
+				printLogIdx(logIdx);
+				logIdx = NULL;
+			}
 		}
+		// Handle description editing if necessary
 		if (doEditText) {
+			printLogIdx("\x84 Editing profile #%u description...");
 			selectPanel(editPanelIdx, true);
+			beep_advice();
 			editText(topLine + currentLine);
 			selectPanel(editPanelIdx, false);
 			drawProfiles();
+			printLog("\x84 Profile modified.");
+			beep_advice();
 			doEditText = false;
 			changedProfiles = true;
 		}
@@ -448,14 +548,19 @@ void profiles_menu(Panel_t *panel)
 		varREPCNT = 0;
 	} while (!end);
 
+	// Unselect current selection
 	selectCurrentLine(false);
 
+	// Check if profiles have changed and prompt for saving
 	if (changedProfiles && showDialog(&dlg_saveChanges) == 0) {
+		printLog("\x85 Saving modified profiles...");
 		if (!profile_saveFile()) {
 			showDialog(&dlg_errorSaving);
 		}
 	}
 
+	// Release memory & clear panel selection
+end_profile_menu:
 	profile_release();
 	textblink(panel->titlex, panel->titley, panel->titlelen, false);
 }

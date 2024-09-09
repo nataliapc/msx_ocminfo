@@ -44,12 +44,12 @@ typedef struct {
 } ProfileHeaderData_t;
 
 typedef struct {
-	char    description[60];		// StringZ
+	char     description[60];		// AsciiZ
 	uint16_t modifYear;				// Modification date: Year
-	uint8_t modifMonth;				// Modification date: Month
-	uint8_t modifDay;				// Modification date: Day
-	uint8_t cmd[40];				// SetSmart commands
-	uint8_t reserved[24];			// Reserved
+	uint8_t  modifMonth;			// Modification date: Month
+	uint8_t  modifDay;				// Modification date: Day
+	uint8_t  cmd[40];				// SetSmart commands
+	uint8_t  reserved[24];			// Reserved
 } ProfileItem_t;
 
 
