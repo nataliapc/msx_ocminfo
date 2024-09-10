@@ -2,8 +2,9 @@
 const net = require('net');
 const fs = require('fs');
 const path = require('path');
+const readline = require('readline');
 
-const VERSION = `Gopher Server 1.0 (by NataliaPC'2024)`;
+const VERSION = `Gopher File Server 1.1 (by NataliaPC'2024)`;
 const PORT = 7070;
 
 let rootDirectory = process.cwd(); // Default to current working directory
@@ -23,8 +24,7 @@ const server = net.createServer((socket) => {
 		fs.stat(requestedPath, (err, stats) => {
 			if (err) {
 				console.log(`${getDate()} -> ERROR: File or directory not found!`);
-				socket.write('3Error: File or directory not found\tError\t(NULL)\t0\r\n');
-				socket.end('.');
+				printError(socket, 'File or directory not found!');
 				return;
 			}
 
@@ -32,8 +32,7 @@ const server = net.createServer((socket) => {
 				fs.readdir(requestedPath, (err, files) => {
 					if (err) {
 						console.log(`${getDate()} -> ERROR: Unable to read directory!`);
-						socket.write('3Error: Unable to read directory\tError\t(NULL)\t0\r\n');
-						socket.end('.');
+						printError(socket, 'Unable to read directory!');
 						return;
 					}
 
@@ -72,8 +71,7 @@ const server = net.createServer((socket) => {
 				fs.readFile(requestedPath, (err, content) => {
 					if (err) {
 						console.log(`${getDate()} -> ERROR: Unable to read file!`);
-						socket.write('3Error: Unable to read file\tError\t(NULL)\t0\r\n');
-						socket.end('.');
+						printError(socket, 'Unable to read file!');
 						return;
 					}
 					socket.write(content);
@@ -98,17 +96,37 @@ function getDate(socket) {
 }
 
 function sendHeader(socket) {
-	println(socket, ` _______          __         .__  .__      ___________________  `);
-	println(socket, ` \\      \\ _____ _/  |______  |  | |__|____ \\______   \\_   ___ \\ `);
-	println(socket, ` /   |   \\\\__  \\\\   __\\__  \\ |  | |  \\__  \\ |     ___/    \\  \\/ `);
-	println(socket, `/    |    \\/ __ \\|  |  / __ \\|  |_|  |/ __ \\|    |   \\     \\____`);
-	println(socket, `\\____|__  (____  /__| (____  /____/__(____  /____|    \\______  /`);
-	println(socket, `        \\/     \\/          \\/             \\/                 \\/ `);
+	const bannerPath = path.join(__dirname, 'banner.txt');
+	
+	if (fs.existsSync(bannerPath)) {
+		printFile(bannerPath, socket);
+	}
 	println(socket, `${VERSION}`);
 }
 
 function println(socket, txt) {
 	socket.write(`i${txt}\t-\t-\t-\r\n`);
+}
+
+function printFile(filePath, socket, showError = false) {
+	try {
+		const fileContent = fs.readFileSync(filePath, 'utf8');
+		const lines = fileContent.split('\n');
+		
+		for (const line of lines) {
+			println(socket, line.trimEnd());
+		}
+	} catch (err) {
+		if (showError) {
+			console.log(`${getDate()} -> ERROR: Unable to read file!`);
+			printError(socket, 'Unable to read file!');
+		}
+	}
+}
+
+function printError(socket, txt) {
+	socket.write(`3Error: ${txt}\tError\t(NULL)\t0\r\n`);
+	socket.end('.');
 }
 
 function getServerIP() {
