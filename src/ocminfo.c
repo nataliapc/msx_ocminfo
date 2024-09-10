@@ -21,6 +21,8 @@
 // ========================================================
 static uint8_t msxVersionROM;
 static uint8_t kanjiMode;
+static uint8_t originalLINL40;
+static uint8_t originalSCRMOD;
 static bool isVisibleSetSmartText = false;
 static uint8_t lastCmdSent = 0;
 static uint16_t lastExtraKeys;
@@ -65,6 +67,8 @@ static bool drawElement(Element_t *element);
 static void checkPlatformSystem()
 {
 	msxVersionROM = getRomByte(MSXVER);
+	originalLINL40 = varLINL40;
+	originalSCRMOD = varSCRMOD;
 
 	#ifndef _DEBUG_
 		// Check for OCM-PLD Device
@@ -653,17 +657,24 @@ void main(void)
 	textattr(0x00f4);
 	_fillVRAM(0x1b00, 240, 0);
 	clrscr();
+	varLINL40 = originalLINL40;
+	__asm
+		push ix
+		ld  a, (_originalSCRMOD)
+		or  a
+		jr  nz, .screen1
+		ld  ix, #INITXT
+		jr  .bioscall
+	.screen1:
+		ld  ix, #INIT32
+	.bioscall:
+		BIOSCALL
+		ld  ix, #INIFNK
+		BIOSCALL
+		pop ix
+	__endasm;
 	if (kanjiMode) {
 		setKanjiMode(kanjiMode);
-	} else {
-		__asm
-			push ix
-			ld ix, #INITXT
-			BIOSCALL
-			ld ix, #INIFNK
-			BIOSCALL
-			pop ix
-		__endasm;
 	}
 	exit();
 }

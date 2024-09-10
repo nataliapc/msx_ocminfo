@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 
-const VERSION = `Gopher File Server 1.1 (by NataliaPC'2024)`;
+const VERSION = `Gopher File Server 1.2 (by NataliaPC'2024)`;
 const PORT = 7070;
 
 let rootDirectory = process.cwd(); // Default to current working directory
@@ -38,7 +38,7 @@ const server = net.createServer((socket) => {
 			}
 
 			if (stats.isDirectory()) {
-				// It's a directory
+				// It's a folder
 				fs.readdir(requestedPath, (err, files) => {
 					if (err) {
 						console.log(`${getDate()} -> ERROR: Unable to read directory!`);
@@ -50,7 +50,7 @@ const server = net.createServer((socket) => {
 					println(socket, `Folder: ${request=='/'?request:'/'+request+'/'}`);
 					println(socket, '');
 
-					// Sort files, directories go first
+					// Sort files, folders go first
 					const sortedFiles = files.sort((a, b) => {
 						const aPath = path.join(requestedPath, a);
 						const bPath = path.join(requestedPath, b);
@@ -64,7 +64,8 @@ const server = net.createServer((socket) => {
 
 					let descriptionsArray = readDescriptionFile(requestedPath);
 
-					// Send sorted directory list
+					// Send sorted folder list
+					console.log(`${getDate()} <- Send folder (${sortedFiles.length} files)`)
 					sortedFiles.forEach(file => {
 						const filePath = path.join(requestedPath, file);
 						const fileStats = fs.statSync(filePath);
@@ -90,6 +91,7 @@ const server = net.createServer((socket) => {
 						socket.write(line);
 					});
 					socket.end('.');
+					console.log(`${getDate(socket)} -> Done`);
 				});
 			} else {
 				// It's a file
@@ -99,12 +101,13 @@ const server = net.createServer((socket) => {
 						printError(socket, 'Unable to read file!');
 						return;
 					}
+					console.log(`${getDate()} <- Send file`)
 					socket.write(content);
 					socket.end();
+					console.log(`${getDate(socket)} -> Done`);
 				});
 			}
 		});
-		console.log(`${getDate(socket)} -> Done`);
 	});
 });
 
