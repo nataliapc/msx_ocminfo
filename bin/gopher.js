@@ -8,6 +8,7 @@ const VERSION = `Gopher File Server 1.1 (by NataliaPC'2024)`;
 const PORT = 7070;
 
 let rootDirectory = process.cwd(); // Default to current working directory
+let remoteAddress;
 
 if (process.argv[2]) {
 	rootDirectory = path.resolve(process.argv[2]);
@@ -18,8 +19,16 @@ const server = net.createServer((socket) => {
 		const server = getServerIP();
 		const request = data.toString().trim();
 		const requestedPath = path.join(rootDirectory, request);
+		remoteAddress = socket.remoteAddress.replace(/^.*:/, '');
 
-		console.log(`${getDate(socket)} -> ${request}`);
+		console.log(`${getDate(socket)} -> Request: ${request}`);
+
+		// Verify that the requested path is within the root directory to avoid security issues
+		if (!requestedPath.startsWith(rootDirectory)) {
+			console.log(`${getDate()} -> ERROR: Forbidden path: ${requestedPath}`);
+			printError(socket, 'Forbidden path!');
+			return;
+		}
 
 		fs.stat(requestedPath, (err, stats) => {
 			if (err) {
@@ -29,6 +38,7 @@ const server = net.createServer((socket) => {
 			}
 
 			if (stats.isDirectory()) {
+				// It's a directory
 				fs.readdir(requestedPath, (err, files) => {
 					if (err) {
 						console.log(`${getDate()} -> ERROR: Unable to read directory!`);
@@ -52,22 +62,37 @@ const server = net.createServer((socket) => {
 						return a.localeCompare(b);
 					});
 
+					let descriptionsArray = readDescriptionFile(requestedPath);
+
+					// Send sorted directory list
 					sortedFiles.forEach(file => {
 						const filePath = path.join(requestedPath, file);
 						const fileStats = fs.statSync(filePath);
 						const relativePath = path.relative(rootDirectory, filePath);
+
+						// Add description if exists
+						let fileName = file;
+						const description = descriptionsArray[file] ||
+											descriptionsArray[file.toLowerCase()] || 
+											descriptionsArray[file.toUpperCase()] || '';
+						if (description) {
+							fileName = file.padEnd(13) + ' : ' + description;
+						}
+
+						// Send gopher line
 						let line;
 						if (fileStats.isDirectory()) {
-							line = `1<DIR>  ${file}\t${relativePath}\t${server}\t${PORT}\r\n`;
+							line = `1<DIR>  ${fileName}\t${relativePath}\t${server}\t${PORT}\r\n`;
 						} else {
 							const fileSize = getFileSize(fileStats.size);
-							line = `9 ${fileSize}  ${file}\t${relativePath}\t${server}\t${PORT}\r\n`;
+							line = `9 ${fileSize}  ${fileName}\t${relativePath}\t${server}\t${PORT}\r\n`;
 						}
 						socket.write(line);
 					});
 					socket.end('.');
 				});
 			} else {
+				// It's a file
 				fs.readFile(requestedPath, (err, content) => {
 					if (err) {
 						console.log(`${getDate()} -> ERROR: Unable to read file!`);
@@ -79,20 +104,15 @@ const server = net.createServer((socket) => {
 				});
 			}
 		});
+		console.log(`${getDate(socket)} -> Done`);
 	});
-});
-
-server.listen(PORT, () => {
-	console.log(VERSION);
-	console.log(`Running on port ${PORT}`);
-	console.log(`Root directory: ${rootDirectory}`);
 });
 
 function getDate(socket) {
 	let date = new Date();
 	return  `${date.toISOString().slice(0,10)} `+
 			`${date.toTimeString().slice(0,8)}.${date.getMilliseconds().toString().padStart(3, '0')} `+
-			`[${socket.remoteAddress.replace(/^.*:/, '')}]`;
+			`[${remoteAddress}]`;
 }
 
 function sendHeader(socket) {
@@ -129,6 +149,32 @@ function printError(socket, txt) {
 	socket.end('.');
 }
 
+function readDescriptionFile(dirPath) {
+	const descriptionFiles = ['00index.txt', 'descript.ion'];
+	let descriptions = {};
+
+	for (const file of descriptionFiles) {
+		const filePath = path.join(dirPath, file);
+		if (fs.existsSync(filePath)) {
+			try {
+				const content = fs.readFileSync(filePath, 'utf8');
+				const lines = content.split('\n');
+
+				for (const line of lines) {
+					const [fileName, ...descriptionParts] = line.trim().split(/\s+/);
+					if (fileName && descriptionParts.length > 0) {
+						descriptions[fileName] = descriptionParts.join(' ');
+					}
+				}
+				break; // Stop after reading the first found description file
+			} catch (err) {
+				console.error(`Error reading ${file}: ${err.message}`);
+			}
+		}
+	}
+	return descriptions;
+}
+
 function getServerIP() {
 	const os = require('os');
 	const interfaces = os.networkInterfaces();
@@ -147,3 +193,9 @@ function getFileSize(size) {
 	if (size < 1000 * 1000) return `${Math.floor(size / 1000)}K`.padStart(4);
 	return `${Math.floor(size / (1000 * 1000))}M`.padStart(4);
 }
+
+server.listen(PORT, () => {
+	console.log(VERSION);
+	console.log(`Running on port ${PORT}`);
+	console.log(`Root directory: ${rootDirectory}`);
+});
