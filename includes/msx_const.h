@@ -2,7 +2,7 @@
 #####################################################################
 	MSX Constants & structs 
 	by NataliaPC
-	[2024-09-08]
+	[2024-09-10]
 #####################################################################
 */
 #pragma once
@@ -58,6 +58,7 @@ __sfr __at (0x99) IO_VDP2;
 #define CHGCLR	0x062		// Changes the screen colors [Input: Foreground color in FORCLR | Background color in BAKCLR | Border color in BDRCLR]
 #define CLRSPR	0x069		// Initialises all sprites [Changes: All]
 #define INITXT	0x06c		// Switches to SCREEN 0 (text screen with 40×24 characters)
+#define INIT32	0x06f		// Switches to SCREEN 1 (text screen with 32×24 characters)
 #define INIGRP	0x072		// Switches to SCREEN 2 (high resolution screen with 256×192 pixels)
 #define SETGRP	0x07e		// Switches VDP to SCREEN 2 mode
 #define POSIT	0x0c6		// Moves cursor to the specified position [Input: H-Y pos | L-X pos]
@@ -163,6 +164,7 @@ __sfr __at (0x99) IO_VDP2;
 #define JIFFY		0xfc9e	// (WORD) Internal time counter
 #define CSRSW		0xfca9	// (BYTE) Cursor display switch (0:hidden | 1:visible)
 #define CSTYLE		0xfcaa	// (BYTE) Cursor style (0:full cursor | other:halve cursor)
+#define SCRMOD		0xfcaf	// (BYTE) Current BASIC screen mode number
 #define EXPTBL		0xfcc1	// (BYTE) BIOS slot
 #define H_TIMI		0xfd9a	// (WORD) Interrupt Hook
 #define EXTBIO		0xffca	// (...) Extended BIOS call
@@ -176,6 +178,8 @@ __sfr __at (0x99) IO_VDP2;
 
 volatile __at (TPALIM) uint16_t varTPALIMIT;
 volatile __at (CLIKSW) uint8_t  varCLIKSW;
+volatile __at (LINL40) uint8_t  varLINL40;
+volatile __at (SCRMOD) uint8_t  varSCRMOD;
 volatile __at (REPCNT) uint8_t  varREPCNT;
 volatile __at (PUTPNT) uint16_t varPUTPNT;
 volatile __at (GETPNT) uint16_t varGETPNT;
