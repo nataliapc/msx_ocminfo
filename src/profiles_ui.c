@@ -10,6 +10,7 @@
 #include "conio.h"
 #include "heap.h"
 #include "utils.h"
+#include "globals.h"
 #include "types.h"
 #include "ocm_ioports.h"
 #include "profiles_api.h"
@@ -22,7 +23,6 @@
 #define xstr(a) str(a)
 #define str(a) #a
 
-#define MAX_PROFILES	50
 #define MAX_LINES		15
 
 // ========================================================

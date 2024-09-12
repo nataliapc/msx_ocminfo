@@ -9,6 +9,7 @@
 #include "msx_const.h"
 #include "conio.h"
 #include "dos.h"
+#include "globals.h"
 #include "dialogs.h"
 #include "profiles_ui.h"
 #include "heap.h"
@@ -54,10 +55,13 @@ static Panel_t *nextPanel;
 // ========================================================
 // Function declarations
 
+uint16_t commandLine(char **argv, int argc);
 void setByteVRAM(uint16_t vram, uint8_t value) __sdcccall(0);
 void _fillVRAM(uint16_t vram, uint16_t len, uint8_t value) __sdcccall(0);
 void _copyRAMtoVRAM(uint16_t memory, uint16_t vram, uint16_t size) __sdcccall(0);
 
+void abortRoutine();
+void restoreScreen();
 bool sendCommand(Element_t *elem);
 static void drawCurrentPanel();
 static bool drawElement(Element_t *element);
@@ -86,6 +90,9 @@ static void checkPlatformSystem()
 	if (dosVersion() < VER_MSXDOS2x) {
 		die("MSX-DOS 2.x or higher required!");
 	}
+
+	// Set abort exit routine
+	dos2_setAbortRoutine((void*)abortRoutine);
 }
 
 char *play_fail = "\"v12l64o2b\"";
@@ -111,6 +118,12 @@ void beep_fail()
 void beep_error()
 {
 	basic_play(play_error);
+}
+
+void abortRoutine()
+{
+	restoreScreen();
+	dos2_exit(1);
 }
 
 // ========================================================
@@ -507,7 +520,7 @@ inline bool isShiftKeyPressed()
 }
 
 // ========================================================
-void main(void)
+void menu_panels()
 {
 	kanjiMode = (detectKanjiDriver() ? getKanjiMode() : 0);
 	if (kanjiMode) {
@@ -652,7 +665,10 @@ void main(void)
 		varPUTPNT = varGETPNT;
 		varREPCNT = 0;
 	} while (!end);
+}
 
+void restoreScreen()
+{
 	// Clean & restore screen
 	textattr(0x00f4);
 	_fillVRAM(0x1b00, 240, 0);
@@ -663,18 +679,32 @@ void main(void)
 		ld  a, (_originalSCRMOD)
 		or  a
 		jr  nz, .screen1
-		ld  ix, #INITXT
+		ld  ix, #INITXT				; Restore SCREEN 0
 		jr  .bioscall
 	.screen1:
-		ld  ix, #INIT32
+		ld  ix, #INIT32				; Restore SCREEN 1
 	.bioscall:
 		BIOSCALL
-		ld  ix, #INIFNK
+		ld  ix, #INIFNK				; Restore function keys
 		BIOSCALL
 		pop ix
 	__endasm;
+
+	// Restore kanji mode if needed
 	if (kanjiMode) {
 		setKanjiMode(kanjiMode);
 	}
-	exit();
+
+	dos2_setAbortRoutine(0x0000);
+}
+
+// ========================================================
+int main(char **argv, int argc) __sdcccall(0)
+{
+	if (argc != 0) {
+		return commandLine(argv, argc);
+	}
+	menu_panels();
+	restoreScreen();
+	return 0;
 }

@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include "globals.h"
 #include "ocm_ioports.h"
 #include "types.h"
 #include "dialogs.h"
@@ -14,8 +15,6 @@
 
 // ========================================================
 // Defines & externals
-
-#define VERSION		"0.9.5b4"
 
 #define SETSMART_X		34
 #define SETSMART_Y		19
@@ -664,7 +663,7 @@ static const Element_t elemDIPs[] = {
 };
 
 static const Element_t elemHelp[] = {
-	{ LABEL, 3,5,  "     --==[ OCMINFO.COM & CONIO.LIB ]==-- by NataliaPC (@ishwin74) '2024     ",
+	{ LABEL, 3,5,  "    --==[ OCMINFO conio.lib dos.lib ]==--  by "AUTHOR"    ",
 		0, 0, 0, 0, NULL, 0, 0,0, NULL, 0, CMDTYPE_NONE,{ 0x00 }, false, 
 		{ "Thanks to: @KdL, @Ducasp, and @Cayce-msx",
 		  "",

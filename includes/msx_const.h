@@ -2,7 +2,7 @@
 #####################################################################
 	MSX Constants & structs 
 	by NataliaPC
-	[2024-09-10]
+	[2024-09-12]
 #####################################################################
 */
 #pragma once
@@ -179,6 +179,7 @@ __sfr __at (0x99) IO_VDP2;
 volatile __at (TPALIM) uint16_t varTPALIMIT;
 volatile __at (CLIKSW) uint8_t  varCLIKSW;
 volatile __at (LINL40) uint8_t  varLINL40;
+volatile __at (CRTCNT) uint8_t  varCRTCNT;
 volatile __at (SCRMOD) uint8_t  varSCRMOD;
 volatile __at (REPCNT) uint8_t  varREPCNT;
 volatile __at (PUTPNT) uint16_t varPUTPNT;

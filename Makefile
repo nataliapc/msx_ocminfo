@@ -50,15 +50,16 @@ FULLOPT :=  --max-allocs-per-node 2000000
 LDFLAGS = -rc
 OPFLAGS = --std-sdcc2x --less-pedantic --opt-code-size -pragma-define:CRT_ENABLE_STDIO=0
 WRFLAGS = --disable-warning 196 --disable-warning 84
-CCFLAGS = --code-loc 0x0108 --data-loc 0 -mz80 --no-std-crt0 --out-fmt-ihx $(OPFLAGS) $(WRFLAGS) $(DEFINES) $(DEBUG)
+CCFLAGS = --code-loc 0x0180 --data-loc 0 -mz80 --no-std-crt0 --out-fmt-ihx $(OPFLAGS) $(WRFLAGS) $(DEFINES) $(DEBUG)
 
 
 LIBS = conio.lib dos.lib utils.lib
 REL_LIBS = $(addprefix $(OBJDIR)/, \
-				crt0msx_msxdos.rel \
+				crt0msx_msxdos_advanced.rel \
 				heap.rel \
 				ocm_ioports.rel \
 				dialogs.rel \
+				command_line.rel \
 				profiles_api.rel \
 				profiles_ui.rel \
 			) \
