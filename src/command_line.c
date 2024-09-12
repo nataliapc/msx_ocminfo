@@ -75,7 +75,10 @@ void doApplyProfile(uint8_t idx)
 			}
 			while (*cmd) {
 				ocm_sendSmartCmd(*cmd);
-				if (verbose) cprintf("%c%x", *cmd<16?'0':'\0', *cmd);
+				if (verbose) {
+					if (*cmd < 16) putch('0');
+					cprintf("%x", *cmd);
+				}
 				cmd++;
 			}
 		} else {

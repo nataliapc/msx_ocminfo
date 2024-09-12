@@ -251,9 +251,7 @@ static bool changeCurrentValue(int8_t increase)
 		
 		if (sendCommand(currentElement)) {
 			// Display setsmart text
-			char digit0[] = "0";
-			if (lastCmdSent >= 16) *digit0 = '\0';
-			csprintf(heap_top, "setsmart -%s%x", digit0, lastCmdSent);
+			csprintf(heap_top, "setsmart -%x%x", lastCmdSent/16, lastCmdSent%16);
 			putlinexy(SETSMART_X,SETSMART_Y, SETSMART_SIZE, heap_top);
 			isVisibleSetSmartText = true;
 		}
@@ -300,7 +298,8 @@ bool sendCommand(Element_t *elem)
 	lastCmdSent = cmd;
 	// Send Command
 	ocm_sendSmartCmd(cmd);
-	return false;
+	
+	return true;
 }
 
 void getPanelsCmds(uint8_t *cmd)
