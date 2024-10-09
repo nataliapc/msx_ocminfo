@@ -11,8 +11,6 @@ void basic_play(void *params) __naked __sdcccall(1)
 
 		ld   hl, #.play_call						; Copy routine to _heap_top
 		ld   de, (_heap_top)						; _heap_top must be >= 0x8000
-		push de
-		pop  ix
 		ld   bc, #.play_call_end - .play_call
 		ldir
 
@@ -21,6 +19,7 @@ void basic_play(void *params) __naked __sdcccall(1)
 		ld   bc, #80								; Max length of PLAY sentence
 		ldir
 
+		ld   ix, (_heap_top)
 		jp   (ix)
 
 	.play_call:

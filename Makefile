@@ -41,7 +41,7 @@ EMUEXT1 = $(EMUEXT) -ext Mitsubishi_ML-30DC_ML-30FD
 EMUEXT2 = $(EMUEXT)
 EMUEXT2P = $(EMUEXT)
 # -ext msxdos2
-EMUSCRIPTS = -script ./emulation/boot.tcl
+EMUSCRIPTS = -script ./emulation/ocm_ioports.tcl -script ./emulation/boot.tcl
 
 
 DEFINES := -D_DOSLIB_

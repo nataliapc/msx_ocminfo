@@ -18,7 +18,8 @@
 
 	;--- Initialize globals and jump to "main"
 
-init:   call gsinit
+init:
+	call gsinit
 	jp   __pre_main
 
 	;--- Program code and data (global vars) start here
@@ -39,7 +40,7 @@ __pre_main:
 _heap_top::
 	.dw 0
 
-        .area   _GSINIT
+	.area   _GSINIT
 gsinit::
         ld	bc,#l__INITIALIZER
         ld	a,b

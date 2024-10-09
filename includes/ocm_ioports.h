@@ -121,7 +121,7 @@ typedef union {							// [OCM] Get System Info #0     (read only)
 		unsigned turboMegaSD: 1;		// bit 3   Turbo MegaSD (tMSD)             | Status
 		unsigned turboPanaRedirec: 1;	// bit 4   Turbo Pana Redirection (tPR)    | Status
 		unsigned vdpSpeed: 1;			// bit 5   VDP Speed Mode                  | 0=Normal, 1=Fast
-		unsigned mapperSizeReq: 1;		// bit 6   Mapper Size Req                 | 0=2048kB, 1=4096kB
+		unsigned mapperSizeReq: 1;		// bit 6   Mapper Size Req                 | 0=2048KB, 1=4096KB
 		unsigned megaSDmodeReq: 1;		// bit 7   MegaSD Mode Req                 | Status
 	};
 	uint8_t raw;
@@ -171,9 +171,9 @@ typedef union {							// [OCM] Get System Info #4     (read only) [if port 0x44 
 		unsigned scanlinesLvl: 2;		// bit 0-1 VGA Scanlines Level (SM-X/SX-2) | 0=0%, 1=25%, 2=50%, 3=75%
 		unsigned intPSG2: 1;			// bit 2   Internal PSG2       (SM-X/SX-2) | Status
 		unsigned sdramSize: 2;			// bit 3   SDRAM Size                      | 
-										//            0=8Mb, 1=16Mb, 2=32Mb, 3=Use sdramSizeAux
+										//            0=8MB, 1=16MB, 2=32MB, 3=Use sdramSizeAux
 		unsigned ocmBiosReloadReq: 1;	// bit 5   OCM-BIOS Reloading Req          | Status
-		unsigned extraMapperReq: 1;		// bit 6   Extra-Mapper 4096 KB Req        | Status
+		unsigned extraMapperReq: 1;		// bit 6   Extra-Mapper 4096KB Req         | Status
 		unsigned slot0ModeReq: 1;		// bit 7   Slot-0 Mode Req                 | 0=Primaty, 1=Expanded
 	};
 	struct {
@@ -185,9 +185,9 @@ typedef union {							// [OCM] Get System Info #4     (read only) [if port 0x44 
 typedef union {							// [OCM] Get System Info #4(b)  (read only) [if port 0x44 == 1]
 	struct {
 		unsigned extMegaRomReading: 1;	// bit 0   Extended MegaROM Reading        | Status
-		unsigned sdramSizeAux: 3;		// bit 1-3 SDRAM Size > 32Mb               |
-										//            0=64Mb, 1=128Mb, 2=192Mb, 3=256Mb, 4=320Mb,
-										//            5=384Mb, 6=448Mb, 7=512Mb
+		unsigned sdramSizeAux: 3;		// bit 1-3 SDRAM Size > 32MB               |
+										//            0=64MB, 1=128MB, 2=192MB, 3=256MB, 4=320MB,
+										//            5=384MB, 6=448MB, 7=512MB
 		unsigned verticalOffset: 4;		// bit 4-7 Vertical screen offset          | [4-12] -> [16-24]
 	};
 	struct {
@@ -383,8 +383,8 @@ typedef enum {
 #define OCM_SMART_IntPSG2OFF	0x54	// Set Internal PSG2 OFF (default) (only for SM-X / SX-2)
 #define OCM_SMART_IntPSG2ON		0x55	// Set Internal PSG2 ON (this second PSG acts as an external PSG) (only for SM-X / SX-2)
 
-#define OCM_SMART_Mapper4MbOFF	0x56	// Set Extra-Mapper 4096 KB OFF (default)
-#define OCM_SMART_Mapper4MbON	0x57	// Set Extra-Mapper 4096 KB ON (only available if SDRAM > 8 MB)
+#define OCM_SMART_Mapper4MbOFF	0x56	// Set Extra-Mapper 4096KB OFF (default)
+#define OCM_SMART_Mapper4MbON	0x57	// Set Extra-Mapper 4096KB ON (only available if SDRAM > 8MB)
 /*
 0x58	// Set Extended MegaROM Reading OFF (default for compatibility)
 0x59	// Set Extended MegaROM Reading ON (ASCII-8K/16K max size playable)
@@ -462,11 +462,11 @@ typedef enum {
 */
 #define OCM_SMART_ColdReset		0xfb	// Cold Reset
 /*
-0xfc	// Warm Reset w/ Mapper 2048 KB (RAM size 6144 KB if Extra-Mapper is ON)
+0xfc	// Warm Reset w/ Mapper 2048KB (RAM size 6144KB if Extra-Mapper is ON)
 */
 #define OCM_SMART_WarmReset		0xfd	// Warm Reset
 /*
-0xfe	// Warm Reset w/ Mapper 4096 KB (RAM size 8192 KB if Extra-Mapper is ON)
+0xfe	// Warm Reset w/ Mapper 4096KB (RAM size 8192KB if Extra-Mapper is ON)
 0xff	// Restore All Default + Reserve Default Mapper & MegaSD
 */
 

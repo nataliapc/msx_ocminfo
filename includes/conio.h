@@ -74,7 +74,9 @@ typedef struct {
 	uint8_t curx;			// [11] X coordinate of the current window
 	uint8_t cury;			// [12] Y coordinate of the current window
 	//Only MSX
-	uint16_t vramCharMap;	// [13] Address at VRAM for chars(tiles) map
+	bool     vramBlink;		// [13] True for text blink enabled
+	uint16_t vramCharMap;	// [14] Address at VRAM for chars(tiles) map
+	uint16_t vramCharPat;	// [16] Address at VRAM for chars(tiles) patterns
 } text_info;
 
 /**
@@ -239,6 +241,11 @@ void textbackground(uint8_t color) __z88dk_fastcall;
  * Enables or disables text blinking in a given region.
  */
 void textblink(uint8_t x, uint8_t y, uint16_t length, bool enabled);
+
+/**
+ * This function clears fullscreen text blinking.
+ */
+void clrblink();
 
 /**
  * textattr

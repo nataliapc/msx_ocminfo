@@ -163,7 +163,7 @@ static void printHeader()
 
 	textblink(1,1, 80, true);
 
-	csprintf(heap_top, "Model: %s     SDRAM: %sMb     PLD v%u.%u.%u     I/O rev.%u",
+	csprintf(heap_top, "Model: %s     SDRAM: %sMB     PLD v%u.%u.%u     I/O rev.%u",
 		machineTypeStr[sysInfo2.machineTypeId], 
 		sdram, 
 		pldVers0.pldVersion / 10, 

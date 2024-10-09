@@ -126,7 +126,7 @@ static const char *dipSlot2Str[4] = {
 	"External", "Int.SCC+", "Int.A8K ", "Int.A16K"		// for Raw value
 };
 static const char *dipMapperStr[2] = {
-	"2048Kb", "4096Kb"
+	"2048KB", "4096KB"
 };
 
 
@@ -551,8 +551,8 @@ static const Element_t elemDIPs[] = {
 /*REV*/	/*{ OCM_SMART_Mapper4MbOFF, OCM_SMART_Mapper4MbON },
 		ATR_FORCEPANELRELOAD | ATR_NEEDRESETTOAPPLY,*/ {0x00}, false,
 		{ "Virtual DIP-Switch #7: RAM Mapper",
-		  "OFF: Internal 2048Kb RAM / 1st EPBIOS",
-		  "ON:  Internal 4096Kb RAM / Optional 2nd EPBIOS", (char*)NULL },
+		  "OFF: Internal 2048KB RAM / 1st EPBIOS",
+		  "ON:  Internal 4096KB RAM / Optional 2nd EPBIOS", (char*)NULL },
 		IOREV_ALL, M_ALL
 	},
 	// 6
@@ -640,8 +640,8 @@ static const Element_t elemDIPs[] = {
 		{ 0x00 },
 		false,
 		{ "Hardware DIP-Switch #7: RAM Mapper",
-		  "OFF: Internal 2048Kb RAM / 1st EPBIOS",
-		  "ON:  Internal 4096Kb RAM / Optional 2nd EPBIOS", (char*)NULL },
+		  "OFF: Internal 2048KB RAM / 1st EPBIOS",
+		  "ON:  Internal 4096KB RAM / Optional 2nd EPBIOS", (char*)NULL },
 		IOREV_ALL, M_ALL
 	},
 	// 13
