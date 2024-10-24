@@ -20,6 +20,7 @@ typedef enum {
 	M_SX2             = 0x0008,				// Device 3 (1<<3)
 	M_SMXMIN_SMXHB_ID = 0x0010,				// Device 4 (1<<4)
 	M_DE0CV_ID        = 0x0020,				// Device 5 (1<<5)
+	M_SXE             = 0x0040,				// Device 6 (1<<6)
 	M_ALL             = 0xffff				// All devices supported
 } MachineMask_t;
 
@@ -36,6 +37,7 @@ typedef enum {
 	IOREV_9,								// OCM-PLD Pack v3.7
 	IOREV_10,								// OCM-PLD Pack v3.9
 	IOREV_11,								// OCM-PLD Pack v3.9.1
+	IOREV_12,								// OCM-PLD Pack v3.9.2
 	IOREV_NA = 0xff							// Not/Available
 } IOrev_t;
 

@@ -136,7 +136,7 @@ cont:
 	ld      c,#0x62			;DOS 2 function for program termination (_TERM)
 	ld      b,l
 	call    5				;On DOS 2 this terminates; on DOS 1 this returns...
-	ld      c,#0x0
+	ld      c,#0x00
 	jp      5				;...and then this one terminates
 							;(DOS 1 function for program termination).
 

@@ -48,6 +48,12 @@ namespace eval ocm_ioports {
 		79	0b11001100
 	}
 
+	# SX-E
+	set ioports_array(73) 0b01011000
+	set ioports_array(0)  0b00011000
+	set ioports_array(1)  0b01100000
+ 
+
 	variable cmd
 	array set cmd {
 		0	{ 0 0 0 }
@@ -75,6 +81,15 @@ namespace eval ocm_ioports {
 		64	{ 73 0b00000010 0b00000010 66 0b00000001 0b00000000 71 0b00000111 0b00000000 72 0b00000001 0b00000000 }
 		65	{ 66 0b00000001 0b00000000 72 0b00000001 0b00000001 }
 		66	{ 74 0b00000001 0b00000000 } 67	{ 74 0b00000001 0b00000001 }
+		71	{  1 0b11110000 0b01000000 }
+		72	{  1 0b11110000 0b01010000 }
+		73	{  1 0b11110000 0b01100000 }
+		74	{  1 0b11110000 0b01110000 }
+		75	{  1 0b11110000 0b10000000 }
+		76	{  1 0b11110000 0b10010000 }
+		77	{  1 0b11110000 0b10100000 }
+		78	{  1 0b11110000 0b10110000 }
+		79	{  1 0b11110000 0b11000000 }
 		80	{  0 0b00000011 0b00000000 } 81	{  0 0b00000011 0b00000001 }
 		82	{  0 0b00000011 0b00000010 } 83	{  0 0b00000011 0b00000011 }
 		84	{  0 0b00000100 0b00000000 } 85	{  0 0b00000100 0b00000100 }
@@ -121,6 +136,7 @@ namespace eval ocm_ioports {
 
 	proc trigger_id_write {} {
 		set ocm_ioports::ioext_id $::wp_last_value
+		ocm_info_update
 	}
 
 	proc trigger_id_read {} {
@@ -141,6 +157,7 @@ namespace eval ocm_ioports {
 			set new_value [expr {$current_value | ($value & $mask)}]
 			set ocm_ioports::ioports_array($port_num) $new_value
 		}
+		ocm_info_update
 	}
 
 	proc trigger_read {} {
@@ -156,6 +173,7 @@ namespace eval ocm_ioports {
 	proc trigger_write44 {} {
 		set in_value [expr {255 - $::wp_last_value}]
 		set ocm_ioports::port4b_id $in_value
+		ocm_info_update
 	}
 
 	proc trigger_read4b {} {
@@ -167,9 +185,153 @@ namespace eval ocm_ioports {
 	namespace export ocm_ioports_start
 	namespace export ocm_ioports_stop
 
+
+	################################################################## Panel
+
+	variable info_active false
+	variable textheight 20
+	variable panel_margin 1
+	variable sub_panel_width 300
+	variable sub_panel_height [expr {$textheight + 4}]
+	variable panel_info
+
+	array set flaglabels {
+		64 "40h DeviceID"
+		66 "42h VirtualDIP"
+		67 "43h LockToggles"
+		68 "44h LedLights"
+		69 "45h AudioVol0"
+		70 "46h AudioVol1"
+		71 "47h SysInfo0"
+		72 "48h SysInfo1"
+		73 "49h SysInfo2"
+		74 "4Ah SysInfo3"
+		0  "4Bh#0 SysInfo4#0"
+		1  "4Bh#1 SysInfo4#1"
+		76 "4Ch SysInfo5"
+		78 "4Eh Version0"
+		79 "4Fh Version1"
+	}
+
+	proc ocm_info_init {} {
+		variable flaglabels
+		variable info_active
+		variable textheight
+		variable panel_margin
+		variable sub_panel_width
+		variable sub_panel_height
+		variable panel_info
+
+		set panel_info [dict create \
+			flags [dict create \
+				title "  === OCM # I/O Ports ===" width 800 row 0 color 0x00000000 \
+				num "" ] \
+		]
+
+		set row 1
+		foreach port {64 66 67 68 69 70 71 72 73 74 0 1 76 78 79} {
+			set label $flaglabels($port)
+			set col 0x000000ff
+			dict append panel_info \
+				$label [dict create \
+					title "$label" \
+					num $port \
+					width $sub_panel_width \
+					row $row \
+					color $col ]
+			set row [expr { $row + 1 }]
+		}
+
+		# calc width of software item
+		set full_width 0
+		dict for {name info} $panel_info {
+			if {[dict get $info row] == 1} {
+				incr full_width [dict get $info width]
+				incr full_width $panel_margin
+			}
+		}
+		incr full_width -$panel_margin
+		dict set panel_info flags width $full_width
+
+		# set base element
+		osd create rectangle info \
+			-x [expr {$panel_margin * 2}] \
+			-y [expr {$panel_margin * 2}] \
+			-alpha 0
+
+		# create subpanels
+		dict for {name info} $panel_info {
+			set row [dict get $info row]
+			create_sub_panel $name \
+							[dict get $info title] \
+							[dict get $info num ] \
+							[dict get $info color] \
+							[dict get $info width] \
+							[dict get $info row]
+		}
+	}
+
+	proc create_sub_panel {name title num col width row} {
+		variable textheight
+		variable panel_margin
+		variable sub_panel_height
+
+		set value ""
+		if {$num!=""} { set value "N/A" }
+
+		osd create rectangle info.$name \
+			-x $panel_margin \
+			-y [expr {($sub_panel_height + $panel_margin) * $row}] \
+			-h $sub_panel_height \
+			-w $width \
+			-rgba $col \
+			-clip true
+		osd create text info.$name.title \
+			-x 2 \
+			-y 2 \
+			-rgba 0xddddffff \
+			-text $title \
+			-size [expr {int($textheight * 0.8)}]
+		osd create text info.$name.value \
+			-x [expr {$width - 100} ] \
+			-y 2 \
+			-rgba 0xffff00ff \
+			-text $value \
+			-size [expr {int($textheight * 0.8)}]
+	}
+
+	proc get_flag {num} {
+		return [format %08b $ocm_ioports::ioports_array($num)]
+	}
+
+	proc ocm_info_update {} {
+		variable info_active
+		variable panel_info
+
+		dict for {name info} $panel_info {
+			set num [dict get $info num]
+			if {$num!=""} {
+				if {$num==64} {
+					set value $ocm_ioports::ioext_id
+				} else {
+					set value [get_flag $num]
+				}
+				osd configure info.$name.value -text $value
+			}
+		}
+		return false
+	}
+
+
+	namespace export ocm_info_init
+	namespace export ocm_info_update
+
+
 } ; #namespace
 
 namespace import ocm_ioports::*
 
 
 ocm_ioports_start
+ocm_info_init
+ocm_info_update

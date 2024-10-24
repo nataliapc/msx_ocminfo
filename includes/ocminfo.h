@@ -58,7 +58,7 @@ static const char *ocminfoVersionStr = "\x13 ocminfo v"VERSION" \x14";
 
 static const char *machineTypeStr[16] = {
 	"1ChipMSX", "Zemmix Neo/SX-1", "SM-X/MCP2", "SX-2", "SM-X Mini/SM-X HB", 
-	"DE0CV", "??", "??", "??", "??", "??", "??", "??", "??", "??", "Unknown"
+	"DE0CV", "SX-E", "??", "??", "??", "??", "??", "??", "??", "??", "Unknown"
 };
 static const char *sdramSizeStr[4] = {
 	"8", "16", "32", "--"
@@ -313,7 +313,7 @@ static const Element_t elemVideo[] = {
 		{ "Changes the vertical offset.",
 		  "Default is 19; value 16 is useful for Ark-A-Noah; value 24 is useful",
 		  "for Space Manbow.", (char*)NULL },
-		IOREV_ALL, M_ALL
+		IOREV_12, M_ALL
 	},
 	// 4
 	{
@@ -338,7 +338,7 @@ static const Element_t elemVideo[] = {
 		{ OCM_SMART_Scanlines00, OCM_SMART_Scanlines25, OCM_SMART_Scanlines50, OCM_SMART_Scanlines75 },
 		ATR_SAVEINPROFILE,
 		{ "Visualization of scanlines for VGA/VGA+ (mainly for 2nd Gen machines).", (char*)NULL },
-		IOREV_ALL, M_SX2|M_SMX_MCP2_ID
+		IOREV_ALL, M_SX2|M_SMX_MCP2_ID|M_SXE
 	},
 	// END
 	{ END }
@@ -427,7 +427,7 @@ static const Element_t elemAudio[] = {
 		ATR_SAVEINPROFILE,
 		{ "Enable/disable an additional internal PSG (acting as an external PSG).",
 		  "Default is OFF.", (char*)NULL },
-		IOREV_11, M_SX2|M_SMX_MCP2_ID
+		IOREV_11, M_SX2|M_SMX_MCP2_ID|M_SXE
 	},
 	// 6
 	{
@@ -440,7 +440,7 @@ static const Element_t elemAudio[] = {
 		ATR_SAVEINPROFILE,
 		{ "Enable/disable the OPL3 sound chipset.",
 		  "Default is OFF.", (char*)NULL },
-		IOREV_10, M_SX2|M_SMX_MCP2_ID
+		IOREV_10, M_SX2|M_SMX_MCP2_ID|M_SXE
 	},
 	// 7
 	{

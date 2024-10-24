@@ -151,13 +151,13 @@ static void getOcmData()
 	customVideoModeValue = (sysInfo2.videoType ? 1 : (sysInfo2.videoForcedMode ? 0 : 2));
 	customVideoOutputValue = customVideoOutputMap[virtualDIPs.videoOutput_raw];
 	customSlots12Value = customSlots12Map[virtualDIPs.raw >> 3 & 0b111 ];
-	if (sysInfo4_1.raw & 0xf0 != 0xf0) customVerticalOffsetValue = sysInfo4_1.verticalOffset - 4;
+	customVerticalOffsetValue = sysInfo4_1.verticalOffset - 4;
 }
 
 // ========================================================
 static void printHeader()
 {
-	char *sdram = sysInfo4_0.sdramSize != 3 || sysInfo4_1.errorFlag ? 
+	char *sdram = sysInfo4_0.sdramSize != 3 ? 
 		sdramSizeStr[sysInfo4_0.sdramSize] : 
 		sdramSizeAuxStr[sysInfo4_1.sdramSizeAux];
 
