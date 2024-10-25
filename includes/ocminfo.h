@@ -503,7 +503,7 @@ static const Element_t elemDIPs[] = {
 		{ OCM_SMART_Disp15KhSvid, OCM_SMART_Disp15KhRGB, OCM_SMART_Disp31KhVGA, OCM_SMART_Disp31KhVGAp },
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		{ "Virtual DIP-Switch #2-#3: Video Output",
-		  "OFF/OFF: Composite/S-Video w/mono audio     OFF/ON: RGB 15khz",
+		  "OFF/OFF: Composite/S-Video w/mono audio     OFF/ON: RGB 15KHz",
 		  "ON/OFF:  VGA Mode w/Pixel 1:1               ON/ON:  VGA+ Mode for CRT", (char*)NULL },
 		IOREV_ALL, M_ALL
 	},
@@ -572,7 +572,7 @@ static const Element_t elemDIPs[] = {
 	// 7
 	{
 		LABEL, 
-		44,5, "\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x13 HW DIPs \x14\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17"
+		44,5, "\x17\x17\x17\x17\x17\x17\x17\x17\x13 Hardware DIPs \x14\x17\x17\x17\x17\x17\x17\x17\x17\x17"
 	},
 	// 8
 	{
@@ -598,7 +598,7 @@ static const Element_t elemDIPs[] = {
 		{ 0x00 },
 		false,
 		{ "Hardware DIP-Switch #2-#3: Video Output",
-		  "OFF/OFF: Composite/S-Video w/mono audio     OFF/ON: RGB 15khz",
+		  "OFF/OFF: Composite/S-Video w/mono audio     OFF/ON: RGB 15KHz",
 		  "ON/OFF:  VGA Mode w/Pixel 1:1               ON/ON:  VGA+ Mode for CRT", (char*)NULL },
 		IOREV_ALL, M_ALL
 	},

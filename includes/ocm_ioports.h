@@ -309,8 +309,8 @@ typedef enum {
 
 #define OCM_SMART_Disp15KhSvid	0x17	// Set Display Mode 15KHz Composite/S-Video
 #define OCM_SMART_Disp15KhRGB	0x18	// Set Display Mode 15KHz RGB w/ Audio Out
-#define OCM_SMART_Disp31KhVGA	0x19	// Set Display Mode 31Khz VGA for LED TV or LED Display (also HDMI AV on SM-X)
-#define OCM_SMART_Disp31KhVGAp	0x1a	// Set Display Mode 31Khz VGA+ for CRT Monitor (legacy output) (also HDMI AV on SM-X)
+#define OCM_SMART_Disp31KhVGA	0x19	// Set Display Mode 31KHz VGA for LED TV or LED Display (also HDMI AV on SM-X)
+#define OCM_SMART_Disp31KhVGAp	0x1a	// Set Display Mode 31KHz VGA+ for CRT Monitor (legacy output) (also HDMI AV on SM-X)
 
 #define OCM_SMART_VDPNormal		0x1b	// Set VDP Speed Normal Mode (default)
 #define OCM_SMART_VDPFast		0x1c	// Set VDP Speed Fast Mode (V9958 only)
