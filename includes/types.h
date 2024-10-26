@@ -13,15 +13,17 @@
 // Structs & Enums
 
 typedef enum {
-	M_NONE            = 0x0000,				// None machine supported
-	M_OCM_ID          = 0x0001,				// Device 0 (1<<0)
-	M_ZEMNEO_SX1_ID   = 0x0002,				// Device 1 (1<<1)
-	M_SMX_MCP2_ID     = 0x0004,				// Device 2 (1<<2)
-	M_SX2             = 0x0008,				// Device 3 (1<<3)
-	M_SMXMIN_SMXHB_ID = 0x0010,				// Device 4 (1<<4)
-	M_DE0CV_ID        = 0x0020,				// Device 5 (1<<5)
-	M_SXE             = 0x0040,				// Device 6 (1<<6)
-	M_ALL             = 0xffff				// All devices supported
+	M_NONE         = 0b0000000000000000,	// None machine supported
+	M_OCM          = 0b0000000000000001,	// Device 0 (1<<0)
+	M_ZEMNEO_SX1   = 0b0000000000000010,	// Device 1 (1<<1)
+	M_SMX_MCP2     = 0b0000000000000100,	// Device 2 (1<<2)
+	M_SX2          = 0b0000000000001000,	// Device 3 (1<<3)
+	M_SMXMIN_SMXHB = 0b0000000000010000,	// Device 4 (1<<4)
+	M_DE0CV        = 0b0000000000100000,	// Device 5 (1<<5)
+	M_SXE          = 0b0000000001000000,	// Device 6 (1<<6)
+	M_ALL          = 0b1111111111111111,	// All devices supported
+	M_FIRST_GEN    = 0b0000000000000011,
+	M_SECOND_GEN   = 0b1111111111111100
 } MachineMask_t;
 
 typedef enum {
@@ -61,7 +63,7 @@ enum {										// Masks for Element_t.attribs.raw
 	ATR_FORCEPANELRELOAD = 1,
 	ATR_NEEDRESETTOAPPLY = 2,
 	ATR_SAVEINPROFILE    = 4,
-	ATR_UNUSED5          = 8,
+	ATR_USELASTSTRFORNA  = 8,
 	ATR_UNUSED4          = 16,
 	ATR_UNUSED3          = 32,
 	ATR_UNUSED2          = 64,
@@ -87,7 +89,8 @@ typedef struct {
 			unsigned forcePanelReload: 1;	// Force panel reload when value changes
 			unsigned needResetToApply: 1;	// Need a Cold/Warm reset to apply
 			unsigned saveToProfile:1;		// Elegible to be saved to profile
-			unsigned reserved: 5;			// Not used flags [reserved]
+			unsigned useLastStrForNA:1;		// Use last valueStr for N/A
+			unsigned reserved: 4;			// Not used flags [reserved]
 		};
 	};
 	char *description[4];					// Description lines

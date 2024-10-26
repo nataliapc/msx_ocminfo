@@ -29,6 +29,8 @@
 // Variables
 
 extern char *emptyArea;
+extern bool muteSound;
+
 
 static uint8_t *itemsCount;
 static uint8_t editPanelIdx;
@@ -508,6 +510,10 @@ void profiles_menu(Panel_t *panel)
 				showDialog(&dlg_profileApplied);
 				redrawSelection++;
 			}
+		} else
+		if (key == 'm' || key == 'M') {				// Mute/unmute menu sounds
+			muteSound = !muteSound;
+			beep_ok();
 		} else
 		if (key == 'h' || key == 'H') {				// Show help dialog
 			showDialog(&dlg_help);

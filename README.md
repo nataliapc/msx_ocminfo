@@ -19,12 +19,28 @@ Use the function keys (_F1-F5_) or _TAB_ to navigate the different panels, and t
 
 To modify an item, you can press _SPACE_, _ENTER_, or _'+'_ to increase its value or _'-'_ to decrease it.
 
-If you want to suggest improvements, feel free to create an issue here.
+To mute/unmute the program sounds press _'M'_.
+
+Press _'P'_ to get access to the Profiles panel, where you can create user profiles with different settings.
+
+You can also using **OCMINFO** like command line program with parameters:
+
+	Usage: OCMINFO [/n|/L] [/Q] [/?]
+	
+	Use without parameters to open the configuration panels.
+	
+	Options:
+	  /n    Apply the user profile number 'n'.
+	  /L    List the user profiles.
+	  /Q    Quiet mode (no verbose).
+	  /?    Show this help.
+
+If you want to suggest improvements, feel free to create a github issue.
 
 ----
 
 ### Thanks
 
-Thanks to [@KdL](https://github.com/gnogni) and [@ducasp](https://github.com/ducasp) for their core developments and support, and to [@cayce-msx](https://github.com/cayce-msx) for his [Wiki](https://github.com/cayce-msx/msxpp-quick-ref/wiki).
+Thanks to [@KdL](https://github.com/gnogni), [@ducasp](https://github.com/ducasp) and [@HRA!](https://github.com/hra1129) for their core developments and support, and to [@cayce-msx](https://github.com/cayce-msx) for his [Wiki](https://github.com/cayce-msx/msxpp-quick-ref/wiki).
 
 

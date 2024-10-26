@@ -327,9 +327,9 @@ typedef enum {
 #define OCM_SMART_AudioPreset1	0x24	// Internal Audio Preset #1 "Mute Sound"
 #define OCM_SMART_AudioPreset2	0x25	// Internal Audio Preset #2 "Middle Sound"
 #define OCM_SMART_AudioPreset3	0x26	// Internal Audio Preset #3 "High Sound" (default)
+#define OCM_SMART_CMTOFF		0x27	// Set CMT OFF (default) (disabled w/ MSXtR BIOS) (n/a on SM-X / SX-2)
+#define OCM_SMART_CMTON			0x28	// Set CMT ON (needs a cassette recorder) (disabled w/ MSXtR BIOS) (n/a on SM-X / SX-2)
 /*
-0x27	// Set CMT OFF (default) (disabled w/ MSXtR BIOS) (n/a on SM-X / SX-2)
-0x28	// Set CMT ON (needs a cassette recorder) (disabled w/ MSXtR BIOS) (n/a on SM-X / SX-2)
 0x29	// Lock Turbo Toggles
 0x2a	// Unlock Turbo Toggles
 0x2b	// Lock Display Toggles

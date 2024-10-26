@@ -69,6 +69,9 @@ static const char *sdramSizeAuxStr[8] = {
 static const char *onOffStr[2] = {
 	"OFF", "ON "
 };
+static const char *cmtOnOffStr[3] = {
+	"OFF", "ON ", "ON "
+};
 static const char *numbersStr[8] = {
 	"0", "1", "2", "3", "4", "5", "6", "7"
 };
@@ -338,7 +341,7 @@ static const Element_t elemVideo[] = {
 		{ OCM_SMART_Scanlines00, OCM_SMART_Scanlines25, OCM_SMART_Scanlines50, OCM_SMART_Scanlines75 },
 		ATR_SAVEINPROFILE,
 		{ "Visualization of scanlines for VGA/VGA+ (mainly for 2nd Gen machines).", (char*)NULL },
-		IOREV_ALL, M_SX2|M_SMX_MCP2_ID|M_SXE
+		IOREV_ALL, M_SECOND_GEN
 	},
 	// END
 	{ END }
@@ -349,7 +352,7 @@ static const Element_t elemAudio[] = {
 	{
 		VALUE,
 		3,6, " Audio presets ",
-		6, 1, 7, 7,
+		7, 1, 8, 8,
 		&customAudioPresetValue, 0b00000111, 0,6, audioPresetStr, 18,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_NullCommand, OCM_SMART_AudioPreset1, OCM_SMART_AudioPreset2, OCM_SMART_AudioPreset3,
@@ -364,7 +367,7 @@ static const Element_t elemAudio[] = {
 	{
 		CUSTOM_VOLUME_SLIDER,
 		3,8, " Master volume ",
-		-1, 1, 7, 7,
+		-1, 1, 8, 8,
 		&(audioVols0.raw), 0b01110000, 0,7, numbersStr, 18,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_MasterVol0, OCM_SMART_MasterVol1, OCM_SMART_MasterVol2, OCM_SMART_MasterVol3,
@@ -378,7 +381,7 @@ static const Element_t elemAudio[] = {
 	{
 		CUSTOM_VOLUME_SLIDER,
 		3,9, " PSG volume ",
-		-1, 1, 6, 6,
+		-1, 1, 7, 7,
 		&(audioVols0.raw), 0b00000111, 0,7, numbersStr, 18,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_PSGVol0, OCM_SMART_PSGVol1, OCM_SMART_PSGVol2, OCM_SMART_PSGVol3,
@@ -392,7 +395,7 @@ static const Element_t elemAudio[] = {
 	{
 		CUSTOM_VOLUME_SLIDER,
 		3,10, " SCC+ volume ",
-		-1, 1, 5, 5,
+		-1, 1, 6, 6,
 		&(audioVols1.raw), 0b01110000, 0,7, numbersStr, 18,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_SCCIVol0, OCM_SMART_SCCIVol1, OCM_SMART_SCCIVol2, OCM_SMART_SCCIVol3,
@@ -406,7 +409,7 @@ static const Element_t elemAudio[] = {
 	{
 		CUSTOM_VOLUME_SLIDER,
 		3,11, " OPLL volume ",
-		-1, 1, 4, 4,
+		-1, 1, 5, 5,
 		&(audioVols1.raw), 0b00000111, 0,7, numbersStr, 18,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_OPLLVol0, OCM_SMART_OPLLVol1, OCM_SMART_OPLLVol2, OCM_SMART_OPLLVol3, 
@@ -420,33 +423,47 @@ static const Element_t elemAudio[] = {
 	{
 		SLIDER,
 		3,13, " PSG2 ",
-		-1, 1, 3, 3,
+		-1, 1, 4, 4,
 		&(sysInfo4_0.raw), 0b00000100, 0,1, onOffStr, 24,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_IntPSG2OFF, OCM_SMART_IntPSG2ON },
 		ATR_SAVEINPROFILE,
 		{ "Enable/disable an additional internal PSG (acting as an external PSG).",
 		  "Default is OFF.", (char*)NULL },
-		IOREV_11, M_SX2|M_SMX_MCP2_ID|M_SXE
+		IOREV_11, M_SECOND_GEN
 	},
 	// 6
 	{
 		SLIDER,
 		3,15, " OPL3 ",
-		-1, -6, 2, 2,
+		-1, 1, 3, 3,
 		&(sysInfo1.raw), 0b00000100, 0,1, onOffStr, 24,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_OPL3OFF, OCM_SMART_OPL3ON },
 		ATR_SAVEINPROFILE,
 		{ "Enable/disable the OPL3 sound chipset.",
 		  "Default is OFF.", (char*)NULL },
-		IOREV_10, M_SX2|M_SMX_MCP2_ID|M_SXE
+		IOREV_10, M_SECOND_GEN
 	},
 	// 7
 	{
 		SLIDER,
+		3,17, " CMT I/F ",
+		-1, -7, 2, 2,
+		&(sysInfo1.raw), 0b00000100, 0,1, cmtOnOffStr, 24,
+		CMDTYPE_STANDARD,
+		{ OCM_SMART_CMTOFF, OCM_SMART_CMTON },
+		ATR_SAVEINPROFILE|ATR_USELASTSTRFORNA,
+		{ "Cassette tape interface:",
+		  "On 1st Gen machines CMT is modifiable. Default is OFF.",
+		  "On 2nd Gen machines CMT is always enabled.", (char*)NULL },
+		IOREV_ALL, M_FIRST_GEN
+	},
+	// 8
+	{
+		SLIDER,
 		40,6, " Pseudo stereo ",
-		1, 1, -7, -7,
+		1, 1, -8, -8,
 		&(sysInfo2.raw), 0b00000001, 0,1, onOffStr, 24,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_PseudSterOFF, OCM_SMART_PseudSterON },
@@ -455,11 +472,11 @@ static const Element_t elemAudio[] = {
 		  "Default is OFF.", (char*)NULL },
 		IOREV_3, M_ALL
 	},
-	// 8
+	// 9
 	{
 		SLIDER,
 		40,8, " Right Inverse Audio ",
-		-1, -1, -7, -7,
+		-1, -1, -8, -8,
 		&(sysInfo3.raw), 0b00000001, 0,1, onOffStr, 24,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_RightInvAud0, OCM_SMART_RightInvAud1 },
@@ -665,7 +682,7 @@ static const Element_t elemDIPs[] = {
 static const Element_t elemHelp[] = {
 	{ LABEL, 3,5,  "    --==[ OCMINFO conio.lib dos.lib ]==--  by "AUTHOR"    ",
 		0, 0, 0, 0, NULL, 0, 0,0, NULL, 0, CMDTYPE_NONE,{ 0x00 }, false, 
-		{ "Thanks to: @KdL, @Ducasp, and @Cayce-msx",
+		{ "Thanks to: @KdL, @Ducasp, @HRA! and @Cayce-msx",
 		  "",
 		  "GitHub: https://github.com/nataliapc", (char*)NULL }
 	},
@@ -675,8 +692,9 @@ static const Element_t elemHelp[] = {
 	{ LABEL, 3,11, "to select the items. Information text will appear at bottom." },
 	{ LABEL, 3,12, "To modify an item, you can press SPACE, ENTER, or '+' to increase its value" },
 	{ LABEL, 3,13, "or '-' to decrease it." },
-	{ LABEL, 3,15, "If you want to suggest improvements, feel free to create an issue at the" },
-	{ LABEL, 3,16, "GitHub project page, the link is shown below." },
+	{ LABEL, 3,14, "Use 'M' to mute/unmute the menu sounds." },
+	{ LABEL, 3,16, "If you want to suggest improvements, feel free to create an issue at the" },
+	{ LABEL, 3,17, "GitHub project page, the link is shown below." },
 	// END
 	{ END }
 };

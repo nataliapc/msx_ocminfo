@@ -23,6 +23,8 @@ static bool verbose = true;
 void printHelp()
 {
 	cputs(
+		"https://github.com/nataliapc/msx_ocminfo\n"
+		"\n"
 		"Usage: OCMINFO [/n|/L] [/Q] [/?]\n"
 		"\n"
 		"Use without parameters to open the configuration panels.\n"
@@ -138,12 +140,13 @@ uint16_t commandLine(char **argv, int argc)
 	}
 
 	if (showHelp || verbose) {
-		cputs("OCMINFO "VERSION" by "AUTHOR"\n\n");
+		cputs("OCMINFO "VERSION" by "AUTHOR"\n");
 	}
 
 	if (showHelp) {
 		printHelp();
 	} else {
+		cputs("\n");
 		if (listProfiles) {
 			doListProfiles();
 		} else

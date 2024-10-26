@@ -29,6 +29,7 @@ static uint8_t lastCmdSent = 0;
 static uint16_t lastExtraKeys;
 static uint16_t currentExtraKeys;
 static bool end = false;
+bool muteSound = false;
 char *emptyArea;
 
 OCM_P42_VirtualDIP_t virtualDIPs;
@@ -102,22 +103,26 @@ char *play_advice = "\"v12l64o4a\"";
 
 void beep_ok()
 {
-	basic_play(play_ok);
+	if (!muteSound)
+		basic_play(play_ok);
 }
 
 void beep_advice()
 {
-	basic_play(play_advice);
+	if (!muteSound)
+		basic_play(play_advice);
 }
 
 void beep_fail()
 {
-	basic_play(play_fail);
+	if (!muteSound)
+		basic_play(play_fail);
 }
 
 void beep_error()
 {
-	basic_play(play_error);
+	if (!muteSound)
+		basic_play(play_error);
 }
 
 void abortRoutine()
@@ -377,12 +382,10 @@ static void drawCustom_cpuSpeed(Element_t *element)
 	if (!virtualDIPs.cpuClock) {
 		// Standard / TurboPana speed
 		elemChange->supportedBy = M_NONE;		// Element 'Custom speed' disabled
-		elemChange->valueOffsetX = 24;
 		putlinexy(elemChange->posX + strlen(elemChange->label), elemChange->posY, 12, emptyArea);
 	} else {
 		// Custom speed
 		elemChange->supportedBy = M_ALL;		// Element 'Custom speed' enabled
-		elemChange->valueOffsetX = 14;
 	}
 	drawWidget_value(element);
 }
@@ -408,7 +411,13 @@ static bool drawElement(Element_t *element)
 	if (element->type == LABEL) return true;
 
 	if (!isIOrevisionSupported(element) || !isMachineSupported(element)) {
-		putlinexy(posx+element->valueOffsetX+4, posy, 7, "n/a    ");
+		char *text = element->useLastStrForNA ? element->valueStr[element->maxValue+1] : "n/a    ";
+		putlinexy(
+			posx + element->valueOffsetX + element->maxValue + 7,
+			posy,
+			strlen(text),
+			text
+		);
 		return true;
 	}
 
@@ -643,6 +652,11 @@ void menu_panels()
 				profiles_menu(&pPanels[PANEL_PROFILES]);
 				printHeader();
 				selectPanel(currentPanel);
+				break;
+			case 'm':
+			case 'M':
+				muteSound = !muteSound;
+				beep_ok();
 				break;
 			case 'x':
 			case 'X':
