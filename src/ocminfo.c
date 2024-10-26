@@ -12,6 +12,7 @@
 #include "globals.h"
 #include "dialogs.h"
 #include "profiles_ui.h"
+#include "profiles_api.h"
 #include "heap.h"
 #include "utils.h"
 #include "ocm_ioports.h"
@@ -29,7 +30,6 @@ static uint8_t lastCmdSent = 0;
 static uint16_t lastExtraKeys;
 static uint16_t currentExtraKeys;
 static bool end = false;
-bool muteSound = false;
 char *emptyArea;
 
 OCM_P42_VirtualDIP_t virtualDIPs;
@@ -103,25 +103,25 @@ char *play_advice = "\"v12l64o4a\"";
 
 void beep_ok()
 {
-	if (!muteSound)
+	if (!profile_getHeaderData()->muteSound)
 		basic_play(play_ok);
 }
 
 void beep_advice()
 {
-	if (!muteSound)
+	if (!profile_getHeaderData()->muteSound)
 		basic_play(play_advice);
 }
 
 void beep_fail()
 {
-	if (!muteSound)
+	if (!profile_getHeaderData()->muteSound)
 		basic_play(play_fail);
 }
 
 void beep_error()
 {
-	if (!muteSound)
+	if (!profile_getHeaderData()->muteSound)
 		basic_play(play_error);
 }
 
@@ -545,6 +545,7 @@ void menu_panels()
 
 	//Platform system checks
 	checkPlatformSystem();
+	profile_loadFile();
 
 	// Initialize screen 0[80]
 	textmode(BW80);
@@ -652,11 +653,6 @@ void menu_panels()
 				profiles_menu(&pPanels[PANEL_PROFILES]);
 				printHeader();
 				selectPanel(currentPanel);
-				break;
-			case 'm':
-			case 'M':
-				muteSound = !muteSound;
-				beep_ok();
 				break;
 			case 'x':
 			case 'X':

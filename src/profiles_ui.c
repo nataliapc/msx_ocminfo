@@ -29,7 +29,6 @@
 // Variables
 
 extern char *emptyArea;
-extern bool muteSound;
 
 
 static uint8_t *itemsCount;
@@ -107,7 +106,7 @@ Dialog_t dlg_noProfiles = {
 
 Dialog_t dlg_saveChanges = {
 	0,0,
-	{ "Profiles modified.", "Do you want to save changes?" },
+	{ "Configuration modified.", "Do you want to save changes?" },
 	{ "  Yes  ", "  No   ", NULL },
 	0,	//defaultButton
 	1,	//cancelButton
@@ -132,17 +131,36 @@ Dialog_t dlg_profileApplied = {
 	DLG_DEFAULT
 };
 
+Dialog_t dlg_mutedSound = {
+	0,0,
+	{ "   Menu sounds muted   " },
+	{ "  Continue  ", NULL },
+	0,	//defaultButton
+	0,	//cancelButton
+	DLG_DEFAULT
+};
+
+Dialog_t dlg_unmutedSound = {
+	0,0,
+	{ "   Menu sounds enabled   " },
+	{ "  Continue  ", NULL },
+	0,	//defaultButton
+	0,	//cancelButton
+	DLG_DEFAULT
+};
+
 Dialog_t dlg_help = {
 	0,0,
-	{ "Up/Down . . . . Move selection       ",
-	  "Right/Left. . . Next/Previous page   ",
-	  "RETURN. . . . . Apply current profile",
-	  "A . . . . . . . Add new profile      ",
-	  "U . . . . . . . Update name & values ",
-	  "DEL . . . . . . Delete selection     ",
-	  "Ctrl+Up/Down. . Move selected item   ",
-	  "H . . . . . . . Show this help       ",
-	  "BS/B. . . . . . Go back to panels    "
+	{ "Up/Down . . . . Move selection         ",
+	  "Right/Left. . . Next/Previous page     ",
+	  "RETURN. . . . . Apply current profile  ",
+	  "A . . . . . . . Add new profile        ",
+	  "U . . . . . . . Update name & values   ",
+	  "DEL . . . . . . Delete selection       ",
+	  "Ctrl+Up/Down. . Move selected item     ",
+	  "M . . . . . . . Mute/Unmute menu sounds",
+	  "H . . . . . . . Show this help         ",
+	  "BS/B. . . . . . Go back to panels      "
 	},
 	{ "  Close  ", NULL },
 	0,	//defaultButton
@@ -512,8 +530,11 @@ void profiles_menu(Panel_t *panel)
 			}
 		} else
 		if (key == 'm' || key == 'M') {				// Mute/unmute menu sounds
-			muteSound = !muteSound;
+			ProfileHeaderData_t *headerData = profile_getHeaderData();
+			headerData->muteSound = !(headerData->muteSound);
+			changedProfiles = true;
 			beep_ok();
+			showDialog(headerData->muteSound ? &dlg_mutedSound : &dlg_unmutedSound);
 		} else
 		if (key == 'h' || key == 'H') {				// Show help dialog
 			showDialog(&dlg_help);
@@ -559,7 +580,7 @@ void profiles_menu(Panel_t *panel)
 
 	// Check if profiles have changed and prompt for saving
 	if (changedProfiles && showDialog(&dlg_saveChanges) == 0) {
-		printLog("\x85 Saving modified profiles...");
+		printLog("\x85 Saving modified configuration...");
 		if (!profile_saveFile()) {
 			showDialog(&dlg_errorSaving);
 		}

@@ -21,7 +21,7 @@ static char *filename = "A:\\OCMINFO.CFG";
 static void *original_heaptop = NULL;
 
 static ProfileHeader_t _header = { PROF_MAGIC, PROF_REV, sizeof(ProfileHeaderData_t), 0x00 };
-static ProfileHeaderData_t _headerData = { 0, sizeof(ProfileItem_t) };
+static ProfileHeaderData_t _headerData = { 0, sizeof(ProfileItem_t), false };
 static ProfileItem_t *_profiles = NULL;
 static SYSTEMDATE_t date;
 
@@ -49,7 +49,7 @@ static uint8_t _calculateChecksum()
 	uint8_t calculatedChecksum = 0;
 	uint16_t i;
 	// Calculate checksum for header data
-	for (i = 0; i < sizeof(ProfileHeaderData_t); i++) {
+	for (i = 0; i < _header.headerLength; i++) {
 		calculatedChecksum += ((uint8_t*)&_headerData)[i];
 	}
 	// Calculate checksum for profile items
@@ -137,8 +137,9 @@ bool profile_saveFile()
 	if (fh >= ERR_FIRST) goto save_fail;
 
 	// Write header
-	_header.checksum = _calculateChecksum();
+	_header.revision = PROF_REV;
 	_header.headerLength = sizeof(ProfileHeaderData_t);
+	_header.checksum = _calculateChecksum();
 	if (dos2_fwrite((char*)&_header, sizeof(ProfileHeader_t), fh) != sizeof(ProfileHeader_t))
 		goto save_fail;
 

@@ -25,7 +25,7 @@
 // Defines
 
 #define PROF_MAGIC		{ 0x464f5250 }	//"PROF"
-#define PROF_REV		1
+#define PROF_REV		2
 
 
 // ========================================================
@@ -41,6 +41,7 @@ typedef struct {
 typedef struct {
 	uint8_t  itemsCount;			// Number of profiles stored
 	uint16_t itemLength;			// Length of each profile item
+	bool     muteSound;				// Mute sound (default: false)
 } ProfileHeaderData_t;
 
 typedef struct {
