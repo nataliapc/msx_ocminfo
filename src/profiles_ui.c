@@ -151,16 +151,16 @@ Dialog_t dlg_unmutedSound = {
 
 Dialog_t dlg_help = {
 	0,0,
-	{ "Up/Down "                  "\x84\x84\x84\x84\x84\x84\x84 Move selection         ",
-	  "Right/Left "                           "\x84\x84\x84\x84 Next/Previous page     ",
-	  "RETURN "               "\x84\x84\x84\x84\x84\x84\x84\x84 Apply current profile  ",
-	  "A ""\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84 Add new profile        ",
-	  "U ""\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84 Update name & values   ",
-	  "DEL "      "\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84 Delete selection       ",
-	  "Ctrl+Up/Down "                                 "\x84\x84 Move selected item     ",
-	  "M ""\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84 Mute/Unmute menu sounds",
-	  "H ""\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84 Show this help         ",
-	  "BS/B "         "\x84\x84\x84\x84\x84\x84\x84\x84\x84\x84 Go back to panels      "
+	{ "Up/Down "                  "\x7f\x7f\x7f\x7f\x7f\x7f\x7f Move selection         ",
+	  "Right/Left "                           "\x7f\x7f\x7f\x7f Next/Previous page     ",
+	  "RETURN "               "\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Apply current profile  ",
+	  "A ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Add new profile        ",
+	  "U ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Update name & values   ",
+	  "DEL "      "\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Delete selection       ",
+	  "Ctrl+Up/Down "                                 "\x7f\x7f Move selected item     ",
+	  "M ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Mute/Unmute menu sounds",
+	  "H ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Show this help         ",
+	  "BS/B "         "\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Go back to panels      "
 	},
 	{ "  Close  ", NULL },
 	0,	//defaultButton

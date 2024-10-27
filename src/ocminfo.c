@@ -519,7 +519,7 @@ inline void redefineFunctionKeys()
 
 inline void redefineCharPatterns()
 {
-	_copyRAMtoVRAM((uint16_t)charPatters, 0x1000+0x80*8, 5*8);
+	_copyRAMtoVRAM((uint16_t)charPatters, 0x1000+0x7f*8, 5*8);
 }
 
 inline bool isShiftKeyPressed()
