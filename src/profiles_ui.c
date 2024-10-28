@@ -130,7 +130,7 @@ const Dialog_t dlg_deleteProfile = {
 	0,0,
 	dlg_deleteProfileStr,
 	dlg_yesNoBtn,
-	1,	//defaultButton
+	0,	//defaultButton
 	1,	//cancelButton
 	DLG_DEFAULT
 };
