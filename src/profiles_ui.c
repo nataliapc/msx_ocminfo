@@ -77,92 +77,111 @@ static const Panel_t pPanels[] = {
 // ========================================================
 // Dialogs
 
-Dialog_t dlg_fileNotFound = {
+const char *dlg_yesNoBtn[] = { "  Yes  ", "  No   ", NULL };
+const char *dlg_continueBtn[] = { "  Continue  ", NULL };
+const char *dlg_closeBtn[] = { "  Close  ", NULL };
+
+const char *dlg_fileNotFoundStr[] = {
+	"Profiles file not found", "or unreadable...", "", "Create a new file?", NULL
+};
+const Dialog_t dlg_fileNotFound = {
 	0,0,
-	{ "Profiles file not found", "or unreadable...", "", "Create a new file?" },
-	{ "  Yes  ", "  No   ", NULL },
+	dlg_fileNotFoundStr,
+	dlg_yesNoBtn,
 	0,	//defaultButton
 	1,	//cancelButton
 	DLG_DEFAULT
 };
 
-Dialog_t dlg_errorSaving = {
+const char *dlg_errorSavingStr[] = { "Error saving profiles file!", NULL };
+const Dialog_t dlg_errorSaving = {
 	0,0,
-	{ "Error saving profiles file!" },
-	{ "  Continue  ", NULL },
+	dlg_errorSavingStr,
+	dlg_continueBtn,
 	0,	//defaultButton
 	1,	//cancelButton
 	DLG_DEFAULT
 };
 
-Dialog_t dlg_noProfiles = {
+const char *dlg_noProfilesStr[] = { "Profile list is empty!", NULL };
+const Dialog_t dlg_noProfiles = {
 	0,0,
-	{ "Profile list is empty!" },
-	{ "  Continue  ", NULL },
+	dlg_noProfilesStr,
+	dlg_continueBtn,
 	0,	//defaultButton
 	0,	//cancelButton
 	DLG_DEFAULT
 };
 
-Dialog_t dlg_saveChanges = {
+const char *dlg_saveChangesStr[] = {
+	"Configuration modified.", "Do you want to save changes?", NULL
+};
+const Dialog_t dlg_saveChanges = {
 	0,0,
-	{ "Configuration modified.", "Do you want to save changes?" },
-	{ "  Yes  ", "  No   ", NULL },
+	dlg_saveChangesStr,
+	dlg_yesNoBtn,
 	0,	//defaultButton
 	1,	//cancelButton
 	DLG_DEFAULT
 };
 
-Dialog_t dlg_deleteProfile = {
+const char *dlg_deleteProfileStr[] = { "Remove selected profile?", NULL };
+const Dialog_t dlg_deleteProfile = {
 	0,0,
-	{ "Remove selected profile?" },
-	{ "  Yes  ", "  No   ", NULL },
+	dlg_deleteProfileStr,
+	dlg_yesNoBtn,
 	1,	//defaultButton
 	1,	//cancelButton
 	DLG_DEFAULT
 };
 
-Dialog_t dlg_profileApplied = {
+const char *dlg_profileAppliedStr[] = { "    Profile applied    ", NULL };
+const Dialog_t dlg_profileApplied = {
 	0,0,
-	{ "    Profile applied    " },
-	{ "  Continue  ", NULL },
+	dlg_profileAppliedStr,
+	dlg_continueBtn,
 	0,	//defaultButton
 	0,	//cancelButton
 	DLG_DEFAULT
 };
 
-Dialog_t dlg_mutedSound = {
+const char *dlg_mutedSoundStr[] = { "   Menu sounds muted   ", NULL };
+const Dialog_t dlg_mutedSound = {
 	0,0,
-	{ "   Menu sounds muted   " },
-	{ "  Continue  ", NULL },
+	dlg_mutedSoundStr,
+	dlg_continueBtn,
 	0,	//defaultButton
 	0,	//cancelButton
 	DLG_DEFAULT
 };
 
-Dialog_t dlg_unmutedSound = {
+const char *dlg_unmutedSoundStr[] = { "   Menu sounds enabled   ", NULL };
+const Dialog_t dlg_unmutedSound = {
 	0,0,
-	{ "   Menu sounds enabled   " },
-	{ "  Continue  ", NULL },
+	dlg_unmutedSoundStr,
+	dlg_continueBtn,
 	0,	//defaultButton
 	0,	//cancelButton
 	DLG_DEFAULT
 };
 
-Dialog_t dlg_help = {
+const char *dlg_helpStr[] = {
+	"Up/Down "                  "\x7f\x7f\x7f\x7f\x7f\x7f\x7f Move selection         ",
+	"Right/Left "                           "\x7f\x7f\x7f\x7f Next/Previous page     ",
+	"RETURN "               "\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Apply current profile  ",
+	"A ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Add new profile        ",
+	"U ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Update name & values   ",
+	"DEL "      "\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Delete selection       ",
+	"Ctrl+Up/Down "                                 "\x7f\x7f Move selected item     ",
+	"M ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Mute/Unmute menu sounds",
+	"H ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Show this help         ",
+	"BS/B "         "\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Go back to panels      ",
+	NULL
+};
+const Dialog_t dlg_help = {
 	0,0,
-	{ "Up/Down "                  "\x7f\x7f\x7f\x7f\x7f\x7f\x7f Move selection         ",
-	  "Right/Left "                           "\x7f\x7f\x7f\x7f Next/Previous page     ",
-	  "RETURN "               "\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Apply current profile  ",
-	  "A ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Add new profile        ",
-	  "U ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Update name & values   ",
-	  "DEL "      "\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Delete selection       ",
-	  "Ctrl+Up/Down "                                 "\x7f\x7f Move selected item     ",
-	  "M ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Mute/Unmute menu sounds",
-	  "H ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Show this help         ",
-	  "BS/B "         "\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Go back to panels      "
-	},
-	{ "  Close  ", NULL },
+	dlg_helpStr,
+	dlg_closeBtn,
 	0,	//defaultButton
 	0,	//cancelButton
 	DLG_DEFAULT

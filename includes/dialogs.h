@@ -11,6 +11,9 @@
 #include "conio.h"
 
 
+#define DLG_MAX_TXT		24
+#define DLG_MAX_BTN		4
+
 // ========================================================
 //  Structs & Enums
 
@@ -28,8 +31,8 @@ typedef enum {
 
 typedef struct {
 	uint8_t posX, posY;			// 0,0 -> dialog centered
-	char *text[12];				// Dialog text lines (max: 10) [NULL for last line]
-	char *buttons[4];			// Button texts (max:3) [NULL for last button/no buttons]
+	char **text;				// Dialog text lines (max:DLG_MAX_TXT) [NULL for last line]
+	char **buttons;				// Button texts (max:DLG_MAX_BTN) [NULL for last button/no buttons]
 	uint8_t defaultButton;		// Index for default button
 	uint8_t cancelButton;		// Index for cancel button
 	DlgAttrib_t attrib;			// Attributes bitmask

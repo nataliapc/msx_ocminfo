@@ -731,19 +731,25 @@ static const Panel_t pPanels[] = {
 // ========================================================
 // Dialogs
 
-Dialog_t dlg_exit = {
+const char *dlg_exitStr[] = {
+	" Exit? ", NULL
+};
+const Dialog_t dlg_exit = {
 	0,0,
-	{ "Exit?", NULL },
-	{ "  Yes  ", "  No   ", NULL },
+	dlg_exitStr,
+	dlg_yesNoBtn,
 	0,	//defaultButton
 	1,	//cancelButton
 	DLG_DEFAULT
 };
 
-Dialog_t dlg_reset = {
+const char *dlg_resetStr[] = {
+	"Reset requested", "", "Do you want to reboot now?", NULL
+};
+const Dialog_t dlg_reset = {
 	0,0,
-	{ "Reset requested", "", "Do you want to reboot now?", NULL },
-	{ "  Yes  ", "  No   ", NULL },
+	dlg_resetStr,
+	dlg_yesNoBtn,
 	1,	//defaultButton
 	1,	//cancelButton
 	DLG_DEFAULT

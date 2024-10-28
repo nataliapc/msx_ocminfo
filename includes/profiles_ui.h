@@ -8,5 +8,7 @@
 #include "types.h"
 
 
+extern const char *dlg_yesNoBtn[];
+
 void profiles_menu(Panel_t *panel);
 

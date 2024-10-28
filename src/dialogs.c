@@ -27,20 +27,20 @@ uint8_t showDialog(Dialog_t *dlg)
 {
 	uint8_t dlgWidth, dlgHeight;
 	uint8_t numLines, maxLineLen = 0;
-	uint8_t linesLen[sizeof(dlg->text)];
+	uint8_t linesLen[DLG_MAX_TXT];
 	uint8_t numBtn, totalBtnLen = 0;
-	uint8_t btnLen[sizeof(dlg->buttons)], btnX[sizeof(dlg->buttons)];
+	uint8_t btnLen[DLG_MAX_BTN], btnX[DLG_MAX_BTN];
 	uint8_t selectedBtn = dlg->defaultButton;
 	uint8_t key, i, auxX, auxY;
 	bool end = false;
 
 	// Calculate dialog sizes
-	for (numLines=0; numLines<sizeof(dlg->text); numLines++) {
+	for (numLines=0; ; numLines++) {
 		if (dlg->text[numLines] == NULL) break;
 		linesLen[numLines] = strlen(dlg->text[numLines]);
 		if (linesLen[numLines] > maxLineLen) maxLineLen = linesLen[numLines];
 	}
-	for (numBtn=0; numBtn<sizeof(dlg->buttons); numBtn++) {
+	for (numBtn=0; ; numBtn++) {
 		if (dlg->buttons[numBtn] == NULL) break;
 		btnLen[numBtn] = strlen(dlg->buttons[numBtn]);
 		totalBtnLen += btnLen[numBtn] + 1;
