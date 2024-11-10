@@ -9,6 +9,8 @@
 #include <stdbool.h>
 
 
+#define ELEMENT_MAX_DESC		3
+
 // ========================================================
 // Structs & Enums
 
@@ -93,7 +95,7 @@ typedef struct {
 			unsigned reserved: 4;			// Not used flags [reserved]
 		};
 	};
-	char *description[4];					// Description lines
+	char **description;						// Description lines
 	IOrev_t ioRevNeeded;					// I/O Revision needed [0x00:all 0xff:n/a]
 	MachineMask_t supportedBy;				// Supported machines
 } Element_t;

@@ -151,8 +151,7 @@ static const Element_t elemSystem[] = {
 		CMDTYPE_NONE,
 		{ 0x00 }, 
 		false,
-		{ "Currently active CPU clock frequency (read only).", 
-		  "Customize below values to adjust it.", (char*)NULL },
+		desc_cpuClock,
 		IOREV_ALL, M_ALL
 	},
 	// 2
@@ -164,9 +163,7 @@ static const Element_t elemSystem[] = {
 		CMDTYPE_STANDARD, 
 		{ OCM_SMART_CPU358MHz, OCM_SMART_TurboPana, OCM_SMART_CPU806MHz }, 
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
-		{ "Standard: Standard CPU clock mode (3.58MHz)",
-		  "tPANA:    Panasonic turbo mode (aka Turbo Pana, 5.37MHz)",
-		  "Custom:   Custom CPU clock mode (4.10MHz to 8.06MHz)", (char*)NULL },
+		desc_cpuMode,
 		IOREV_ALL, M_ALL
 	},
 	// 4
@@ -179,9 +176,7 @@ static const Element_t elemSystem[] = {
 		{ OCM_SMART_CPU410MHz, OCM_SMART_CPU410MHz, OCM_SMART_CPU448MHz, OCM_SMART_CPU490MHz, 
 		  OCM_SMART_CPU539MHz, OCM_SMART_CPU610MHz, OCM_SMART_CPU696MHz, OCM_SMART_CPU806MHz }, 
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
-		{ "Custom CPU speed. These are not real CPU frequencies but a simulation",
-		  "slowing down the 10.74MHz frequency. The values have been calculated and",
-		  "are purely indicative. The default is 8.06MHz.", (char*)NULL },
+		desc_customSpeed,
 		IOREV_ALL, M_ALL
 	},
 	// 5
@@ -193,8 +188,7 @@ static const Element_t elemSystem[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_ExtBusCPU, OCM_SMART_ExtBus358 },
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
-		{ "Synchronize external bus clock to CPU clock (default), or force it to",
-		  "3.58MHz.", (char*)NULL },
+		desc_extBusClock,
 		IOREV_3, M_ALL
 	},
 	// 6
@@ -206,9 +200,7 @@ static const Element_t elemSystem[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_TPanaRedOFF, OCM_SMART_TPanaRedON },
 		ATR_SAVEINPROFILE,
-		{ "Turbo Pana redirect mode sets Turbo Pana I/O to the current Custom Speed.",
-		  "This allows games to reach 8.06MHz or other frequencies using port 41h ID8,",
-		  "making them OCM-compatible without software patch.", (char*)NULL },
+		desc_tPanaRedir,
 		IOREV_1, M_ALL
 	},
 	// 7
@@ -220,9 +212,7 @@ static const Element_t elemSystem[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_TMegaSDOFF, OCM_SMART_TMegaSDON },
 		ATR_SAVEINPROFILE,
-		{ "Turbo MegaSD sets SD card speed access at loading time activating 8.06MHz,",
-		  "so you get fast load even with CPU at 3.58/5.37MHz. It can adversely affect",
-		  "external cartridges that do not support 8.06MHz.", (char*)NULL },
+		desc_turboMegaSD,
 		IOREV_1, M_ALL
 	},
 	// 8
@@ -239,9 +229,7 @@ static const Element_t elemSystem[] = {
 		CMDTYPE_NONE,
 		{ 0x00 },
 		false,
-		{ "Default keyboard layout (read only).",
-		  "Values can be Japanese or non-Japanese (international keyboard layout",
-		  "embedded inside the BIOS).", (char*)NULL },
+		desc_defaultKeyboard,
 		IOREV_1, M_ALL
 	},
 	// 10
@@ -253,9 +241,7 @@ static const Element_t elemSystem[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_KBLayoutJP, OCM_SMART_KBLayoutNJP },
 		ATR_SAVEINPROFILE,
-		{ "Current active keyboard layout.",
-		  "Values can be Japanese or non-Japanese (international keyboard layout",
-		  "embedded inside the BIOS).", (char*)NULL },
+		desc_currentKeyboard,
 		IOREV_1, M_ALL
 	},
 	// END
@@ -272,8 +258,7 @@ static const Element_t elemVideo[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_VDPNormal, OCM_SMART_VDPFast },
 		ATR_SAVEINPROFILE,
-		{ "Normal: Works like real hardware (default).",
-		  "Fast:   The VDP works faster (V9958 only).", (char*)NULL },
+		desc_vdpSpeed,
 		IOREV_ALL, M_ALL
 	},
 	// 1
@@ -285,9 +270,7 @@ static const Element_t elemVideo[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_ForcePAL, OCM_SMART_VideoAuto, OCM_SMART_ForceNTSC },
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
-		{ "Video output mode (Auto/PAL/NTSC)", 
-		  "Auto:     Set to auto (default) that is bound by VDP Control Register #9.",
-		  "PAL/NTSC: Force video output to PAL(50Hz) or NTSC(60Hz).", (char*)NULL },
+		desc_videoMode,
 		IOREV_1, M_ALL
 	},
 	// 2
@@ -299,7 +282,7 @@ static const Element_t elemVideo[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_LegacyVGA, OCM_SMART_LegacyVGAplus },
 		false,
-		{ "Assign Legacy Output to VGA or VGA+ (default).", (char*)NULL },
+		desc_legacyOutput,
 		IOREV_8, M_ALL
 	},
 	// 3
@@ -313,9 +296,7 @@ static const Element_t elemVideo[] = {
 		  OCM_SMART_VertOffset19, OCM_SMART_VertOffset20, OCM_SMART_VertOffset21,
 		  OCM_SMART_VertOffset22, OCM_SMART_VertOffset23, OCM_SMART_VertOffset24 },
 		ATR_SAVEINPROFILE,
-		{ "Changes the vertical offset.",
-		  "Default is 19; value 16 is useful for Ark-A-Noah; value 24 is useful",
-		  "for Space Manbow.", (char*)NULL },
+		desc_verticalOffset,
 		IOREV_12, M_ALL
 	},
 	// 4
@@ -327,8 +308,7 @@ static const Element_t elemVideo[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_CenterYJKOFF, OCM_SMART_CenterYJKON },
 		ATR_SAVEINPROFILE,
-		{ "Allows forcing the centering of YJK modes and VDP R#25 mask, useful for",
-		  "MSX2+ games. Default is OFF.", (char*)NULL },
+		desc_centerYJKmodes,
 		IOREV_7, M_ALL
 	},
 	// 5
@@ -340,7 +320,7 @@ static const Element_t elemVideo[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_Scanlines00, OCM_SMART_Scanlines25, OCM_SMART_Scanlines50, OCM_SMART_Scanlines75 },
 		ATR_SAVEINPROFILE,
-		{ "Visualization of scanlines for VGA/VGA+ (mainly for 2nd Gen machines).", (char*)NULL },
+		desc_scanlines,
 		IOREV_ALL, M_SECOND_GEN
 	},
 	// END
@@ -358,9 +338,7 @@ static const Element_t elemAudio[] = {
 		{ OCM_SMART_NullCommand, OCM_SMART_AudioPreset1, OCM_SMART_AudioPreset2, OCM_SMART_AudioPreset3,
 		  OCM_SMART_AudioPreset4, OCM_SMART_AudioPreset5, OCM_SMART_AudioPreset6 },
 		ATR_FORCEPANELRELOAD,
-		{ "Set audio presets (press +/- to change):",
-		  "#Custom preset, #1:Mute, #2:Middle Sound, #3:High Sound (default option),",
-		  "#4:Emphasis PSG Sound, #5:Emphasis SCC+ Sound, #6:Emphasis OPLL Sound.", (char*)NULL },
+		desc_audioPresets,
 		IOREV_ALL, M_ALL
 	},
 	// 1
@@ -373,8 +351,7 @@ static const Element_t elemAudio[] = {
 		{ OCM_SMART_MasterVol0, OCM_SMART_MasterVol1, OCM_SMART_MasterVol2, OCM_SMART_MasterVol3,
 		  OCM_SMART_MasterVol4, OCM_SMART_MasterVol5, OCM_SMART_MasterVol6, OCM_SMART_MasterVol7 },
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
-		{ "Set Master volume level.",
-		  "Default is 7.", (char*)NULL },
+		desc_masterVolume,
 		IOREV_ALL, M_ALL
 	},
 	// 2
@@ -387,8 +364,7 @@ static const Element_t elemAudio[] = {
 		{ OCM_SMART_PSGVol0, OCM_SMART_PSGVol1, OCM_SMART_PSGVol2, OCM_SMART_PSGVol3,
 		  OCM_SMART_PSGVol4, OCM_SMART_PSGVol5, OCM_SMART_PSGVol6, OCM_SMART_PSGVol7 },
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
-		{ "Set PSG volume level.",
-		  "Default is 4.", (char*)NULL },
+		desc_psgVolume,
 		IOREV_ALL, M_ALL
 	},
 	// 3
@@ -401,8 +377,7 @@ static const Element_t elemAudio[] = {
 		{ OCM_SMART_SCCIVol0, OCM_SMART_SCCIVol1, OCM_SMART_SCCIVol2, OCM_SMART_SCCIVol3,
 		  OCM_SMART_SCCIVol4, OCM_SMART_SCCIVol5, OCM_SMART_SCCIVol6, OCM_SMART_SCCIVol7 },
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
-		{ "Set SCC+ volume level.",
-		  "Default is 4.", (char*)NULL },
+		desc_sccVolume,
 		IOREV_ALL, M_ALL
 	},
 	// 4
@@ -415,8 +390,7 @@ static const Element_t elemAudio[] = {
 		{ OCM_SMART_OPLLVol0, OCM_SMART_OPLLVol1, OCM_SMART_OPLLVol2, OCM_SMART_OPLLVol3, 
 		  OCM_SMART_OPLLVol4, OCM_SMART_OPLLVol5, OCM_SMART_OPLLVol6, OCM_SMART_OPLLVol7 },
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
-		{ "Set OPLL volume level.",
-		  "Default is 4.", (char*)NULL },
+		desc_opllVolume,
 		IOREV_ALL, M_ALL
 	},
 	// 5
@@ -428,8 +402,7 @@ static const Element_t elemAudio[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_IntPSG2OFF, OCM_SMART_IntPSG2ON },
 		ATR_SAVEINPROFILE,
-		{ "Enable/disable an additional internal PSG (acting as an external PSG).",
-		  "Default is OFF.", (char*)NULL },
+		desc_psg2,
 		IOREV_11, M_SECOND_GEN
 	},
 	// 6
@@ -441,8 +414,7 @@ static const Element_t elemAudio[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_OPL3OFF, OCM_SMART_OPL3ON },
 		ATR_SAVEINPROFILE,
-		{ "Enable/disable the OPL3 sound chipset.",
-		  "Default is OFF.", (char*)NULL },
+		desc_opl3,
 		IOREV_10, M_SECOND_GEN
 	},
 	// 7
@@ -454,9 +426,7 @@ static const Element_t elemAudio[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_CMTOFF, OCM_SMART_CMTON },
 		ATR_SAVEINPROFILE|ATR_USELASTSTRFORNA,
-		{ "Cassette tape interface:",
-		  "On 1st Gen machines CMT is modifiable. Default is OFF.",
-		  "On 2nd Gen machines CMT is always enabled.", (char*)NULL },
+		desc_cmtIF,
 		IOREV_ALL, M_FIRST_GEN
 	},
 	// 8
@@ -468,8 +438,7 @@ static const Element_t elemAudio[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_PseudSterOFF, OCM_SMART_PseudSterON },
 		ATR_SAVEINPROFILE,
-		{ "Enable/disable the Pseudo-Stereo mode (needs an external sound cartridge).",
-		  "Default is OFF.", (char*)NULL },
+		desc_pseudoStereo,
 		IOREV_3, M_ALL
 	},
 	// 9
@@ -481,9 +450,7 @@ static const Element_t elemAudio[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_RightInvAud0, OCM_SMART_RightInvAud1 },
 		ATR_SAVEINPROFILE,
-		{ "Enable/disable the Right Inverse Audio, which is a good solution for",
-		  "recording really clean balanced audio.",
-		  "Default is OFF.", (char*)NULL },
+		desc_rightInverseAudio,
 		IOREV_5, M_ALL
 	},
 	// END
@@ -505,9 +472,7 @@ static const Element_t elemDIPs[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_CPU358MHz, OCM_SMART_CPU806MHz },
 		ATR_FORCEPANELRELOAD,
-		{ "Virtual DIP-Switch #1: CPU Clock",
-		  "OFF: Standard CPU clock mode (3.58MHz)",
-		  "ON:  Custom CPU clock mode (4.10MHz to 8.06MHz)", (char*)NULL },
+		desc_vCpuClock,
 		IOREV_ALL, M_ALL
 	},
 	// 2
@@ -519,9 +484,7 @@ static const Element_t elemDIPs[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_Disp15KhSvid, OCM_SMART_Disp15KhRGB, OCM_SMART_Disp31KhVGA, OCM_SMART_Disp31KhVGAp },
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
-		{ "Virtual DIP-Switch #2-#3: Video Output",
-		  "OFF/OFF: Composite/S-Video w/mono audio     OFF/ON: RGB 15KHz",
-		  "ON/OFF:  VGA Mode w/Pixel 1:1               ON/ON:  VGA+ Mode for CRT", (char*)NULL },
+		desc_vVideoOutput,
 		IOREV_ALL, M_ALL
 	},
 	// 3
@@ -536,9 +499,7 @@ static const Element_t elemDIPs[] = {
 		  OCM_SMART_S1extS2scc, OCM_SMART_S1sccS2scc,
 		  OCM_SMART_S1extS2a16, OCM_SMART_S1sccS2a16 },
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
-		{ "Virtual DIP-Switch #4: Cartridge Slot 1 Configuration",
-		  "OFF: External Slot-1 / Optional Slot-3 (shared)",
-		  "ON:  Internal ESE-MegaSCC+", (char*)NULL },
+		desc_vCartridgeSlot1,
 		IOREV_ALL, M_ALL
 	},
 	// 4
@@ -553,9 +514,7 @@ static const Element_t elemDIPs[] = {
 		  OCM_SMART_S1extS2scc, OCM_SMART_S1sccS2scc,
 		  OCM_SMART_S1extS2a16, OCM_SMART_S1sccS2a16 },
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
-		{ "Virtual DIP-Switch #5-#6: Cartridge Slot 2 Configuration",
-		  "OFF/OFF: External Slot-2          OFF/ON: Internal ESE-MegaRAM ASCII-8K",
-		  "ON/OFF:  Internal ESE-MegaSCC+    ON/ON:  Internal ESE-MegaRAM ASCII-16K", (char*)NULL },
+		desc_vCartridgeSlot2,
 		IOREV_ALL, M_ALL
 	},
 	// 5
@@ -567,9 +526,7 @@ static const Element_t elemDIPs[] = {
 		CMDTYPE_NONE,
 /*REV*/	/*{ OCM_SMART_Mapper4MbOFF, OCM_SMART_Mapper4MbON },
 		ATR_FORCEPANELRELOAD | ATR_NEEDRESETTOAPPLY,*/ {0x00}, false,
-		{ "Virtual DIP-Switch #7: RAM Mapper",
-		  "OFF: Internal 2048KB RAM / 1st EPBIOS",
-		  "ON:  Internal 4096KB RAM / Optional 2nd EPBIOS", (char*)NULL },
+		desc_vRamMapper,
 		IOREV_ALL, M_ALL
 	},
 	// 6
@@ -581,9 +538,7 @@ static const Element_t elemDIPs[] = {
 		CMDTYPE_NONE,
 /*REV*/	/*{ OCM_SMART_MegaSDOFF, OCM_SMART_MegaSDON },
 		ATR_FORCEPANELRELOAD | ATR_NEEDRESETTOAPPLY,*/ {0x00}, false,
-		{ "Virtual DIP-Switch #8: SD card Slot",
-		  "OFF: Disabled",
-		  "ON:  Enabled", (char*)NULL },
+		desc_vInternalMegaSD,
 		IOREV_ALL, M_ALL
 	},
 	// 7
@@ -600,9 +555,7 @@ static const Element_t elemDIPs[] = {
 		CMDTYPE_NONE,
 		{ 0x00 },
 		false,
-		{ "Hardware DIP-Switch #1: CPU Clock",
-		  "OFF: Standard CPU clock mode (3.58MHz)",
-		  "ON:  Custom CPU clock mode (4.10MHz to 8.06MHz)", (char*)NULL },
+		desc_hCpuClock,
 		IOREV_ALL, M_ALL
 	},
 	// 9
@@ -614,9 +567,7 @@ static const Element_t elemDIPs[] = {
 		CMDTYPE_NONE,
 		{ 0x00 },
 		false,
-		{ "Hardware DIP-Switch #2-#3: Video Output",
-		  "OFF/OFF: Composite/S-Video w/mono audio     OFF/ON: RGB 15KHz",
-		  "ON/OFF:  VGA Mode w/Pixel 1:1               ON/ON:  VGA+ Mode for CRT", (char*)NULL },
+		desc_hVideoOutput,
 		IOREV_ALL, M_ALL
 	},
 	// 10
@@ -628,9 +579,7 @@ static const Element_t elemDIPs[] = {
 		CMDTYPE_NONE,
 		{ 0x00 },
 		false,
-		{ "Hardware DIP-Switch #4: Cartridge Slot 1 Configuration",
-		  "OFF: External Slot-1 / Optional Slot-3 (shared)",
-		  "ON:  Internal ESE-MegaSCC+", (char*)NULL },
+		desc_hCartridgeSlot1,
 		IOREV_ALL, M_ALL
 	},
 	// 11
@@ -642,9 +591,7 @@ static const Element_t elemDIPs[] = {
 		CMDTYPE_NONE,
 		{ 0x00 },
 		false,
-		{ "Hardware DIP-Switch #5-#6: Cartridge Slot 2 Configuration",
-		  "OFF/OFF: External Slot-2          OFF/ON: Internal ESE-MegaRAM ASCII-8K",
-		  "ON/OFF:  Internal ESE-MegaSCC+    ON/ON:  Internal ESE-MegaRAM ASCII-16K", (char*)NULL },
+		desc_hCartridgeSlot2,
 		IOREV_ALL, M_ALL
 	},
 	// 12
@@ -656,9 +603,7 @@ static const Element_t elemDIPs[] = {
 		CMDTYPE_NONE,
 		{ 0x00 },
 		false,
-		{ "Hardware DIP-Switch #7: RAM Mapper",
-		  "OFF: Internal 2048KB RAM / 1st EPBIOS",
-		  "ON:  Internal 4096KB RAM / Optional 2nd EPBIOS", (char*)NULL },
+		desc_hRamMapper,
 		IOREV_ALL, M_ALL
 	},
 	// 13
@@ -670,9 +615,7 @@ static const Element_t elemDIPs[] = {
 		CMDTYPE_NONE,
 		{ 0x00 },
 		false,
-		{ "Hardware DIP-Switch #8: SD card Slot",
-		  "OFF: Disabled",
-		  "ON:  Enabled", (char*)NULL },
+		desc_hInternalMegaSD,
 		IOREV_ALL, M_ALL
 	},
 	// END
@@ -682,9 +625,7 @@ static const Element_t elemDIPs[] = {
 static const Element_t elemHelp[] = {
 	{ LABEL, 3,5,  "    --==[ OCMINFO conio.lib dos.lib ]==--  by "AUTHOR"    ",
 		0, 0, 0, 0, NULL, 0, 0,0, NULL, 0, CMDTYPE_NONE,{ 0x00 }, false, 
-		{ "Thanks to: @KdL, @Ducasp, @HRA! and @Cayce-msx",
-		  "",
-		  "GitHub: https://github.com/nataliapc", (char*)NULL }
+		desc_help
 	},
 	{ LABEL, 3,7,  "This program aims to be a helpful tool for configuring and maintaining" },
 	{ LABEL, 3,8,  "MSX++ (OCM-PLD) FPGA-based systems." },
@@ -697,6 +638,198 @@ static const Element_t elemHelp[] = {
 	{ LABEL, 3,17, "GitHub project page, the link is shown below." },
 	// END
 	{ END }
+};
+
+
+// ========================================================
+// Element descriptions
+
+const char *desc_cpuClock[] = {
+	"Currently active CPU clock frequency (read only).",
+	"Customize below values to adjust it.",
+	NULL
+};
+const char *desc_cpuMode[] = {
+	"Standard: Standard CPU clock mode (3.58MHz)",
+	"tPANA:    Panasonic turbo mode (aka Turbo Pana, 5.37MHz)",
+	"Custom:   Custom CPU clock mode (4.10MHz to 8.06MHz)"
+};
+const char *desc_customSpeed[] = {
+	"Custom CPU speed. These are not real CPU frequencies but a simulation",
+	"slowing down the 10.74MHz frequency. The values have been calculated and",
+	"are purely indicative. The default is 8.06MHz."
+};
+const char *desc_extBusClock[] = {
+	"Synchronize external bus clock to CPU clock (default), or force it to",
+	"3.58MHz.",
+	NULL
+};
+const char *desc_tPanaRedir[] = {
+	"Turbo Pana redirect mode sets Turbo Pana I/O to the current Custom Speed.",
+	"This allows games to reach 8.06MHz or other frequencies using port 41h ID8,",
+	"making them OCM-compatible without software patch."
+};
+const char *desc_turboMegaSD[] = {
+	"Turbo MegaSD sets SD card speed access at loading time activating 8.06MHz,",
+	"so you get fast load even with CPU at 3.58/5.37MHz. It can adversely affect",
+	"external cartridges that do not support 8.06MHz."
+};
+const char *desc_defaultKeyboard[] = {
+	"Default keyboard layout (read only).",
+	"Values can be Japanese or non-Japanese (international keyboard layout",
+	"embedded inside the BIOS)."
+};
+const char *desc_currentKeyboard[] = {
+	"Current active keyboard layout.",
+	"Values can be Japanese or non-Japanese (international keyboard layout",
+	"embedded inside the BIOS)."
+};
+
+const char *desc_vdpSpeed[] = {
+	"VDP Speed: Normal (default) or Fast (V9958 only).",
+	"Normal: Works like real hardware.",
+	"Fast:   The VDP works faster."
+};
+const char *desc_videoMode[] = {
+	"Video output mode (Auto/PAL/NTSC)",
+	"Auto:     Set to auto (default) that is bound by VDP Control Register #9.",
+	"PAL/NTSC: Force video output to PAL(50Hz) or NTSC(60Hz)."
+};
+const char *desc_legacyOutput[] = {
+	"Assign Legacy Output to VGA or VGA+ (default).",
+	NULL
+};
+const char *desc_verticalOffset[] = {
+	"Changes the vertical offset.",
+	"Default is 19; value 16 is useful for Ark-A-Noah; value 24 is useful",
+	"for Space Manbow."
+};
+const char *desc_centerYJKmodes[] = {
+	"Allows forcing the centering of YJK modes and VDP R#25 mask, useful for",
+	"MSX2+ games. Default is OFF.",
+	NULL
+};
+const char *desc_scanlines[] = {
+	"Visualization of scanlines for VGA/VGA+ (mainly for 2nd Gen machines).",
+	NULL
+};
+
+const char *desc_audioPresets[] = {
+	"Set audio presets (press +/- to change):",
+	"#Custom preset, #1:Mute, #2:Middle Sound, #3:High Sound (default option),",
+	"#4:Emphasis PSG Sound, #5:Emphasis SCC+ Sound, #6:Emphasis OPLL Sound."
+};
+const char *desc_masterVolume[] = {
+	"Set Master volume level.",
+	"Default is 7.",
+	NULL
+};
+const char *desc_psgVolume[] = {
+	"Set PSG volume level.",
+	"Default is 4.",
+	NULL
+};
+const char *desc_sccVolume[] = {
+	"Set SCC+ volume level.",
+	"Default is 4.",
+	NULL
+};
+const char *desc_opllVolume[] = {
+	"Set OPLL volume level.",
+	"Default is 4.",
+	NULL
+};
+const char *desc_psg2[] = {
+	"Enable/disable an additional internal PSG (acting as an external PSG).",
+	"Default is OFF.",
+	NULL
+};
+const char *desc_opl3[] = {
+	"Enable/disable the OPL3 sound chipset.",
+	"Default is OFF.",
+	NULL
+};
+const char *desc_cmtIF[] = {
+	"Cassette tape interface:",
+	"On 1st Gen machines CMT is modifiable. Default is OFF.",
+	"On 2nd Gen machines CMT is always enabled."
+};
+const char *desc_pseudoStereo[] = {
+	"Enable/disable the Pseudo-Stereo mode (needs an external sound cartridge).",
+	"Default is OFF.",
+	NULL
+};
+const char *desc_rightInverseAudio[] = {
+	"Enable/disable the Right Inverse Audio, which is a good solution for",
+	"recording really clean balanced audio.",
+	"Default is OFF."
+};
+
+const char *desc_vCpuClock[] = {
+	"Virtual DIP-Switch #1: CPU Clock",
+	"OFF: Standard CPU clock mode (3.58MHz)",
+	"ON:  Custom CPU clock mode (4.10MHz to 8.06MHz)"
+};
+const char *desc_hCpuClock[] = {
+	"Hardware DIP-Switch #1: CPU Clock",
+	"OFF: Standard CPU clock mode (3.58MHz)",
+	"ON:  Custom CPU clock mode (4.10MHz to 8.06MHz)"
+};
+const char *desc_vVideoOutput[] = {
+	"Virtual DIP-Switch #2-#3: Video Output",
+	"OFF/OFF: Composite/S-Video w/mono audio     OFF/ON: RGB 15KHz",
+	"ON/OFF:  VGA Mode w/Pixel 1:1               ON/ON:  VGA+ Mode for CRT"
+};
+const char *desc_hVideoOutput[] = {
+	"Hardware DIP-Switch #2-#3: Video Output",
+	"OFF/OFF: Composite/S-Video w/mono audio     OFF/ON: RGB 15KHz",
+	"ON/OFF:  VGA Mode w/Pixel 1:1               ON/ON:  VGA+ Mode for CRT"
+};
+const char *desc_vCartridgeSlot1[] = {
+	"Virtual DIP-Switch #4: Cartridge Slot 1 Configuration",
+	"OFF: External Slot-1 / Optional Slot-3 (shared)",
+	"ON:  Internal ESE-MegaSCC+"
+};
+const char *desc_hCartridgeSlot1[] = {
+	"Hardware DIP-Switch #4: Cartridge Slot 1 Configuration",
+	"OFF: External Slot-1 / Optional Slot-3 (shared)",
+	"ON:  Internal ESE-MegaSCC+"
+};
+const char *desc_vCartridgeSlot2[] = {
+	"Virtual DIP-Switch #5-#6: Cartridge Slot 2 Configuration",
+	"OFF/OFF: External Slot-2          OFF/ON: Internal ESE-MegaRAM ASCII-8K",
+	"ON/OFF:  Internal ESE-MegaSCC+    ON/ON:  Internal ESE-MegaRAM ASCII-16K"
+};
+const char *desc_hCartridgeSlot2[] = {
+	"Hardware DIP-Switch #5-#6: Cartridge Slot 2 Configuration",
+	"OFF/OFF: External Slot-2          OFF/ON: Internal ESE-MegaRAM ASCII-8K",
+	"ON/OFF:  Internal ESE-MegaSCC+    ON/ON:  Internal ESE-MegaRAM ASCII-16K"
+};
+const char *desc_vRamMapper[] = {
+	"Virtual DIP-Switch #7: RAM Mapper",
+	"OFF: Internal 2048KB RAM / 1st EPBIOS",
+	"ON:  Internal 4096KB RAM / Optional 2nd EPBIOS"
+};
+const char *desc_hRamMapper[] = {
+	"Hardware DIP-Switch #7: RAM Mapper",
+	"OFF: Internal 2048KB RAM / 1st EPBIOS",
+	"ON:  Internal 4096KB RAM / Optional 2nd EPBIOS"
+};
+const char *desc_vInternalMegaSD[] = {
+	"Virtual DIP-Switch #8: SD card Slot",
+	"OFF: Disabled",
+	"ON:  Enabled"
+};
+const char *desc_hInternalMegaSD[] = {
+	"Hardware DIP-Switch #8: SD card Slot",
+	"OFF: Disabled",
+	"ON:  Enabled"
+};
+
+const char *desc_help[] = {
+	"Thanks to: @KdL, @HRA!, @Ducasp, and @Cayce-msx",
+	"",
+	"GitHub: https://github.com/nataliapc"
 };
 
 

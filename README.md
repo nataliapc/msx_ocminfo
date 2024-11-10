@@ -41,6 +41,6 @@ If you want to suggest improvements, feel free to create a github issue.
 
 ### Thanks
 
-Thanks to [@KdL](https://github.com/gnogni), [@ducasp](https://github.com/ducasp) and [@HRA!](https://github.com/hra1129) for their core developments and support, and to [@cayce-msx](https://github.com/cayce-msx) for his [Wiki](https://github.com/cayce-msx/msxpp-quick-ref/wiki).
+Thanks to [@KdL](https://github.com/gnogni), [@HRA!](https://github.com/hra1129), and [@ducasp](https://github.com/ducasp) for their core developments and support, and to [@cayce-msx](https://github.com/cayce-msx) for his [Wiki](https://github.com/cayce-msx/msxpp-quick-ref/wiki).
 
 

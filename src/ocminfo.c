@@ -341,10 +341,9 @@ static void drawDescription(char **description)
 	puttext(2,21, 79,23, emptyArea);
 
 	// Print new Description
-	uint8_t i = 0;
-	while (description[i] != NULL) {
+	for (uint8_t i = 0; i < ELEMENT_MAX_DESC ; i++) {
+		if (description[i] == NULL) break;
 		putlinexy(3,21+i, strlen(description[i]), description[i]);
-		i++;
 	}
 }
 
