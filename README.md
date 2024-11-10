@@ -8,7 +8,7 @@ The program is using the [sdcc_msxconio](https://github.com/nataliapc/sdcc_msxco
 
 The core can be found at the [official MSX++ repository](https://github.com/gnogni/ocm-pld-dev) maintained by [@KdL](https://github.com/gnogni).
 
-![F1 panel](.images/f1.jpg) ![F2 panel](.images/f3.jpg)
+![ocminfo panels](.images/panels.jpg)
 
 ----
 
@@ -42,5 +42,4 @@ If you want to suggest improvements, feel free to create a github issue.
 ### Thanks
 
 Thanks to [@KdL](https://github.com/gnogni), [@HRA!](https://github.com/hra1129), and [@ducasp](https://github.com/ducasp) for their core developments and support, and to [@cayce-msx](https://github.com/cayce-msx) for his [Wiki](https://github.com/cayce-msx/msxpp-quick-ref/wiki).
-
 
