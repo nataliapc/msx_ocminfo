@@ -168,14 +168,16 @@ static void printHeader()
 
 	textblink(1,1, 80, true);
 
-	csprintf(heap_top, "Model: %s     SDRAM: %sMB     PLD v%u.%u.%u     I/O rev.%u",
+	csprintf(heap_top, "Model: %s   SDRAM: %sMB",
 		machineTypeStr[sysInfo2.machineTypeId], 
-		sdram, 
+		sdram);
+	putlinexy(3,1, strlen(heap_top), heap_top);
+	csprintf(heap_top, "PLD v%u.%u.%u   I/O rev.%u",
 		pldVers0.pldVersion / 10, 
 		pldVers0.pldVersion % 10, 
 		pldVers1.pldSubversion, 
 		pldVers1.ioRevision);
-	putlinexy(5,1, strlen(heap_top), heap_top);
+	putlinexy(56,1, strlen(heap_top), heap_top);
 
 	// Function keys topbar
 	drawFrame(1,2, 80,24);
@@ -575,9 +577,13 @@ void menu_panels()
 
 		// If OCM extra key pressed/realeased the panel is updated
 		if (lastExtraKeys != currentExtraKeys) {
-			getOcmData();
-			drawCurrentPanel();
-			lastExtraKeys = currentExtraKeys;
+			beep_advice();
+			while (lastExtraKeys != currentExtraKeys) {
+				ASM_EI; ASM_HALT;
+				currentExtraKeys = getExtraKeysOCM().raw;
+				getOcmData();
+				drawCurrentPanel();
+			}
 			continue;
 		}
 

@@ -60,15 +60,16 @@ enum {
 	PANEL_UPDATE,
 	PANEL_DELETE,
 	PANEL_HELP,
-	PANEL_PROFILES
+	PANEL_PROFILES,
+	PANEL_BACK
 };
 
 static const Panel_t pPanels[] = {
-	{ " [A]dd new ",	3,3, 	11 },
-	{ " [U]pdate ",		14,3, 	10 },
-	{ " [DEL]ete ",		24,3,	10 },
-	{ " [H]elp ",		52,3,	8  },
-	{ " [P]rofiles ",	60,3,	12 },
+	{ " [A]dd new ",	2,3, 	11 },
+	{ " [U]pdate ",		13,3, 	10 },
+	{ " [DEL]ete ",		23,3,	10 },
+	{ " [H]elp ",		54,3,	8  },
+	{ " [P]rofiles ",	61,3,	12 },
 	{ " [B]ack ",		72,3,	8  },
 	{ NULL }
 };
@@ -380,6 +381,8 @@ void selectPanel(uint8_t idx, bool enabled)
 {
 	Panel_t *panel = &pPanels[idx];
 	textblink(panel->titlex,panel->titley, panel->titlelen, enabled);
+	panel = &pPanels[PANEL_PROFILES];
+	textblink(panel->titlex,panel->titley, panel->titlelen, !enabled);
 }
 
 void showDialogNoProfiles()
@@ -556,7 +559,9 @@ void profiles_menu(Panel_t *panel)
 			showDialog(headerData->muteSound ? &dlg_mutedSound : &dlg_unmutedSound);
 		} else
 		if (key == 'h' || key == 'H') {				// Show help dialog
+			selectPanel(PANEL_HELP, true);
 			showDialog(&dlg_help);
+			selectPanel(PANEL_HELP, false);
 			redrawSelection++;
 		} else
 		if (key == KEY_ESC || key == KEY_BS ||		// Go back to panels
@@ -598,11 +603,15 @@ void profiles_menu(Panel_t *panel)
 	selectCurrentLine(false);
 
 	// Check if profiles have changed and prompt for saving
-	if (changedProfiles && showDialog(&dlg_saveChanges) == 0) {
-		printLog("\x85 Saving modified configuration...");
-		if (!profile_saveFile()) {
-			showDialog(&dlg_errorSaving);
+	if (changedProfiles) {
+		selectPanel(PANEL_BACK, true);
+		if (showDialog(&dlg_saveChanges) == 0) {
+			printLog("\x85 Saving modified configuration...");
+			if (!profile_saveFile()) {
+				showDialog(&dlg_errorSaving);
+			}
 		}
+		selectPanel(PANEL_BACK, false);
 	}
 
 	// Release memory & clear panel selection

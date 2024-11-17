@@ -327,8 +327,8 @@ typedef enum {
 #define OCM_SMART_AudioPreset1	0x24	// Internal Audio Preset #1 "Mute Sound"
 #define OCM_SMART_AudioPreset2	0x25	// Internal Audio Preset #2 "Middle Sound"
 #define OCM_SMART_AudioPreset3	0x26	// Internal Audio Preset #3 "High Sound" (default)
-#define OCM_SMART_CMTOFF		0x27	// Set CMT OFF (default) (disabled w/ MSXtR BIOS) (n/a on SM-X / SX-2)
-#define OCM_SMART_CMTON			0x28	// Set CMT ON (needs a cassette recorder) (disabled w/ MSXtR BIOS) (n/a on SM-X / SX-2)
+#define OCM_SMART_CMTOFF		0x27	// Set CMT OFF (default) (disabled w/ MSXtR BIOS) (n/a on SM-X / SX-2 / SX-E)
+#define OCM_SMART_CMTON			0x28	// Set CMT ON (needs a cassette recorder) (disabled w/ MSXtR BIOS) (n/a on SM-X / SX-2 / SX-E)
 /*
 0x29	// Lock Turbo Toggles
 0x2a	// Unlock Turbo Toggles
@@ -376,13 +376,13 @@ typedef enum {
 #define OCM_SMART_VertOffset23	0x4e	// Vertical Offset 23
 #define OCM_SMART_VertOffset24	0x4f	// Vertical Offset 24 (useful for Space Manbow)
 
-#define OCM_SMART_Scanlines00	0x50	// Set VGA Scanlines 0% (default) (only for SM-X / SX-2)
-#define OCM_SMART_Scanlines25	0x51	// Set VGA Scanlines 25% (only for SM-X / SX-2)
-#define OCM_SMART_Scanlines50	0x52	// Set VGA Scanlines 50% (only for SM-X / SX-2)
-#define OCM_SMART_Scanlines75	0x53	// Set VGA Scanlines 75% (only for SM-X / SX-2)
+#define OCM_SMART_Scanlines00	0x50	// Set VGA Scanlines 0% (default) (only for SM-X / SX-2 / SX-E)
+#define OCM_SMART_Scanlines25	0x51	// Set VGA Scanlines 25% (only for SM-X / SX-2 / SX-E)
+#define OCM_SMART_Scanlines50	0x52	// Set VGA Scanlines 50% (only for SM-X / SX-2 / SX-E)
+#define OCM_SMART_Scanlines75	0x53	// Set VGA Scanlines 75% (only for SM-X / SX-2 / SX-E)
 
-#define OCM_SMART_IntPSG2OFF	0x54	// Set Internal PSG2 OFF (default) (only for SM-X / SX-2)
-#define OCM_SMART_IntPSG2ON		0x55	// Set Internal PSG2 ON (this second PSG acts as an external PSG) (only for SM-X / SX-2)
+#define OCM_SMART_IntPSG2OFF	0x54	// Set Internal PSG2 OFF (default) (only for SM-X / SX-2 / SX-E)
+#define OCM_SMART_IntPSG2ON		0x55	// Set Internal PSG2 ON (this second PSG acts as an external PSG) (only for SM-X / SX-2 / SX-E)
 
 #define OCM_SMART_Mapper4MbOFF	0x56	// Set Extra-Mapper 4096KB OFF (default)
 #define OCM_SMART_Mapper4MbON	0x57	// Set Extra-Mapper 4096KB ON (only available if SDRAM > 8MB)
@@ -402,10 +402,10 @@ typedef enum {
 0x85	// Set Internal Slot-2 Linear OFF (default)
 0x86	// Set Internal Slot-2 Linear ON (requires SCC-I or ASCII-8K/16K preset)
 */
-#define OCM_SMART_OPL3OFF		0x87	// Set Internal OPL3 OFF (default) (only for SM-X / SX-2)
-#define OCM_SMART_OPL3ON		0x88	// Set Internal OPL3 ON (only for SM-X / SX-2)
+#define OCM_SMART_OPL3OFF		0x87	// Set Internal OPL3 OFF (default) (only for SM-X / SX-2 / SX-E)
+#define OCM_SMART_OPL3ON		0x88	// Set Internal OPL3 ON (only for SM-X / SX-2 / SX-E)
 /*
-0x89-0x8f	// Reserved (Ducasp) (only for SM-X / SX-2)
+0x89-0x8f	// Reserved (Ducasp) (only for SM-X / SX-2 / SX-E)
 ...
 */
 #define OCM_SMART_MasterVol0	0xb0	// Set Master Volume 0
@@ -449,7 +449,7 @@ typedef enum {
 #define OCM_SMART_ForcePAL		0xd2	// Force PAL Mode
 /*
 0xd3	// Restore Default Keyboard Layout
-0xd4	// Null Command (reserved)
+0xd4	// Null Command $D4 (reserved) + Set C-BIOS Mode ON [Reserved to IPL-ROM]
 */
 #define OCM_SMART_RestoreTurbo	0xd5	// Restore Default Turbo Mode
 

@@ -633,9 +633,8 @@ static const Element_t elemHelp[] = {
 	{ LABEL, 3,11, "to select the items. Information text will appear at bottom." },
 	{ LABEL, 3,12, "To modify an item, you can press SPACE, ENTER, or '+' to increase its value" },
 	{ LABEL, 3,13, "or '-' to decrease it." },
-	{ LABEL, 3,14, "Use 'M' to mute/unmute the menu sounds." },
-	{ LABEL, 3,16, "If you want to suggest improvements, feel free to create an issue at the" },
-	{ LABEL, 3,17, "GitHub project page, the link is shown below." },
+	{ LABEL, 3,15, "If you want to suggest improvements, feel free to create an issue at the" },
+	{ LABEL, 3,16, "GitHub project page, the link is shown below." },
 	// END
 	{ END }
 };
@@ -850,12 +849,12 @@ enum {
 
 static const Panel_t pPanels[] = {
 	{ NULL },
-	{ " F1:System ",	3,3, 	11,	elemSystem },
-	{ " F2:Video ",		14,3, 	10,	elemVideo },
-	{ " F3:Audio ",		24,3,	10,	elemAudio },
-	{ " F4:DIP-SW ",	34,3,	11,	elemDIPs },
-	{ " [H]elp ",		52,3,	8,	elemHelp },
-	{ " [P]rofiles ",	60,3,	12,	NULL },
+	{ " F1:System ",	2,3, 	11,	elemSystem },
+	{ " F2:Video ",		12,3, 	10,	elemVideo },
+	{ " F3:Audio ",		21,3,	10,	elemAudio },
+	{ " F4:DIP-SW ",	30,3,	11,	elemDIPs },
+	{ " [H]elp ",		54,3,	8,	elemHelp },
+	{ " [P]rofiles ",	61,3,	12,	NULL },
 	{ " E[x]it ",		72,3,	8,	NULL },
 	{ NULL }
 };
