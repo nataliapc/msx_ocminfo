@@ -160,8 +160,8 @@ static const Element_t elemSystem[] = {
 		3,8, " CPU Mode ",
 		-1, 1, 7, 7,
 		&customCpuModeValue, 0b00000011, 0,2, cpuModeStr, 19,
-		CMDTYPE_STANDARD, 
-		{ OCM_SMART_CPU358MHz, OCM_SMART_TurboPana, OCM_SMART_CPU806MHz }, 
+		CMDTYPE_CUSTOM_CPUMODE, 
+		{ OCM_SMART_CPU358MHz, OCM_SMART_TurboPana, OCM_SMART_NullCommand }, 
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		desc_cpuMode,
 		IOREV_ALL, M_ALL

@@ -58,6 +58,7 @@ typedef enum {
 typedef enum {
 	CMDTYPE_NONE,
 	CMDTYPE_STANDARD,
+	CMDTYPE_CUSTOM_CPUMODE,
 	CMDTYPE_CUSTOM_SLOTS12,
 } CmdType_t;
 

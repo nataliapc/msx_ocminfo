@@ -289,6 +289,12 @@ uint8_t getActiveCommand(Element_t *elem)
 		return elem->cmd[getValue(elem)];
 	} else
 	// Custom Command behaviours
+	if (elem->cmdType == CMDTYPE_CUSTOM_CPUMODE) {
+		uint8_t cmd = elem->cmd[getValue(elem)];
+		return cmd != OCM_SMART_NullCommand ? 
+				cmd :
+				(elem+1)->cmd[sysInfo0.cpuCustomSpeed];
+	} else
 	if (elem->cmdType == CMDTYPE_CUSTOM_SLOTS12) {
 		return elem->cmd[customSlots12Value];
 	}
@@ -575,6 +581,12 @@ void menu_panels()
 			currentExtraKeys = getExtraKeysOCM().raw;
 		}
 
+		// Clear last setsmart text
+		if (isVisibleSetSmartText || lastExtraKeys != currentExtraKeys) {
+			putlinexy(SETSMART_X,SETSMART_Y, SETSMART_SIZE, emptyArea);
+			isVisibleSetSmartText = false;
+		}
+
 		// If OCM extra key pressed/realeased the panel is updated
 		if (lastExtraKeys != currentExtraKeys) {
 			beep_advice();
@@ -585,12 +597,6 @@ void menu_panels()
 				drawCurrentPanel();
 			}
 			continue;
-		}
-
-		// Clear last setsmart text
-		if (isVisibleSetSmartText) {
-			putlinexy(SETSMART_X,SETSMART_Y, SETSMART_SIZE, emptyArea);
-			isVisibleSetSmartText = false;
 		}
 
 		// Manage pressed key
