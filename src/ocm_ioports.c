@@ -30,10 +30,33 @@ bool ocm_detectDevice(uint8_t devId) __naked __z88dk_fastcall
 		cpl								; complement all bits of the value
 		cp   l							; if it does not match the value you originally wrote,
 
-		ld   a, #0
+		xor  a
 		ret  nz							; it does not exists on expanded I/O ports
 		inc  a
 		ret								; does exists
+	__endasm;
+}
+
+void ocm_setPortValue(uint8_t port, uint8_t value) __naked __sdcccall(1)
+{
+	port;								// A = Param port
+	value;								// L = Param value
+	__asm
+		ld   b, l						; B = Param value
+		ld   c, a						; C = Param port
+		in   a, (0x40)					; backup current manufacturer/device
+		cpl
+		push af
+
+		ld   l, #0xd4					; DEVID_OCMPLD
+		call .detectExtIODevice
+		ld   l, a
+		jr   z, .odv_end				; Return if not detected
+
+		ld   a, b						; Write the OCM device port
+		out  (c), a
+
+		jr  .odv_end
 	__endasm;
 }
 
@@ -45,7 +68,7 @@ uint8_t ocm_getPortValue(uint8_t port) __naked __z88dk_fastcall
 		cpl
 		push af
 
-		ld   c, l
+		ld   c, l						; C = Param port
 		ld   l, #0xd4					; DEVID_OCMPLD
 		call .detectExtIODevice
 		ld   l, a

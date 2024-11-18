@@ -476,6 +476,7 @@ typedef enum {
 //  Functions
 
 bool ocm_detectDevice(DeviceId_t devId) __z88dk_fastcall;
+void ocm_setPortValue(uint8_t port, uint8_t value) __sdcccall(1);
 uint8_t ocm_getPortValue(uint8_t port) __z88dk_fastcall;
 uint16_t ocm_getDynamicPortValue(uint8_t index) __z88dk_fastcall;
 bool ocm_sendSmartCmd(uint8_t cmd) __z88dk_fastcall;

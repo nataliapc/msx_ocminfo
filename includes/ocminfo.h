@@ -469,8 +469,8 @@ static const Element_t elemDIPs[] = {
 		3,7, " CPU Clock ",
 		5, 1, 7, 7,
 		&(virtualDIPs.raw), 0b00000001, 0,1, dipCpuStr, 22, 
-		CMDTYPE_STANDARD,
-		{ OCM_SMART_CPU358MHz, OCM_SMART_CPU806MHz },
+		CMDTYPE_CUSTOM_CPUMODE,
+		{ OCM_SMART_CPU358MHz, OCM_SMART_NullCommand },
 		ATR_FORCEPANELRELOAD,
 		desc_vCpuClock,
 		IOREV_ALL, M_ALL

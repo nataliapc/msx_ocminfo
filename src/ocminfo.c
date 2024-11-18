@@ -291,9 +291,10 @@ uint8_t getActiveCommand(Element_t *elem)
 	// Custom Command behaviours
 	if (elem->cmdType == CMDTYPE_CUSTOM_CPUMODE) {
 		uint8_t cmd = elem->cmd[getValue(elem)];
-		return cmd != OCM_SMART_NullCommand ? 
-				cmd :
-				(elem+1)->cmd[sysInfo0.cpuCustomSpeed];
+		if (cmd == OCM_SMART_NullCommand) {
+			ocm_setPortValue(OCM_VIRTDIPS_PORT, ocm_getPortValue(OCM_VIRTDIPS_PORT) ^ 255 & 254);
+		}
+		return cmd;
 	} else
 	if (elem->cmdType == CMDTYPE_CUSTOM_SLOTS12) {
 		return elem->cmd[customSlots12Value];
