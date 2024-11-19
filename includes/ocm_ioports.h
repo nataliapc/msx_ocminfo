@@ -147,7 +147,7 @@ typedef union {							// [OCM] Get System Info #2     (read only)
 		unsigned extClockMode: 1;		// bit 1   External Bus Clock Mode         | 0=Sync to CPU, 1=3.58MHz
 		unsigned machineTypeId: 4;		// bit 2-5 Machine Type ID (bit 0 LSB)     |
 										//            0=OCM, 1=Zemmix Neo/SX-1, 2=SM-X/MCP2, 3=SX-2,
-										//            4=SM-X Mini/SM-X HB, 5=DE0CV, 6=SX-E,
+										//            4=SM-X Mini/SM-X HB, 5=DE0CV, 6=SX-E/SX-Lite,
 										//            7-14=Free, 15=Unknown
 		unsigned videoType: 1;			// bit 6   NTSC/PAL type                   | 0=Forced, 1=Auto
 		unsigned videoForcedMode: 1;	// bit 7   Forced Video Mode               | 0=60Hz (NTSC), 1=50Hz (PAL)

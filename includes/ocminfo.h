@@ -58,7 +58,7 @@ static const char *ocminfoVersionStr = "\x13 ocminfo v"VERSION" \x14";
 
 static const char *machineTypeStr[16] = {
 	"1ChipMSX", "Zemmix Neo/SX-1", "SM-X/MCP2", "SX-2", "SM-X Mini/SM-X HB", 
-	"DE0CV", "SX-E", "??", "??", "??", "??", "??", "??", "??", "??", "Unknown"
+	"DE0CV", "SX-E/SX-Lite", "??", "??", "??", "??", "??", "??", "??", "??", "Unknown"
 };
 static const char *sdramSizeStr[4] = {
 	"8", "16", "32", "--"
