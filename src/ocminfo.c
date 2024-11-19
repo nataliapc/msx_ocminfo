@@ -352,6 +352,9 @@ void getPanelsCmds(uint8_t *cmd)
 // ========================================================
 static void drawDescription(char **description)
 {
+	ASM_EI;
+	ASM_HALT;
+
 	// Clear Description zone
 	puttext(2,21, 79,23, emptyArea);
 
@@ -491,6 +494,9 @@ static void selectPanelTitle(Panel_t *panel)
 
 static void selectPanel(Panel_t *panel)
 {
+	// Refresh I/O ext values
+	getOcmData();
+
 	ASM_EI;
 	ASM_HALT;
 
@@ -498,10 +504,9 @@ static void selectPanel(Panel_t *panel)
 	selectPanelTitle(panel);
 
 	// Clear Panel zone
-	puttext(2,5, 79,19, emptyArea);
-
-	// Refresh I/O ext values
-	getOcmData();
+	if (currentPanel != panel) {
+		puttext(2,5, 79,19, emptyArea);
+	}
 
 	// Draw Panel elements
 	currentPanel = panel;
