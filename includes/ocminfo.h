@@ -461,14 +461,14 @@ static const Element_t elemDIPs[] = {
 	// 0
 	{
 		LABEL, 
-		3,5,  "\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x13 Virtual DIPs \x14\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17"
+		3,5,  "\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x13 Virtual DIPs \x14\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17"
 	},
 	// 1
 	{
 		SLIDER,
 		3,7, " CPU Clock ",
 		5, 1, 7, 7,
-		&(virtualDIPs.raw), 0b00000001, 0,1, dipCpuStr, 22, 
+		&(virtualDIPs.raw), 0b00000001, 0,1, dipCpuStr, 20, 
 		CMDTYPE_CUSTOM_CPUMODE,
 		{ OCM_SMART_CPU358MHz, OCM_SMART_NullCommand },
 		ATR_FORCEPANELRELOAD,
@@ -480,7 +480,7 @@ static const Element_t elemDIPs[] = {
 		SLIDER,
 		3,9, " Video Output ",
 		-1, 1, 7, 7,
-		&customVideoOutputValue, 0b00000011, 0,3, virtualDipVideoStr, 20, 
+		&customVideoOutputValue, 0b00000011, 0,3, virtualDipVideoStr, 18, 
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_Disp15KhSvid, OCM_SMART_Disp15KhRGB, OCM_SMART_Disp31KhVGA, OCM_SMART_Disp31KhVGAp },
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
@@ -492,7 +492,7 @@ static const Element_t elemDIPs[] = {
 		SLIDER,
 		3,11, " Cartridge Slot 1 ",
 		-1, 1, 7, 7,
-		&customSlots12Value, 0b00000001, 0,1, dipSlot1Str, 22, 
+		&customSlots12Value, 0b00000001, 0,1, dipSlot1Str, 20, 
 		CMDTYPE_CUSTOM_SLOTS12,
 		{ OCM_SMART_S1extS2ext, OCM_SMART_S1sccS2ext,
 		  OCM_SMART_S1extS2a8,  OCM_SMART_S1sccS2a8,
@@ -507,7 +507,7 @@ static const Element_t elemDIPs[] = {
 		SLIDER,
 		3,13, " Cartridge Slot 2 ",
 		-1, 1, 7, 7,
-		&customSlots12Value, 0b00000110, 0,3, virtualDipSlot2Str, 20, 
+		&customSlots12Value, 0b00000110, 0,3, virtualDipSlot2Str, 18, 
 		CMDTYPE_CUSTOM_SLOTS12,
 		{ OCM_SMART_S1extS2ext, OCM_SMART_S1sccS2ext,
 		  OCM_SMART_S1extS2a8,  OCM_SMART_S1sccS2a8,
@@ -522,7 +522,7 @@ static const Element_t elemDIPs[] = {
 		VALUE,
 		3,15, " RAM Mapper ",
 		-1, 1, 7, 7,
-		&(virtualDIPs.raw), 0b01000000, 0,1, dipMapperStr, 30,//22,
+		&(virtualDIPs.raw), 0b01000000, 0,1, dipMapperStr, 28,//20,
 		CMDTYPE_NONE,
 /*REV*/	/*{ OCM_SMART_Mapper4MbOFF, OCM_SMART_Mapper4MbON },
 		ATR_FORCEPANELRELOAD | ATR_NEEDRESETTOAPPLY,*/ {0x00}, false,
@@ -534,7 +534,7 @@ static const Element_t elemDIPs[] = {
 		VALUE,
 		3,17, " Internal MegaSD ",
 		-1, -5, 7, 7,
-		&(virtualDIPs.raw), 0b10000000, 0,1, onOffStr, 30,//22,
+		&(virtualDIPs.raw), 0b10000000, 0,1, onOffStr, 28,//20,
 		CMDTYPE_NONE,
 /*REV*/	/*{ OCM_SMART_MegaSDOFF, OCM_SMART_MegaSDON },
 		ATR_FORCEPANELRELOAD | ATR_NEEDRESETTOAPPLY,*/ {0x00}, false,
@@ -544,12 +544,12 @@ static const Element_t elemDIPs[] = {
 	// 7
 	{
 		LABEL, 
-		44,5, "\x17\x17\x17\x17\x17\x17\x17\x17\x13 Hardware DIPs \x14\x17\x17\x17\x17\x17\x17\x17\x17\x17"
+		42,5, "\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x13 Hardware DIPs \x14\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17"
 	},
 	// 8
 	{
 		VALUE,
-		44,7, " CPU Clock ",
+		42,7, " CPU Clock ",
 		5, 1, -7, -7,
 		&(sysInfo5.raw), 0b00000001, 0,1, dipCpuStr, 24, 
 		CMDTYPE_NONE,
@@ -561,7 +561,7 @@ static const Element_t elemDIPs[] = {
 	// 9
 	{
 		VALUE,
-		44,9, " Video Output ",
+		42,9, " Video Output ",
 		-1, 1, -7, -7,
 		&(sysInfo5.raw), 0b00000110, 0,3, dipVideoStr, 24, 
 		CMDTYPE_NONE,
@@ -573,7 +573,7 @@ static const Element_t elemDIPs[] = {
 	// 10
 	{
 		VALUE,
-		44,11, " Cartridge Slot 1 ",
+		42,11, " Cartridge Slot 1 ",
 		-1, 1, -7, -7,
 		&(sysInfo5.raw), 0b00001000, 0,1, dipSlot1Str, 24, 
 		CMDTYPE_NONE,
@@ -585,7 +585,7 @@ static const Element_t elemDIPs[] = {
 	// 11
 	{
 		VALUE,
-		44,13, " Cartridge Slot 2 ",
+		42,13, " Cartridge Slot 2 ",
 		-1, 1, -7, -7,
 		&(sysInfo5.raw), 0b00110000, 0,3, dipSlot2Str, 24, 
 		CMDTYPE_NONE,
@@ -597,7 +597,7 @@ static const Element_t elemDIPs[] = {
 	// 12
 	{
 		VALUE,
-		44,15, " RAM Mapper ",
+		42,15, " RAM Mapper ",
 		-1, 1, -7, -7,
 		&(sysInfo5.raw), 0b01000000, 0,1, dipMapperStr, 24, 
 		CMDTYPE_NONE,
@@ -609,7 +609,7 @@ static const Element_t elemDIPs[] = {
 	// 13
 	{
 		VALUE,
-		44,17, " Internal MegaSD ",
+		42,17, " Internal MegaSD ",
 		-1, -5, -7, -7,
 		&(sysInfo5.raw), 0b10000000, 0,1, onOffStr, 24, 
 		CMDTYPE_NONE,
