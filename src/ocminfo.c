@@ -25,6 +25,9 @@ static uint8_t msxVersionROM;
 static uint8_t kanjiMode;
 static uint8_t originalLINL40;
 static uint8_t originalSCRMOD;
+static uint8_t originalFORCLR;
+static uint8_t originalBAKCLR;
+static uint8_t originalBDRCLR;
 static bool isVisibleSetSmartText = false;
 static uint8_t lastCmdSent = 0;
 static uint16_t lastExtraKeys;
@@ -74,6 +77,9 @@ static void checkPlatformSystem()
 	msxVersionROM = getRomByte(MSXVER);
 	originalLINL40 = varLINL40;
 	originalSCRMOD = varSCRMOD;
+	originalFORCLR = varFORCLR;
+	originalBAKCLR = varBAKCLR;
+	originalBDRCLR = varBDRCLR;
 
 	#ifndef _DEBUG_
 		// Check for OCM-PLD Device
@@ -695,6 +701,9 @@ void restoreScreen()
 	_fillVRAM(0x1b00, 240, 0);
 	clrscr();
 	varLINL40 = originalLINL40;
+	varFORCLR = originalFORCLR;
+	varBAKCLR = originalBAKCLR;
+	varBDRCLR = originalBDRCLR;
 	__asm
 		push ix
 		ld  a, (_originalSCRMOD)
