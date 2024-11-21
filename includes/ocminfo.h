@@ -114,10 +114,10 @@ static const char *dipCpuStr[2] = {
 	"Standard", "Custom  "
 };
 static const char *virtualDipVideoStr[4] = {
-	"Cmp/S-Vid", "RGB 15KHz", "VGA 1:1  ", "VGA+     "
+	"Cmp/S-Vid", "RGB 15KHz", "VGA (1:1)", "VGA+     "
 };
 static const char *dipVideoStr[4] = {
-	"Cmp/S-Vid", "VGA 1:1  ", "RGB 15KHz", "VGA+     "
+	"Cmp/S-Vid", "VGA (1:1)", "RGB 15KHz", "VGA+     "
 };
 static const char *dipSlot1Str[2] = {
 	"External", "Int.SCC+"
