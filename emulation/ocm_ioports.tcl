@@ -52,14 +52,18 @@ namespace eval ocm_ioports {
 	set ioports_array(73) 0b01011000
 	set ioports_array(0)  0b00011000
 	set ioports_array(1)  0b01100000
- 
+
+	# 3.9.1
+	set ioports_array(78) 0b00100111
+	set ioports_array(79) 0b10101011
+
 
 	variable cmd
 	array set cmd {
 		0	{ 0 0 0 }
 		1	{ 71 0b00010000 0b00000000 }
 		2	{ 71 0b00010000 0b00010000 }
-		3	{ 66 0b00000001 0b00000000 71 0b00000111 0b00000000 72 0b00000001 0b00000000 }
+		3	{ 66 0b00000001 0b00000000 72 0b00000001 0b00000000 }
 		4	{ 66 0b00000001 0b00000001 71 0b00000111 0b00000001 72 0b00000001 0b00000000 }
 		5	{ 66 0b00000001 0b00000001 71 0b00000111 0b00000010 72 0b00000001 0b00000000 }
 		6	{ 66 0b00000001 0b00000001 71 0b00000111 0b00000011 72 0b00000001 0b00000000 }
@@ -121,6 +125,8 @@ namespace eval ocm_ioports {
 		set watchpoint_write44 [debug set_watchpoint write_io 0x44 {} { ocm_ioports::trigger_write44 }]
 		set watchpoint_read1 [debug set_watchpoint read_io {0x42 0x4a} {} { ocm_ioports::trigger_read }]
 		set watchpoint_read2 [debug set_watchpoint read_io {0x4c 0x4f} {} { ocm_ioports::trigger_read }]
+		set watchpoint_write1 [debug set_watchpoint write_io {0x42 0x44} {} { ocm_ioports::trigger_write }]
+		set watchpoint_write2 [debug set_watchpoint write_io 0x4d {} { ocm_ioports::trigger_write }]
 		set watchpoint_read4b [debug set_watchpoint read_io 0x4b {} { ocm_ioports::trigger_read4b }]
 		return "Enabled OCM I/O Ports emulation"
 	}
@@ -170,6 +176,13 @@ namespace eval ocm_ioports {
 			set in_value $ocm_ioports::ioports_array($in_port)
 			after time 0 "reg a $in_value"
 		}
+	}
+
+	proc trigger_write {} {
+		set in_port [expr $::wp_last_address & 0xFF]
+		set in_value [expr {255 - $::wp_last_value}]
+		set ocm_ioports::ioports_array($in_port) $in_value
+		ocm_info_update
 	}
 
 	proc trigger_write44 {} {
@@ -353,4 +366,4 @@ namespace import ocm_ioports::*
 
 
 ocm_ioports_start
-ocm_toggle_info
+#ocm_toggle_info
