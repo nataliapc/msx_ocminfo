@@ -45,6 +45,7 @@ static uint8_t customVideoModeValue;
 static uint8_t customVideoOutputValue;
 static uint8_t customVerticalOffsetValue = 3;
 static uint8_t customAudioPresetValue = 0;
+static uint8_t customLockAllToggles;
 static uint8_t customSlots12Value;
 
 static const uint8_t customVideoOutputMap[4] = { 0, 2, 1, 3 };
@@ -622,6 +623,119 @@ static const Element_t elemDIPs[] = {
 	{ END }
 };
 
+static const Element_t elemLocks[] = {
+	// 0
+	{
+		SLIDER,
+		3,6, " Lock all key toggles ",
+		4, 1, 0, 0,
+		&customLockAllToggles, 0b00000001, 0,1, onOffStr, 23,
+		CMDTYPE_STANDARD,
+		{ OCM_SMART_UnlockAll, OCM_SMART_LockAll },
+		ATR_FORCEPANELRELOAD,
+		desc_lockAllToggles,
+		IOREV_ALL, M_ALL
+	},
+	// 1
+	{
+		SLIDER,
+		3,9, " Lock CPU Mode ",
+		-1, 1, 4, 4,
+		&(lockToggles.raw), 0b00000001, 0,1, onOffStr, 23,
+		CMDTYPE_STANDARD,
+		{ OCM_SMART_UnlockTurbo, OCM_SMART_LockTurbo },
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
+		desc_lockCpuMode,
+		IOREV_ALL, M_ALL
+	},
+	// 2
+	{
+		SLIDER,
+		3,11, " Lock Video Output ",
+		-1, 1, 4, 4,
+		&(lockToggles.raw), 0b00000010, 0,1, onOffStr, 23,
+		CMDTYPE_STANDARD,
+		{ OCM_SMART_UnlockDisplay, OCM_SMART_LockDisplay },
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
+		desc_lockVideoOutput,
+		IOREV_ALL, M_ALL
+	},
+	// 3
+	{
+		SLIDER,
+		3,13, " Lock Audio Mixer ",
+		-1, 1, 4, 4,
+		&(lockToggles.raw), 0b00000100, 0,1, onOffStr, 23,
+		CMDTYPE_STANDARD,
+		{ OCM_SMART_UnlockAudio, OCM_SMART_LockAudio },
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
+		desc_lockAudioMixer,
+		IOREV_ALL, M_ALL
+	},
+	// 4
+	{
+		SLIDER,
+		3,15, " Lock Reset key ",
+		-1, -4, 4, 4,
+		&(lockToggles.raw), 0b00100000, 0,1, onOffStr, 23,
+		CMDTYPE_STANDARD,
+		{ OCM_SMART_UnlockHardRst, OCM_SMART_LockHardRst },
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
+		desc_lockResetKey,
+		IOREV_ALL, M_ALL
+	},
+	// 5
+	{
+		SLIDER,
+		42,9, " Lock Slot-1 ",
+		3, 1, -4, -4,
+		&(lockToggles.raw), 0b00001000, 0,1, onOffStr, 23,
+		CMDTYPE_STANDARD,
+		{ OCM_SMART_UnlockSlot1, OCM_SMART_LockSlot1 },
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
+		desc_lockSlot1,
+		IOREV_ALL, M_ALL
+	},
+	// 6
+	{
+		SLIDER,
+		42,11, " Lock Slot-2 ",
+		-1, 1, -4, -4,
+		&(lockToggles.raw), 0b00010000, 0,1, onOffStr, 23,
+		CMDTYPE_STANDARD,
+		{ OCM_SMART_UnlockSlot2, OCM_SMART_LockSlot2 },
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
+		desc_lockSlot2,
+		IOREV_ALL, M_ALL
+	},
+	// 7
+	{
+		SLIDER,
+		42,13, " Lock Internal Mapper ",
+		-1, 1, -4, -4,
+		&(lockToggles.raw), 0b01000000, 0,1, onOffStr, 23,
+		CMDTYPE_STANDARD,
+		{ OCM_SMART_UnlockMapper, OCM_SMART_LockMapper },
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
+		desc_lockInternalMapper,
+		IOREV_ALL, M_ALL
+	},
+	// 8
+	{
+		SLIDER,
+		42,15, " Lock Internal MegaSD ",
+		-1, -3, -4, -4,
+		&(lockToggles.raw), 0b10000000, 0,1, onOffStr, 23,
+		CMDTYPE_STANDARD,
+		{ OCM_SMART_UnlockMegaSD, OCM_SMART_LockMegaSD },
+		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
+		desc_lockInternalMegaSD,
+		IOREV_ALL, M_ALL
+	},
+	// END
+	{ END }
+};
+
 static const Element_t elemHelp[] = {
 	{ LABEL, 3,5,  "    --==[ OCMINFO conio.lib dos.lib ]==--  by "AUTHOR"    ",
 		0, 0, 0, 0, NULL, 0, 0,0, NULL, 0, CMDTYPE_NONE,{ 0x00 }, false, 
@@ -825,6 +939,61 @@ const char *desc_hInternalMegaSD[] = {
 	"ON:  Enabled"
 };
 
+const char *desc_lockAllToggles[] = {
+	"Locks all key toggles (ON/OFF). Locks are designed to allow programs to",
+	"interact with Smart Commands without interferences of configuration keys",
+	"pressed by user. Default is OFF.",
+	NULL
+};
+
+const char *desc_lockCpuMode[] = {
+	"Locks CPU Clock changes when pressing F12 changing DIP-SW1.",
+	"Default is OFF.",
+	NULL
+};
+
+const char *desc_lockVideoOutput[] = {
+	"Locks Video Output changes when pressing (SHIFT+)PRTSCR changing",
+	"DIP-SW2/3.",
+	"Default is OFF."
+};
+
+const char *desc_lockAudioMixer[] = {
+	"Locks Audio changes when pressing (SHIFT+)PGUP/PGDOWN/F9/F10/F11.",
+	"CMT I/F and OPL3 are also affected when pressing SCRLK key.",
+	"Default is OFF."
+};
+
+const char *desc_lockResetKey[] = {
+	"Locks reset keys/buttons: when pressing LCTRL+F12 for Cold Reset, ",
+	"LCTRL+SHIFT+F12 for Hard Reset, and machine System Reset button.",
+	"Default is OFF."
+};
+
+const char *desc_lockSlot1[] = {
+	"Locks Slot-1 changes when pressing SHIFT+F12 changing DIP-SW4.",
+	"Default is OFF.",
+	NULL
+};
+
+const char *desc_lockSlot2[] = {
+	"Locks Slot-2 changes when pressing SHIFT+SCRLK changing DIP-SW5/6.",
+	"Default is OFF.",
+	NULL
+};
+
+const char *desc_lockInternalMapper[] = {
+	"Locks Internal Mapper when changing DIP-SW7.",
+	"Default is OFF.",
+	NULL
+};
+
+const char *desc_lockInternalMegaSD[] = {
+	"Locks Internal MegaSD when changing DIP-SW8.",
+	"Default is OFF.",
+	NULL
+};
+
 const char *desc_help[] = {
 	"Thanks to: @KdL, @HRA!, @Ducasp, and @Cayce-msx",
 	"",
@@ -840,6 +1009,7 @@ enum {
 	PANEL_VIDEO,
 	PANEL_AUDIO,
 	PANEL_DIPS,
+	PANEL_LOCKS,
 	PANEL_HELP,
 	PANEL_PROFILES,
 	PANEL_EXIT
@@ -853,6 +1023,7 @@ static const Panel_t pPanels[] = {
 	{ " F2:Video ",		12,3, 	10,	elemVideo },
 	{ " F3:Audio ",		21,3,	10,	elemAudio },
 	{ " F4:DIP-SW ",	30,3,	11,	elemDIPs },
+	{ " F5:Locks ",		40,3,	10,	elemLocks },
 	{ " [H]elp ",		54,3,	8,	elemHelp },
 	{ " [P]rofiles ",	61,3,	12,	NULL },
 	{ " E[x]it ",		72,3,	8,	NULL },

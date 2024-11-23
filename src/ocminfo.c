@@ -163,6 +163,7 @@ static void getOcmData()
 	customVideoOutputValue = customVideoOutputMap[virtualDIPs.videoOutput_raw];
 	customSlots12Value = customSlots12Map[virtualDIPs.raw >> 3 & 0b111 ];
 	customVerticalOffsetValue = sysInfo4_1.verticalOffset - 4;
+	customLockAllToggles = lockToggles.raw == 255 ? 1 : 0;
 }
 
 // ========================================================
@@ -650,6 +651,9 @@ void menu_panels()
 				break;
 			case '4':
 				selectPanel(&pPanels[PANEL_DIPS]);
+				break;
+			case '5':
+				selectPanel(&pPanels[PANEL_LOCKS]);
 				break;
 			case 'h':
 			case 'H':

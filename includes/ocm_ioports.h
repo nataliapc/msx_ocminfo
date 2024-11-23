@@ -329,28 +329,28 @@ typedef enum {
 #define OCM_SMART_AudioPreset3	0x26	// Internal Audio Preset #3 "High Sound" (default)
 #define OCM_SMART_CMTOFF		0x27	// Set CMT OFF (default) (disabled w/ MSXtR BIOS) (n/a on SM-X / SX-2 / SX-E)
 #define OCM_SMART_CMTON			0x28	// Set CMT ON (needs a cassette recorder) (disabled w/ MSXtR BIOS) (n/a on SM-X / SX-2 / SX-E)
-/*
-0x29	// Lock Turbo Toggles
-0x2a	// Unlock Turbo Toggles
-0x2b	// Lock Display Toggles
-0x2c	// Unlock Display Toggles
-0x2d	// Lock Audio Mixer & SCRLK Toggles
-0x2e	// Unlock Audio Mixer & SCRLK Toggles
-0x2f	// Lock Slot-1 Toggles
-0x30	// Unlock Slot-1 Toggles
-0x31	// Lock Slot-2 Toggles
-0x32	// Unlock Slot-2 Toggles
-0x33	// Lock Slot-1 & Slot-2 Toggles
-0x34	// Unlock Slot-1 & Slot-2 Toggles
-0x35	// Lock Hard Reset Key
-0x36	// Unlock Hard Reset Key
-0x37	// Lock Mapper Toggle
-0x38	// Unlock Mapper Toggle
-0x39	// Lock MegaSD Toggle
-0x3a	// Unlock MegaSD Toggle
-0x3b	// Lock All Toggles
-0x3c	// Unlock All Toggles (default)
-*/
+
+#define OCM_SMART_LockTurbo		0x29	// Lock Turbo Toggles
+#define OCM_SMART_UnlockTurbo	0x2a	// Unlock Turbo Toggles
+#define OCM_SMART_LockDisplay	0x2b	// Lock Display Toggles
+#define OCM_SMART_UnlockDisplay	0x2c	// Unlock Display Toggles
+#define OCM_SMART_LockAudio		0x2d	// Lock Audio Mixer & SCRLK Toggles
+#define OCM_SMART_UnlockAudio	0x2e	// Unlock Audio Mixer & SCRLK Toggles
+#define OCM_SMART_LockSlot1		0x2f	// Lock Slot-1 Toggles
+#define OCM_SMART_UnlockSlot1	0x30	// Unlock Slot-1 Toggles
+#define OCM_SMART_LockSlot2		0x31	// Lock Slot-2 Toggles
+#define OCM_SMART_UnlockSlot2	0x32	// Unlock Slot-2 Toggles
+#define OCM_SMART_LockSlot12	0x33	// Lock Slot-1 & Slot-2 Toggles
+#define OCM_SMART_UnlockSlot12	0x34	// Unlock Slot-1 & Slot-2 Toggles
+#define OCM_SMART_LockHardRst	0x35	// Lock Hard Reset Key
+#define OCM_SMART_UnlockHardRst	0x36	// Unlock Hard Reset Key
+#define OCM_SMART_LockMapper	0x37	// Lock Mapper Toggle
+#define OCM_SMART_UnlockMapper	0x38	// Unlock Mapper Toggle
+#define OCM_SMART_LockMegaSD	0x39	// Lock MegaSD Toggle
+#define OCM_SMART_UnlockMegaSD	0x3a	// Unlock MegaSD Toggle
+#define OCM_SMART_LockAll		0x3b	// Lock All Toggles
+#define OCM_SMART_UnlockAll		0x3c	// Unlock All Toggles (default)
+
 #define OCM_SMART_PseudSterOFF	0x3d	// Set Pseudo-Stereo OFF (default)
 #define OCM_SMART_PseudSterON	0x3e	// Set Pseudo-Stereo ON (needs an external sound cartridge)
 
