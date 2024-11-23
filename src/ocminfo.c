@@ -50,6 +50,8 @@ OCM_P4C_SysInfo5_t   sysInfo5;
 OCM_P4E_Version0_t   pldVers0;
 OCM_P4F_Version1_t   pldVers1;
 
+uint8_t portsChecksum;
+
 static Panel_t *currentPanel;
 static Element_t *currentElement;
 static Element_t *nextElement;
@@ -138,7 +140,7 @@ void abortRoutine()
 }
 
 // ========================================================
-static void getOcmData()
+static uint8_t getOcmData()
 {
 	// Hardware ports values
 	virtualDIPs.raw = ocm_getPortValue(OCM_VIRTDIPS_PORT);
@@ -164,6 +166,11 @@ static void getOcmData()
 	customSlots12Value = customSlots12Map[virtualDIPs.raw >> 3 & 0b111 ];
 	customVerticalOffsetValue = sysInfo4_1.verticalOffset - 4;
 	customLockAllToggles = lockToggles.raw == 255 ? 1 : 0;
+
+	portsChecksum = virtualDIPs.raw ^ lockToggles.raw ^ ledLights.raw ^ audioVols0.raw ^ 
+					audioVols1.raw ^ sysInfo0.raw ^ sysInfo1.raw ^ sysInfo2.raw ^ sysInfo3.raw ^ 
+					sysInfo4_0.raw ^ sysInfo4_1.raw ^ sysInfo5.raw ^ pldVers0.raw ^ pldVers1.raw;
+	return portsChecksum;
 }
 
 // ========================================================
@@ -602,7 +609,12 @@ void menu_panels()
 
 		// If OCM extra key pressed/realeased the panel is updated
 		if (lastExtraKeys != currentExtraKeys) {
-			beep_advice();
+			uint8_t lastPortsChecksum = portsChecksum;
+			if (lastPortsChecksum != getOcmData()) {
+				beep_advice();
+			} else {
+				beep_fail();
+			}
 			while (lastExtraKeys != currentExtraKeys) {
 				ASM_EI; ASM_HALT;
 				currentExtraKeys = getExtraKeysOCM().raw;
