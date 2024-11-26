@@ -20,6 +20,25 @@
 #define SETSMART_Y		19
 #define SETSMART_SIZE	12
 
+#define VERTICALOFFSET_DEFAULT	3
+#define AUDIOPRESET_DEFAULT		0
+
+// Video output values after mapping
+enum {
+	VIDEOUTPUT_SVID = 0,
+	VIDEOUTPUY_RGB15  = 1,
+	VIDEOUTPUT_VGA11 = 2,
+	VIDEOUTPUY_VGAPLUS  = 3
+};
+
+// Video Mode values
+enum {
+	VIDEOMODE_PAL = 0,
+	VIDEOMODE_AUTO = 1,
+	VIDEOMODE_NTSC = 2
+};
+
+// Extern variables
 extern OCM_P42_VirtualDIP_t virtualDIPs;
 extern OCM_P43_LockToggles_t lockToggles;
 extern OCM_P44_LedLights_t  ledLights;
@@ -41,10 +60,10 @@ extern OCM_P4F_Version1_t   pldVers1;
 
 static uint8_t customCpuClockValue;
 static uint8_t customCpuModeValue;
-static uint8_t customVideoModeValue;
+static uint8_t customVideoModeValue = VIDEOMODE_AUTO;
 static uint8_t customVideoOutputValue;
-static uint8_t customVerticalOffsetValue = 3;
-static uint8_t customAudioPresetValue = 0;
+static uint8_t customVerticalOffsetValue = VERTICALOFFSET_DEFAULT;
+static uint8_t customAudioPresetValue = AUDIOPRESET_DEFAULT;
 static uint8_t customLockAllToggles;
 static uint8_t customSlots12Value;
 
@@ -58,7 +77,7 @@ static const uint8_t customSlots12Map[8] = { 0, 1, 4, 5, 2, 3, 6, 7 };
 static const char *ocminfoVersionStr = "\x13 ocminfo v"VERSION" \x14";
 
 static const char *machineTypeStr[16] = {
-	"1ChipMSX", "Zemmix Neo/SX-1", "SM-X/MCP2", "SX-2", "SM-X Mini/SM-X HB", 
+	"1chipMSX", "Zemmix Neo/SX-1", "SM-X/MCP2", "SX-2", "SM-X Mini/SM-X HB", 
 	"DE0CV", "SX-E/SX-Lite", "??", "??", "??", "??", "??", "??", "??", "??", "Unknown"
 };
 static const char *sdramSizeStr[4] = {
@@ -298,7 +317,7 @@ static const Element_t elemVideo[] = {
 		  OCM_SMART_VertOffset22, OCM_SMART_VertOffset23, OCM_SMART_VertOffset24 },
 		ATR_SAVEINPROFILE,
 		desc_verticalOffset,
-		IOREV_12, M_ALL
+		IOREV_ALL, M_ALL
 	},
 	// 4
 	{
@@ -744,11 +763,14 @@ static const Element_t elemHelp[] = {
 	{ LABEL, 3,7,  "This program aims to be a helpful tool for configuring and maintaining" },
 	{ LABEL, 3,8,  "MSX++ (OCM-PLD) FPGA-based systems." },
 	{ LABEL, 3,10, "Use the F1-F5 or TAB to navigate the different panels, and the cursor keys" },
-	{ LABEL, 3,11, "to select the items. Information text will appear at bottom." },
+	{ LABEL, 3,11, "to select the items. Description text will appear at bottom." },
 	{ LABEL, 3,12, "To modify an item, you can press SPACE, ENTER, or '+' to increase its value" },
 	{ LABEL, 3,13, "or '-' to decrease it." },
-	{ LABEL, 3,15, "If you want to suggest improvements, feel free to create an issue at the" },
-	{ LABEL, 3,16, "GitHub project page, the link is shown below." },
+
+	{ LABEL, 3,15, "Note: descriptions are related to the latest I/O specifications released." },	
+
+	{ LABEL, 3,17, "If you want to suggest improvements, feel free to create an issue at the" },
+	{ LABEL, 3,18, "GitHub project page, the link is shown below." },
 	// END
 	{ END }
 };

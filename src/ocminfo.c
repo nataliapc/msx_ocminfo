@@ -161,12 +161,21 @@ static uint8_t getOcmData()
 	// Custom virtual values
 	customCpuClockValue = (!virtualDIPs.cpuClock ? 7 + sysInfo1.turboPana : sysInfo0.cpuCustomSpeed - 1 );
 	customCpuModeValue = (!virtualDIPs.cpuClock ? sysInfo1.turboPana : 2 );
-	customVideoModeValue = (sysInfo2.videoType ? 1 : (sysInfo2.videoForcedMode ? 0 : 2));
 	customVideoOutputValue = customVideoOutputMap[virtualDIPs.videoOutput_raw];
 	customSlots12Value = customSlots12Map[virtualDIPs.raw >> 3 & 0b111 ];
-	customVerticalOffsetValue = sysInfo4_1.verticalOffset - 4;
 	customLockAllToggles = lockToggles.raw == 255 ? 1 : 0;
 
+	// Additional customs
+	// - Vertical Offset status only exists for I/O rev >= 12
+	if (pldVers1.ioRevision > IOREV_11) {
+		customVerticalOffsetValue = sysInfo4_1.verticalOffset - 4;
+	}
+	// - OCM bug in VideoMode when VGA 1:1 is enabled for I/O rev <= 11
+	if (customVideoOutputValue != VIDEOUTPUT_VGA11 || pldVers1.ioRevision > IOREV_11) {
+		customVideoModeValue = (sysInfo2.videoType ? 1 : (sysInfo2.videoForcedMode ? 0 : 2));
+	}
+
+	// Checksum
 	portsChecksum = virtualDIPs.raw ^ lockToggles.raw ^ ledLights.raw ^ audioVols0.raw ^ 
 					audioVols1.raw ^ sysInfo0.raw ^ sysInfo1.raw ^ sysInfo2.raw ^ sysInfo3.raw ^ 
 					sysInfo4_0.raw ^ sysInfo4_1.raw ^ sysInfo5.raw ^ pldVers0.raw ^ pldVers1.raw;
