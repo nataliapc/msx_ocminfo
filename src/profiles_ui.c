@@ -379,10 +379,10 @@ void selectCurrentLine(bool enabled)
 
 void selectPanel(uint8_t idx, bool enabled)
 {
-	Panel_t *panel = &pPanels[idx];
-	textblink(panel->titlex,panel->titley, panel->titlelen, enabled);
-	panel = &pPanels[PANEL_PROFILES];
-	textblink(panel->titlex,panel->titley, panel->titlelen, !enabled);
+	Panel_t *panel = &pPanels[enabled ? PANEL_PROFILES : idx];
+	textblink(panel->titlex,panel->titley, panel->titlelen, false);
+	panel = &pPanels[enabled ? idx : PANEL_PROFILES];
+	textblink(panel->titlex,panel->titley, panel->titlelen, true);
 }
 
 void showDialogNoProfiles()
