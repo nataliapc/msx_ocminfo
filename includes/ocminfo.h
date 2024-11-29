@@ -16,9 +16,11 @@
 // ========================================================
 // Defines & externals
 
-#define SETSMART_X		34
-#define SETSMART_Y		19
-#define SETSMART_SIZE	12
+#define CUSTOM_SPEED_IDX		3	// Custom CPU speed index (elemSystem[3])
+
+#define SETSMART_X				34
+#define SETSMART_Y				19
+#define SETSMART_SIZE			12
 
 #define VERTICALOFFSET_DEFAULT	3
 #define AUDIOPRESET_DEFAULT		0
@@ -134,10 +136,10 @@ static const char *dipCpuStr[2] = {
 	"Standard", "Custom  "
 };
 static const char *virtualDipVideoStr[4] = {
-	"Cmp/S-Vid", "RGB 15KHz", "VGA (1:1)", "VGA+     "
+	"Cmp/S-Vid", "RGB 15KHz", "VGA (1:1)", "VGA+     "	// for Mapped value
 };
 static const char *dipVideoStr[4] = {
-	"Cmp/S-Vid", "VGA (1:1)", "RGB 15KHz", "VGA+     "
+	"Cmp/S-Vid", "VGA (1:1)", "RGB 15KHz", "VGA+     "	// for Raw value
 };
 static const char *dipSlot1Str[2] = {
 	"External", "Int.SCC+"
@@ -186,7 +188,7 @@ static const Element_t elemSystem[] = {
 		desc_cpuMode,
 		IOREV_ALL, M_ALL
 	},
-	// 4
+	// 3
 	{
 		SLIDER,
 		3,9, " Custom Speed ",
@@ -199,7 +201,7 @@ static const Element_t elemSystem[] = {
 		desc_customSpeed,
 		IOREV_ALL, M_ALL
 	},
-	// 5
+	// 4
 	{
 		SLIDER,
 		3,10, " Ext.Bus Clock ",
@@ -211,7 +213,7 @@ static const Element_t elemSystem[] = {
 		desc_extBusClock,
 		IOREV_3, M_ALL
 	},
-	// 6
+	// 5
 	{
 		SLIDER,
 		3,12, " T. Pana redir. ",
@@ -223,7 +225,7 @@ static const Element_t elemSystem[] = {
 		desc_tPanaRedir,
 		IOREV_1, M_ALL
 	},
-	// 7
+	// 6
 	{
 		SLIDER,
 		3,13, " Turbo MegaSD ",
@@ -235,12 +237,12 @@ static const Element_t elemSystem[] = {
 		desc_turboMegaSD,
 		IOREV_1, M_ALL
 	},
-	// 8
+	// 7
 	{
 		LABEL, 
 		42,5, "\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x13 Keyboard \x14\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17"
 	},
-	// 9
+	// 8
 	{
 		VALUE,
 		42,7, " Default Keyboard ",
@@ -252,7 +254,7 @@ static const Element_t elemSystem[] = {
 		desc_defaultKeyboard,
 		IOREV_1, M_ALL
 	},
-	// 10
+	// 9
 	{
 		SLIDER,
 		42,8, " Current Keyboard ",

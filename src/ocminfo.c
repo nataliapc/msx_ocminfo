@@ -307,17 +307,19 @@ static bool changeCurrentValue(int8_t increase)
 // ========================================================
 uint8_t getActiveCommand(Element_t *elem)
 {
+	uint8_t elemCmd = elem->cmd[getValue(elem)];
+
 	// Single Standard Command
 	if (elem->cmdType == CMDTYPE_STANDARD) {
-		return elem->cmd[getValue(elem)];
+		return elemCmd;
 	} else
 	// Custom Command behaviours
 	if (elem->cmdType == CMDTYPE_CUSTOM_CPUMODE) {
-		uint8_t cmd = elem->cmd[getValue(elem)];
-		if (cmd == OCM_SMART_NullCommand) {
-			ocm_setPortValue(OCM_VIRTDIPS_PORT, ocm_getPortValue(OCM_VIRTDIPS_PORT) ^ 255 & 254);
+		// If custom cpu speed then set the current custom speed directly
+		if (elemCmd == OCM_SMART_NullCommand) {
+			return elemSystem[CUSTOM_SPEED_IDX].cmd[sysInfo0.cpuCustomSpeed];
 		}
-		return cmd;
+		return elemCmd;
 	} else
 	if (elem->cmdType == CMDTYPE_CUSTOM_SLOTS12) {
 		return elem->cmd[customSlots12Value];
@@ -356,8 +358,10 @@ void getPanelsCmds(uint8_t *cmd)
 				cmdToAdd = getActiveCommand(element);
 				ptr = cmd;
 				while (*ptr && *ptr != cmdToAdd) ptr++;
-				if (!*ptr) *ptr = cmdToAdd;
-				*++ptr = 0x00;
+				if (!*ptr) {
+					*ptr = cmdToAdd;
+					*++ptr = 0x00;
+				}
 			}
 			element++;
 		}
@@ -655,6 +659,7 @@ void menu_panels()
 					beep_advice();
 				}
 				break;
+			case KEY_BS:
 			case '-':
 				if (changeCurrentValue(-1)) {
 					drawElement(currentElement);
