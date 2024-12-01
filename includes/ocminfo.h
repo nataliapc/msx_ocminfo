@@ -188,7 +188,7 @@ static const Element_t elemSystem[] = {
 		desc_cpuMode,
 		IOREV_ALL, M_ALL
 	},
-	// 3
+	// 3	(referenced by CUSTOM_SPEED_IDX)
 	{
 		SLIDER,
 		3,9, " Custom Speed ",
@@ -766,8 +766,8 @@ static const Element_t elemHelp[] = {
 	{ LABEL, 3,8,  "MSX++ (OCM-PLD) FPGA-based systems." },
 	{ LABEL, 3,10, "Use the F1-F5 or TAB to navigate the different panels, and the cursor keys" },
 	{ LABEL, 3,11, "to select the items. Description text will appear at bottom." },
-	{ LABEL, 3,12, "To modify an item, you can press SPACE, ENTER, or '+' to increase its value" },
-	{ LABEL, 3,13, "or '-' to decrease it." },
+	{ LABEL, 3,12, "To modify a value, you can press SPACE, RETURN, '+' to increase it or press" },
+	{ LABEL, 3,13, "BS, '-' to decrease it." },
 
 	{ LABEL, 3,15, "Note: descriptions are related to the latest I/O specifications released." },	
 
