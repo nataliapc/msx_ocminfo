@@ -789,7 +789,7 @@ const char *desc_cpuClock[] = {
 const char *desc_cpuMode[] = {
 	"Standard: Standard CPU clock mode (3.58MHz)",
 	"tPANA:    Panasonic turbo mode (aka Turbo Pana, 5.37MHz)",
-	"Custom:   Custom CPU clock mode (4.10MHz to 8.06MHz)"
+	"Custom:   Custom CPU speed mode (4.10MHz to 8.06MHz)"
 };
 const char *desc_customSpeed[] = {
 	"Custom CPU speed. These are not real CPU frequencies but a simulation",
@@ -813,13 +813,13 @@ const char *desc_turboMegaSD[] = {
 };
 const char *desc_defaultKeyboard[] = {
 	"Default keyboard layout (read only).",
-	"Values can be Japanese or non-Japanese (international keyboard layout",
-	"embedded inside the BIOS)."
+	"Values can be Japanese, or non-Japanese (a core layout variant, currently",
+	"available are BR, ES, FR, IT, US)."
 };
 const char *desc_currentKeyboard[] = {
-	"Current active keyboard layout.",
-	"Values can be Japanese or non-Japanese (international keyboard layout",
-	"embedded inside the BIOS)."
+	"Currently active keyboard layout.",
+	"Values can be Japanese, or non-Japanese (a core layout variant, currently",
+	"available are BR, ES, FR, IT, US)."
 };
 
 const char *desc_vdpSpeed[] = {
@@ -905,12 +905,12 @@ const char *desc_rightInverseAudio[] = {
 const char *desc_vCpuClock[] = {
 	"Virtual DIP-Switch #1: CPU Clock",
 	"OFF: Standard CPU clock mode (3.58MHz)",
-	"ON:  Custom CPU clock mode (4.10MHz to 8.06MHz)"
+	"ON:  Custom CPU speed mode (4.10MHz to 8.06MHz)"
 };
 const char *desc_hCpuClock[] = {
 	"Hardware DIP-Switch #1: CPU Clock",
 	"OFF: Standard CPU clock mode (3.58MHz)",
-	"ON:  Custom CPU clock mode (4.10MHz to 8.06MHz)"
+	"ON:  Custom CPU speed mode (4.10MHz to 8.06MHz)"
 };
 const char *desc_vVideoOutput[] = {
 	"Virtual DIP-Switch #2-#3: Video Output",
@@ -990,7 +990,7 @@ const char *desc_lockAudioMixer[] = {
 
 const char *desc_lockResetKey[] = {
 	"Locks reset keys/buttons: when pressing LCTRL+F12 for Cold Reset, ",
-	"LCTRL+SHIFT+F12 for Hard Reset, and machine System Reset button.",
+	"LCTRL+SHIFT+F12 for Full Reset, and machine System Reset button.",
 	"Default is OFF."
 };
 
@@ -1029,7 +1029,7 @@ const char *desc_help[] = {
 // Panel constants
 
 enum {
-	PANEL_SYSTEM = 1,
+	PANEL_SYSTEM = 0,
 	PANEL_VIDEO,
 	PANEL_AUDIO,
 	PANEL_DIPS,
@@ -1039,16 +1039,15 @@ enum {
 	PANEL_EXIT
 };
 #define PANEL_FIRST		PANEL_SYSTEM
-#define PANEL_LAST		PANEL_HELP
+#define PANEL_LAST		PANEL_LOCKS
 
 static const Panel_t pPanels[] = {
-	{ NULL },
 	{ " F1:System ",	2,3, 	11,	elemSystem },
 	{ " F2:Video ",		12,3, 	10,	elemVideo },
 	{ " F3:Audio ",		21,3,	10,	elemAudio },
 	{ " F4:DIP-SW ",	30,3,	11,	elemDIPs },
 	{ " F5:Locks ",		40,3,	10,	elemLocks },
-	{ " [H]elp ",		54,3,	8,	elemHelp },
+	{ " [A]bout ",		53,3,	9,	elemHelp },
 	{ " [P]rofiles ",	61,3,	12,	NULL },
 	{ " E[x]it ",		72,3,	8,	NULL },
 	{ NULL }

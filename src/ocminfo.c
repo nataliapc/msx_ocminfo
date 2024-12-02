@@ -681,20 +681,20 @@ void menu_panels()
 			case '5':
 				selectPanel(&pPanels[PANEL_LOCKS]);
 				break;
-			case 'h':
-			case 'H':
+			case 'a':
+			case 'A':
 				selectPanel(&pPanels[PANEL_HELP]);
 				break;
 			case KEY_TAB:
 				nextPanel = currentPanel;
 				if (!isShiftKeyPressed()) {
 					nextPanel++;
-					if (nextPanel->elements == NULL) {
+					if (nextPanel > &pPanels[PANEL_LAST]) {
 						nextPanel = &pPanels[PANEL_FIRST];
 					}
 				} else {
 					nextPanel--;
-					if (nextPanel->title == NULL) {
+					if (nextPanel < &pPanels[PANEL_FIRST]) {
 						nextPanel = &pPanels[PANEL_LAST];
 					}
 				}

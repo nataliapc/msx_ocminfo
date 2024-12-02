@@ -68,7 +68,7 @@ static const Panel_t pPanels[] = {
 	{ " [A]dd new ",	2,3, 	11 },
 	{ " [U]pdate ",		13,3, 	10 },
 	{ " [DEL]ete ",		23,3,	10 },
-	{ " [H]elp ",		54,3,	8  },
+	{ " [H]elp ",		33,3,	8  },
 	{ " [P]rofiles ",	61,3,	12 },
 	{ " [B]ack ",		72,3,	8  },
 	{ NULL }
@@ -176,7 +176,7 @@ const char *dlg_helpStr[] = {
 	"Ctrl+Up/Down "                                 "\x7f\x7f Move selected item     ",
 	"M ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Mute/Unmute menu sounds",
 	"H ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Show this help         ",
-	"BS/B "         "\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Go back to panels      ",
+	"ESC/B "            "\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Go back to panels      ",
 	NULL
 };
 const Dialog_t dlg_help = {
@@ -202,6 +202,8 @@ void drawProfilesCounter()
 
 void drawHeader()
 {
+	ASM_EI; ASM_HALT;
+
 	// Clear panel
 	textblink(1,3, 80, false);
 	puttext(2,3, 79,23, emptyArea);
@@ -564,7 +566,7 @@ void profiles_menu(Panel_t *panel)
 			selectPanel(PANEL_HELP, false);
 			redrawSelection++;
 		} else
-		if (key == KEY_ESC || key == KEY_BS ||		// Go back to panels
+		if (key == KEY_ESC ||						// Go back to panels
 			key == 'b' || key == 'B') {
 			end++;
 		}
