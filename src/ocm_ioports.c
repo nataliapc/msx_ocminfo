@@ -56,7 +56,7 @@ void ocm_setPortValue(uint8_t port, uint8_t value) __naked __sdcccall(1)
 		ld   a, b						; Write the OCM device port
 		out  (c), a
 
-		jr  .odv_end
+		jr   .odv_end
 	__endasm;
 }
 
@@ -74,10 +74,10 @@ uint8_t ocm_getPortValue(uint8_t port) __naked __z88dk_fastcall
 		ld   l, a
 		jr   z, .odv_end				; Return if not detected
 
-		in a, (c)						; Read the OCM device port
-		ld l, a							; Returns L = ext I/O port value
+		in   a, (c)						; Read the OCM device port
+		ld   l, a						; Returns L = ext I/O port value
 
-		jr .odv_end
+		jr   .odv_end
 	__endasm;
 }
 
@@ -120,16 +120,22 @@ bool ocm_sendSmartCmd(uint8_t cmd) __naked __z88dk_fastcall
 		cpl
 		push af
 
-		ld b, l							; Store Param cmd
-		ld l, #0xd4						; DEVID_OCMPLD
+		ld   b, l						; Store Param cmd
+		ld   l, #0xd4					; DEVID_OCMPLD
 		call .detectExtIODevice
 
-		ld l, a
-		jr z, .odv_end
+		ld   l, a
+		jr   z, .odv_end				; Return L = 0:fail
+										; L = 1:success
 
-		ld l, a							; Returns L = 0:fail 1:success
-		ld a, b							; Restore Param cmd
-		out (0x41), a					; send smart command to OCM_SMARTCMD_PORT
+		ld   a, b						; Restore Param cmd
+		out  (0x41), a					; send smart command to OCM_SMARTCMD_PORT
+
+		in   a, (0x41)					; Read the value you have just written for testing
+		cpl
+		cp   b							; Check the match of the original value
+		jr   z, .odv_end
+		dec  l							; Return L = 0:fail
 
 		jr .odv_end
 	__endasm;
