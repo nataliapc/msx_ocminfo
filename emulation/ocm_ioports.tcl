@@ -14,6 +14,9 @@ namespace eval ocm_ioports {
 	variable port4b_id
 	set port4b_id 0
 
+	variable port41
+	set port41 0
+
 	variable ioports_array
 	# 0x42(66)	[R/Wn] Virtual DIP-SW
 	# 0x43(67)	[R/Wn] Lock toggles
@@ -54,8 +57,8 @@ namespace eval ocm_ioports {
 	set ioports_array(1)  0b01100000
 
 	# 3.9.1
-	set ioports_array(78) 0b00100111
-	set ioports_array(79) 0b10101011
+#	set ioports_array(78) 0b00100111
+#	set ioports_array(79) 0b10101011
 
 
 	variable cmd
@@ -141,7 +144,8 @@ namespace eval ocm_ioports {
 	proc ocm_ioports_start {} {
 		set watchpoint_id_write [debug set_watchpoint write_io 0x40 {} { ocm_ioports::trigger_id_write }]
 		set watchpoint_id_read [debug set_watchpoint read_io 0x40 {} { ocm_ioports::trigger_id_read }]
-		set watchpoint_smartcmd [debug set_watchpoint write_io 0x41 {} { ocm_ioports::trigger_smartcmd }]
+		set watchpoint_smartcmd_w [debug set_watchpoint write_io 0x41 {} { ocm_ioports::trigger_smartcmd_write }]
+		set watchpoint_smartcmd_r [debug set_watchpoint read_io 0x41 {} { ocm_ioports::trigger_smartcmd_read }]
 		set watchpoint_write44 [debug set_watchpoint write_io 0x44 {} { ocm_ioports::trigger_write44 }]
 		set watchpoint_read1 [debug set_watchpoint read_io {0x42 0x4a} {} { ocm_ioports::trigger_read }]
 		set watchpoint_read2 [debug set_watchpoint read_io {0x4c 0x4f} {} { ocm_ioports::trigger_read }]
@@ -174,18 +178,24 @@ namespace eval ocm_ioports {
 		}
 	}
 
-	proc trigger_smartcmd {} {
+	proc trigger_smartcmd_write {} {
 		if {![info exists ocm_ioports::cmd($::wp_last_value)]} {
 			puts stderr [format "Error: Invalid smart command 0x%02X (%d)" $::wp_last_value $::wp_last_value]
 			return
 		}
 		set cmd $ocm_ioports::cmd($::wp_last_value)
+		set ocm_ioports::port41 $::wp_last_value
 		foreach {port_num mask value} $cmd {
 			set current_value [expr {$ocm_ioports::ioports_array($port_num) & ~$mask}]
 			set new_value [expr {$current_value | ($value & $mask)}]
 			set ocm_ioports::ioports_array($port_num) $new_value
 		}
 		ocm_info_update
+	}
+
+	proc trigger_smartcmd_read {} {
+		set value [expr { 255 - $ocm_ioports::port41}]
+		after time 0 "reg a $value"
 	}
 
 	proc trigger_read {} {

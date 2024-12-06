@@ -268,7 +268,6 @@ static bool changeCurrentValue(int8_t increase)
 		currentElement->cmdType == CMDTYPE_NONE ||
 		currentElement->value == NULL)
 	{
-		beep_fail();
 		return false;
 	}
 
@@ -284,6 +283,10 @@ static bool changeCurrentValue(int8_t increase)
 			csprintf(heap_top, "setsmart -%x%x", lastCmdSent/16, lastCmdSent%16);
 			putlinexy(SETSMART_X,SETSMART_Y, SETSMART_SIZE, heap_top);
 			isVisibleSetSmartText = true;
+		} else {
+			// Element disabled
+			currentElement->supportedBy = M_NONE;
+			return false;
 		}
 
 		getOcmData();
@@ -335,10 +338,9 @@ bool sendCommand(Element_t *elem)
 	// Do nothing
 	if (cmd == OCM_SMART_NullCommand) return false;
 	lastCmdSent = cmd;
+
 	// Send Command
-	ocm_sendSmartCmd(cmd);
-	
-	return true;
+	return ocm_sendSmartCmd(cmd);
 }
 
 void getPanelsCmds(uint8_t *cmd)
@@ -449,7 +451,8 @@ static bool drawElement(Element_t *element)
 	if (element->type == LABEL) return true;
 
 	if (!isIOrevisionSupported(element) || !isMachineSupported(element)) {
-		char *text = element->useLastStrForNA ? element->valueStr[element->maxValue+1] : "n/a    ";
+		char *text = element->useLastStrForNA ? element->valueStr[element->maxValue+1] : "n/a     ";
+		putlinexy(posx + element->valueOffsetX, posy, element->maxValue+6, emptyArea);
 		putlinexy(
 			posx + element->valueOffsetX + element->maxValue + 7,
 			posy,
@@ -596,9 +599,6 @@ void menu_panels()
 
 	// Get data from I/O extension ports
 	getOcmData();
-	// Set default Vertical offset for < 3.9.2
-	if (sysInfo4_1.raw & 0xf0 == 0xf0)
-		ocm_sendSmartCmd(OCM_SMART_VertOffset19);
 
 	// Initialize header & panel
 	printHeader();
@@ -608,6 +608,7 @@ void menu_panels()
 	// Main loop panels
 	lastExtraKeys = getExtraKeysOCM().raw;
 	currentExtraKeys = lastExtraKeys;
+	bool changeResult;
 	do {
 		while (!kbhit() && lastExtraKeys == currentExtraKeys) {
 			ASM_EI; ASM_HALT;
@@ -654,16 +655,22 @@ void menu_panels()
 			case KEY_SPACE:
 			case KEY_ENTER:
 			case '+':
-				if (changeCurrentValue(1)) {
-					drawElement(currentElement);
+				changeResult = changeCurrentValue(1);
+				drawElement(currentElement);
+				if (changeResult) {
 					beep_advice();
+				} else {
+					beep_fail();
 				}
 				break;
 			case KEY_BS:
 			case '-':
-				if (changeCurrentValue(-1)) {
-					drawElement(currentElement);
+				changeResult = changeCurrentValue(-1);
+				drawElement(currentElement);
+				if (changeResult) {
 					beep_advice();
+				} else {
+					beep_fail();
 				}
 				break;
 			case '1':
