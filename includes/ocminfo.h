@@ -798,8 +798,8 @@ const char *desc_customSpeed[] = {
 };
 const char *desc_extBusClock[] = {
 	"Synchronize external bus clock to CPU clock (default), or force it to",
-	"3.58MHz.",
-	NULL
+	"3.58MHz. In async mode, tPANA is the default turbo clock, and the F12 key is",
+	"restricted to protect external cartridges."
 };
 const char *desc_tPanaRedir[] = {
 	"Turbo Pana redirect mode sets Turbo Pana I/O to the current Custom Speed.",
