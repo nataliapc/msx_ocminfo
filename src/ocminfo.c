@@ -280,9 +280,11 @@ static bool changeCurrentValue(int8_t increase)
 		
 		if (sendCommand(currentElement)) {
 			// Display setsmart text
-			csprintf(heap_top, "setsmart -%x%x", lastCmdSent/16, lastCmdSent%16);
-			putlinexy(SETSMART_X,SETSMART_Y, SETSMART_SIZE, heap_top);
-			isVisibleSetSmartText = true;
+			if (lastCmdSent != OCM_SMART_NullCommand) {
+				csprintf(heap_top, "setsmart -%x%x", lastCmdSent/16, lastCmdSent%16);
+				putlinexy(SETSMART_X,SETSMART_Y, SETSMART_SIZE, heap_top);
+				isVisibleSetSmartText = true;
+			}
 		} else {
 			// Element disabled
 			currentElement->supportedBy = M_NONE;
@@ -334,9 +336,6 @@ uint8_t getActiveCommand(Element_t *elem)
 bool sendCommand(Element_t *elem)
 {
 	uint8_t cmd = getActiveCommand(elem);
-
-	// Do nothing
-	if (cmd == OCM_SMART_NullCommand) return false;
 	lastCmdSent = cmd;
 
 	// Send Command
