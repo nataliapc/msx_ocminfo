@@ -30,10 +30,12 @@ bool ocm_detectDevice(uint8_t devId) __naked __z88dk_fastcall
 		cpl								; complement all bits of the value
 		cp   l							; if it does not match the value you originally wrote,
 
-		xor  a
-		ret  nz							; it does not exists on expanded I/O ports
-		inc  a
-		ret								; does exists
+		jr   z, .detected
+		xor  a							; it does not exists on expanded I/O ports
+		ret
+	.detected:
+		ld   a, #1						; does exists
+		ret
 	__endasm;
 }
 
