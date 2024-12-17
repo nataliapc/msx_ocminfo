@@ -74,7 +74,7 @@ uint8_t ocm_getPortValue(uint8_t port) __naked __z88dk_fastcall
 		ld   l, #0xd4					; DEVID_OCMPLD
 		call .detectExtIODevice
 		ld   l, a
-		jr   z, .odv_end				; Return if not detected
+		jr   nz, .odv_end				; Return if not detected
 
 		in   a, (c)						; Read the OCM device port
 		ld   l, a						; Returns L = ext I/O port value
@@ -97,7 +97,7 @@ uint16_t ocm_getDynamicPortValue(uint8_t index) __naked __z88dk_fastcall
 		call .detectExtIODevice
 		ld   l, a
 		pop  de							; Recover 'index' param (E)
-		jr   z, .odv_end				; Return if not detected
+		jr   nz, .odv_end				; Return if not detected
 
 		ld   a, e						; Write_neg the 'index' to 0x44
 		cpl
@@ -127,7 +127,7 @@ bool ocm_sendSmartCmd(uint8_t cmd) __naked __z88dk_fastcall
 		call .detectExtIODevice
 
 		ld   l, a
-		jr   z, .odv_end				; Return L = 0:fail
+		jr   nz, .odv_end				; Return L = 0:fail
 										; L = 1:success
 
 		ld   a, b						; Restore Param cmd
