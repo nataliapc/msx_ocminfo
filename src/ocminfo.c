@@ -737,14 +737,15 @@ void menu_panels()
 
 void restoreScreen()
 {
-	// Clean & restore screen
-	textattr(0x00f4);
-	_fillVRAM(0x1b00, 240, 0);
-	clrscr();
+	// Clean & restore original screen parameters & colors
 	varLINL40 = originalLINL40;
 	varFORCLR = originalFORCLR;
 	varBAKCLR = originalBAKCLR;
 	varBDRCLR = originalBDRCLR;
+	_fillVRAM(0x1b00, 240, 0);
+	clrscr();
+
+	// Restore original screen mode
 	__asm
 		push ix
 		ld  a, (_originalSCRMOD)
@@ -766,6 +767,7 @@ void restoreScreen()
 		setKanjiMode(kanjiMode);
 	}
 
+	// Restore abort routine
 	dos2_setAbortRoutine(0x0000);
 }
 
