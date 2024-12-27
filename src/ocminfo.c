@@ -775,6 +775,9 @@ void restoreScreen()
 	}
 
 	__asm
+		ld   ix, #CLSSCR
+		xor  a
+		BIOSCALL
 		ld   ix, #ENASCR
 		BIOSCALL
 	__endasm;

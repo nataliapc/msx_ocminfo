@@ -63,6 +63,7 @@ __sfr __at (0x99) IO_VDP2;
 #define INIT32	0x06f		// Switches to SCREEN 1 (text screen with 32×24 characters)
 #define INIGRP	0x072		// Switches to SCREEN 2 (high resolution screen with 256×192 pixels)
 #define SETGRP	0x07e		// Switches VDP to SCREEN 2 mode
+#define CLSSCR	0x0c3		// Clears the screen [Changes: AF, BC, DE] Zero flag must be set to be able to run this routine. XOR A will do fine most of the time
 #define POSIT	0x0c6		// Moves cursor to the specified position [Input: H-Y pos | L-X pos]
 // MSX2
 #define BIGFIL	0x16b		// Same function as FILVRM with 16-bit VRAM-address [Input: A-Data|BC-Length|HL-VRAM address][Changes: AF,BC]
