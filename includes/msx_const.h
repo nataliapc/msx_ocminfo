@@ -46,6 +46,8 @@ __sfr __at (0x99) IO_VDP2;
 #define RDSLT	0x00c		// Reads value of address in another slot
 #define CALSLT 	0x01c		// Executes inter-slot call [Input: IY-High byte with slot ID | IX-The address that will be called]
 #define INIFNK	0x03e		// Initialises the contents of the function keys [Changes: All]
+#define DISSCR	0x041		// Inhibits the screen display [Changes: AF, BC]
+#define ENASCR	0x044		// Enables the screen display [Changes: AF, BC]
 #define WRTVDP	0x047		// Write data in the VDP-register [Input: B-Data to write | C-Register][Changes: AF,BC]
 #define RDVRM	0x04a		// Reads the content of VRAM [Input: HL-Address read][Output: A-Data][Changes: AF]
 #define WRTVRM	0x04d		// Writes data in VRAM [Input: HL-Address write|A-Data][Changes:AF]
