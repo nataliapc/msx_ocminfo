@@ -742,7 +742,7 @@ void restoreScreen()
 	varFORCLR = originalFORCLR;
 	varBAKCLR = originalBAKCLR;
 	varBDRCLR = originalBDRCLR;
-	_fillVRAM(0x1b00, 240, 0);
+	_fillVRAM(0x0800, 240, 0);
 	clrscr();
 
 	// Restore original screen mode
