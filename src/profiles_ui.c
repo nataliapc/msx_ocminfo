@@ -45,6 +45,7 @@ void beep_ok();
 void beep_advice();
 void beep_fail();
 void beep_error();
+void putstrxy(uint8_t x, uint8_t y, char *str);
 
 void setByteVRAM(uint16_t vram, uint8_t value) __sdcccall(0);
 void _fillVRAM(uint16_t vram, uint16_t len, uint8_t value) __sdcccall(0);
@@ -231,7 +232,7 @@ void printLog(char *log)
 	gettext(5,7+MAX_LINES, 79,23, heap_top);
 	puttext(5,6+MAX_LINES, 79,22, heap_top);
 	_fillVRAM(4+22*80, 75, ' ');
-	putlinexy(5,23, strlen(log), log);
+	putstrxy(5,23, log);
 }
 
 void printLogIdx(char *logPattern)

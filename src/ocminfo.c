@@ -139,6 +139,12 @@ void abortRoutine()
 	dos2_exit(1);
 }
 
+void putstrxy(uint8_t x, uint8_t y, char *str)
+{
+	putlinexy(x, y, strlen(str), str);
+}
+
+
 // ========================================================
 static uint8_t getOcmData()
 {
@@ -185,22 +191,27 @@ static uint8_t getOcmData()
 // ========================================================
 static void printHeader()
 {
-	char *sdram = sysInfo4_0.sdramSize != 3 ? 
-		sdramSizeStr[sysInfo4_0.sdramSize] : 
-		sdramSizeAuxStr[sysInfo4_1.sdramSizeAux];
+	char *sdram = pldVers1.ioRevision < IOREV_11 ?
+		sdramSizeStr[3] :
+		sysInfo4_0.sdramSize != 3 ? sdramSizeStr[sysInfo4_0.sdramSize] : sdramSizeAuxStr[sysInfo4_1.sdramSizeAux];
 
 	textblink(1,1, 80, true);
 
 	csprintf(heap_top, "Model: %s   SDRAM: %sMB",
 		machineTypeStr[sysInfo2.machineTypeId], 
 		sdram);
-	putlinexy(3,1, strlen(heap_top), heap_top);
-	csprintf(heap_top, "PLD v%u.%u.%u   I/O rev.%u",
-		pldVers0.pldVersion / 10, 
-		pldVers0.pldVersion % 10, 
-		pldVers1.pldSubversion, 
-		pldVers1.ioRevision);
-	putlinexy(56,1, strlen(heap_top), heap_top);
+	putstrxy(3,1, heap_top);
+	if (pldVers1.ioRevision < IOREV_5) {
+		csprintf(heap_top, "PLD v3.3.3 or earlier   I/O rev.%u",
+			pldVers1.ioRevision);
+	} else {
+		csprintf(heap_top, "PLD v%u.%u.%u   I/O rev.%u",
+			pldVers0.pldVersion / 10, 
+			pldVers0.pldVersion % 10, 
+			pldVers1.pldSubversion, 
+			pldVers1.ioRevision);
+	}
+	putstrxy(79-strlen(heap_top),1, heap_top);
 
 	// Function keys topbar
 	drawFrame(1,2, 80,24);
@@ -383,7 +394,7 @@ static void drawDescription(char **description)
 	// Print new Description
 	for (uint8_t i = 0; i < ELEMENT_MAX_DESC ; i++) {
 		if (description[i] == NULL) break;
-		putlinexy(3,21+i, strlen(description[i]), description[i]);
+		putstrxy(3,21+i, description[i]);
 	}
 }
 
@@ -401,7 +412,7 @@ static void drawWidget_slider(Element_t *element)
 	} else {
 		csprintf(heap_top, "-\x80%s\x82+  %u  ", sliderStr, value);
 	}
-	putlinexy(posx, wherey(), strlen(heap_top), heap_top);
+	putstrxy(posx, wherey(), heap_top);
 }
 
 static void drawWidget_value(Element_t *element)
@@ -412,7 +423,7 @@ static void drawWidget_value(Element_t *element)
 	} else {
 		csprintf(heap_top, "%s", element->valueStr[value]);
 	}
-	putlinexy(wherex(), wherey(), strlen(heap_top), heap_top);
+	putstrxy(wherex() + element->maxValue, wherey(), heap_top);
 }
 
 static void drawCustom_cpuSpeed(Element_t *element)
@@ -445,23 +456,23 @@ static bool drawElement(Element_t *element)
 	uint8_t posx = element->posX;
 	uint8_t posy = element->posY;
 
-	putlinexy(posx, posy, strlen(element->label), element->label);
+	putstrxy(posx, posy, element->label);
 
 	if (element->type == LABEL) return true;
 
+	posx += element->valueOffsetX;
 	if (!isIOrevisionSupported(element) || !isMachineSupported(element)) {
 		char *text = element->useLastStrForNA ? element->valueStr[element->maxValue+1] : "n/a     ";
-		putlinexy(posx + element->valueOffsetX, posy, element->maxValue+6, emptyArea);
-		putlinexy(
-			posx + element->valueOffsetX + element->maxValue + 7,
+		putlinexy(posx, posy, element->maxValue + 6, emptyArea);
+		putstrxy(
+			posx + element->maxValue + 7,
 			posy,
-			strlen(text),
 			text
 		);
 		return true;
 	}
 
-	posx += element->valueOffsetX + element->minValue;
+	posx += element->minValue;
 	gotoxy(posx, posy);
 
 	switch (element->type) {

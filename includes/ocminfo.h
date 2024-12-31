@@ -83,7 +83,7 @@ static const char *machineTypeStr[16] = {
 	"DE0CV", "SX-E/SX-Lite", "??", "??", "??", "??", "??", "??", "??", "??", "Unknown"
 };
 static const char *sdramSizeStr[4] = {
-	"8", "16", "32", "--"
+	"8", "16", "32", "? "
 };
 static const char *sdramSizeAuxStr[8] = {
 	"64", "128", "192", "256", "320", "384", "448", "512"
@@ -573,72 +573,72 @@ static const Element_t elemDIPs[] = {
 		VALUE,
 		42,7, " CPU Clock ",
 		5, 1, -7, -7,
-		&(sysInfo5.raw), 0b00000001, 0,1, dipCpuStr, 24, 
+		&(sysInfo5.raw), 0b00000001, 0,1, dipCpuStr, 22, 
 		CMDTYPE_NONE,
 		{ 0x00 },
 		false,
 		desc_hCpuClock,
-		IOREV_ALL, M_ALL
+		IOREV_5, M_ALL
 	},
 	// 9
 	{
 		VALUE,
 		42,9, " Video Output ",
 		-1, 1, -7, -7,
-		&(sysInfo5.raw), 0b00000110, 0,3, dipVideoStr, 24, 
+		&(sysInfo5.raw), 0b00000110, 0,3, dipVideoStr, 20, 
 		CMDTYPE_NONE,
 		{ 0x00 },
 		false,
 		desc_hVideoOutput,
-		IOREV_ALL, M_ALL
+		IOREV_5, M_ALL
 	},
 	// 10
 	{
 		VALUE,
 		42,11, " Cartridge Slot 1 ",
 		-1, 1, -7, -7,
-		&(sysInfo5.raw), 0b00001000, 0,1, dipSlot1Str, 24, 
+		&(sysInfo5.raw), 0b00001000, 0,1, dipSlot1Str, 22, 
 		CMDTYPE_NONE,
 		{ 0x00 },
 		false,
 		desc_hCartridgeSlot1,
-		IOREV_ALL, M_ALL
+		IOREV_5, M_ALL
 	},
 	// 11
 	{
 		VALUE,
 		42,13, " Cartridge Slot 2 ",
 		-1, 1, -7, -7,
-		&(sysInfo5.raw), 0b00110000, 0,3, dipSlot2Str, 24, 
+		&(sysInfo5.raw), 0b00110000, 0,3, dipSlot2Str, 20, 
 		CMDTYPE_NONE,
 		{ 0x00 },
 		false,
 		desc_hCartridgeSlot2,
-		IOREV_ALL, M_ALL
+		IOREV_5, M_ALL
 	},
 	// 12
 	{
 		VALUE,
 		42,15, " RAM Mapper ",
 		-1, 1, -7, -7,
-		&(sysInfo5.raw), 0b01000000, 0,1, dipMapperStr, 24, 
+		&(sysInfo5.raw), 0b01000000, 0,1, dipMapperStr, 22, 
 		CMDTYPE_NONE,
 		{ 0x00 },
 		false,
 		desc_hRamMapper,
-		IOREV_ALL, M_ALL
+		IOREV_5, M_ALL
 	},
 	// 13
 	{
 		VALUE,
 		42,17, " Internal MegaSD ",
 		-1, -5, -7, -7,
-		&(sysInfo5.raw), 0b10000000, 0,1, onOffStr, 24, 
+		&(sysInfo5.raw), 0b10000000, 0,1, onOffStr, 22, 
 		CMDTYPE_NONE,
 		{ 0x00 },
 		false,
 		desc_hInternalMegaSD,
-		IOREV_ALL, M_ALL
+		IOREV_5, M_ALL
 	},
 	// END
 	{ END }
