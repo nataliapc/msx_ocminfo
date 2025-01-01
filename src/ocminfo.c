@@ -198,7 +198,7 @@ static void printHeader()
 	textblink(1,1, 80, true);
 
 	csprintf(heap_top, "Model: %s   SDRAM: %sMB",
-		machineTypeStr[sysInfo2.machineTypeId], 
+		machineTypeStr[pldVers1.ioRevision < IOREV_4 ? MACHINETYPE_UNKNOWN : sysInfo2.machineTypeId], 
 		sdram);
 	putstrxy(3,1, heap_top);
 	if (pldVers1.ioRevision < IOREV_5) {

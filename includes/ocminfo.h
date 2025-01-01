@@ -78,6 +78,7 @@ static const uint8_t customSlots12Map[8] = { 0, 1, 4, 5, 2, 3, 6, 7 };
 
 static const char *ocminfoVersionStr = "\x13 ocminfo v"VERSION" \x14";
 
+#define MACHINETYPE_UNKNOWN	 	15		// Unknown machine
 static const char *machineTypeStr[16] = {
 	"1chipMSX", "Zemmix Neo/SX-1", "SM-X/MCP2", "SX-2", "SM-X Mini/SM-X HB", 
 	"DE0CV", "SX-E/SX-Lite", "??", "??", "??", "??", "??", "??", "??", "??", "Unknown"
@@ -169,7 +170,7 @@ static const Element_t elemSystem[] = {
 		CUSTOM_CPUCLOCK_VALUE,
 		3,7, " CPU Clock ",
 		5, 1, 7, 7,
-		&customCpuClockValue, 0b00001111, 0,10, cpuClockStr, 28,
+		&customCpuClockValue, 0b00001111, 0,10, cpuClockStr, 18,
 		CMDTYPE_NONE,
 		{ 0x00 }, 
 		false,
@@ -247,7 +248,7 @@ static const Element_t elemSystem[] = {
 		VALUE,
 		42,7, " Default Keyboard ",
 		1, 1, -7, -7,
-		&(pldVers1.raw), 0b10000000, 0,1, keyboardStr, 28,
+		&(pldVers1.raw), 0b10000000, 0,1, keyboardStr, 27,
 		CMDTYPE_NONE,
 		{ 0x00 },
 		false,
@@ -281,7 +282,7 @@ static const Element_t elemVideo[] = {
 		{ OCM_SMART_VDPNormal, OCM_SMART_VDPFast },
 		ATR_SAVEINPROFILE,
 		desc_vdpSpeed,
-		IOREV_ALL, M_ALL
+		IOREV_2, M_ALL
 	},
 	// 1
 	{
@@ -293,7 +294,7 @@ static const Element_t elemVideo[] = {
 		{ OCM_SMART_ForcePAL, OCM_SMART_VideoAuto, OCM_SMART_ForceNTSC },
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		desc_videoMode,
-		IOREV_1, M_ALL
+		IOREV_4, M_ALL
 	},
 	// 2
 	{
@@ -305,7 +306,7 @@ static const Element_t elemVideo[] = {
 		{ OCM_SMART_LegacyVGA, OCM_SMART_LegacyVGAplus },
 		false,
 		desc_legacyOutput,
-		IOREV_8, M_ALL
+		IOREV_7, M_ALL
 	},
 	// 3
 	{
@@ -319,7 +320,7 @@ static const Element_t elemVideo[] = {
 		  OCM_SMART_VertOffset22, OCM_SMART_VertOffset23, OCM_SMART_VertOffset24 },
 		ATR_SAVEINPROFILE,
 		desc_verticalOffset,
-		IOREV_ALL, M_ALL
+		IOREV_8, M_ALL
 	},
 	// 4
 	{
@@ -343,7 +344,7 @@ static const Element_t elemVideo[] = {
 		{ OCM_SMART_Scanlines00, OCM_SMART_Scanlines25, OCM_SMART_Scanlines50, OCM_SMART_Scanlines75 },
 		ATR_SAVEINPROFILE,
 		desc_scanlines,
-		IOREV_ALL, M_SECOND_GEN
+		IOREV_10, M_SECOND_GEN
 	},
 	// END
 	{ END }
@@ -355,13 +356,13 @@ static const Element_t elemAudio[] = {
 		VALUE,
 		3,6, " Audio presets ",
 		7, 1, 8, 8,
-		&customAudioPresetValue, 0b00000111, 0,6, audioPresetStr, 18,
+		&customAudioPresetValue, 0b00000111, 0,6, audioPresetStr, 14,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_NullCommand, OCM_SMART_AudioPreset1, OCM_SMART_AudioPreset2, OCM_SMART_AudioPreset3,
 		  OCM_SMART_AudioPreset4, OCM_SMART_AudioPreset5, OCM_SMART_AudioPreset6 },
 		ATR_FORCEPANELRELOAD,
 		desc_audioPresets,
-		IOREV_ALL, M_ALL
+		IOREV_7, M_ALL
 	},
 	// 1
 	{
@@ -374,7 +375,7 @@ static const Element_t elemAudio[] = {
 		  OCM_SMART_MasterVol4, OCM_SMART_MasterVol5, OCM_SMART_MasterVol6, OCM_SMART_MasterVol7 },
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		desc_masterVolume,
-		IOREV_ALL, M_ALL
+		IOREV_4, M_ALL
 	},
 	// 2
 	{
@@ -387,7 +388,7 @@ static const Element_t elemAudio[] = {
 		  OCM_SMART_PSGVol4, OCM_SMART_PSGVol5, OCM_SMART_PSGVol6, OCM_SMART_PSGVol7 },
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		desc_psgVolume,
-		IOREV_ALL, M_ALL
+		IOREV_4, M_ALL
 	},
 	// 3
 	{
@@ -400,7 +401,7 @@ static const Element_t elemAudio[] = {
 		  OCM_SMART_SCCIVol4, OCM_SMART_SCCIVol5, OCM_SMART_SCCIVol6, OCM_SMART_SCCIVol7 },
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		desc_sccVolume,
-		IOREV_ALL, M_ALL
+		IOREV_4, M_ALL
 	},
 	// 4
 	{
@@ -413,7 +414,7 @@ static const Element_t elemAudio[] = {
 		  OCM_SMART_OPLLVol4, OCM_SMART_OPLLVol5, OCM_SMART_OPLLVol6, OCM_SMART_OPLLVol7 },
 		ATR_FORCEPANELRELOAD | ATR_SAVEINPROFILE,
 		desc_opllVolume,
-		IOREV_ALL, M_ALL
+		IOREV_4, M_ALL
 	},
 	// 5
 	{
@@ -544,7 +545,7 @@ static const Element_t elemDIPs[] = {
 		VALUE,
 		3,15, " RAM Mapper ",
 		-1, 1, 7, 7,
-		&(virtualDIPs.raw), 0b01000000, 0,1, dipMapperStr, 28,//20,
+		&(virtualDIPs.raw), 0b01000000, 0,1, dipMapperStr, 27,
 		CMDTYPE_NONE,
 /*REV*/	/*{ OCM_SMART_Mapper4MbOFF, OCM_SMART_Mapper4MbON },
 		ATR_FORCEPANELRELOAD | ATR_NEEDRESETTOAPPLY,*/ {0x00}, false,
@@ -556,7 +557,7 @@ static const Element_t elemDIPs[] = {
 		VALUE,
 		3,17, " Internal MegaSD ",
 		-1, -5, 7, 7,
-		&(virtualDIPs.raw), 0b10000000, 0,1, onOffStr, 28,//20,
+		&(virtualDIPs.raw), 0b10000000, 0,1, onOffStr, 27,
 		CMDTYPE_NONE,
 /*REV*/	/*{ OCM_SMART_MegaSDOFF, OCM_SMART_MegaSDON },
 		ATR_FORCEPANELRELOAD | ATR_NEEDRESETTOAPPLY,*/ {0x00}, false,
