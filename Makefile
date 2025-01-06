@@ -34,7 +34,7 @@ HEX2BIN = hex2bin
 MAKE = make -s --no-print-directory
 JAVA = java
 DSKTOOL = $(BINDIR)/dsktool
-OPEMNSX = openmsx
+OPENMSX = openmsx
 
 EMUEXT = -ext debugdevice
 EMUEXT1 = $(EMUEXT) -ext Mitsubishi_ML-30DC_ML-30FD
@@ -159,16 +159,16 @@ test: all
 	; then \
 		echo "**** openmsx already running..." \
 	; else \
-#		$(OPEMNSX) -machine msx2plus $(EMUEXT2P) -diska $(DSKDIR) $(EMUSCRIPTS) \
-#		$(OPEMNSX) -machine Sony_HB-F1XD $(EMUEXT2) -diska $(DSKDIR) $(EMUSCRIPTS) \
-#		$(OPEMNSX) -machine Toshiba_HX-10 $(EMUEXT1) -diska $(DSKDIR) $(EMUSCRIPTS) \
-#		$(OPEMNSX) -machine Philips_NMS_8245 $(EMUEXT2) -diska $(DSKDIR) $(EMUSCRIPTS) \
-#		$(OPEMNSX) -machine Panasonic_FS-A1WSX $(EMUEXT2) -diska $(DSKDIR) $(EMUSCRIPTS) \
-		$(OPEMNSX) -machine turbor $(EMUEXT) -diska $(DSKDIR) $(EMUSCRIPTS) \
+#		$(OPENMSX) -machine msx2plus $(EMUEXT2P) -diska $(DSKDIR) $(EMUSCRIPTS) \
+#		$(OPENMSX) -machine Sony_HB-F1XD $(EMUEXT2) -diska $(DSKDIR) $(EMUSCRIPTS) \
+#		$(OPENMSX) -machine Panasonic_FS-A1WSX $(EMUEXT2) -diska $(DSKDIR) $(EMUSCRIPTS) \
+#		$(OPENMSX) -machine Sony_HB-F700S $(EMUEXT2) -diska $(DSKDIR) $(EMUSCRIPTS) \
+#		$(OPENMSX) -machine Toshiba_HX-10 $(EMUEXT1) -diska $(DSKDIR) $(EMUSCRIPTS) \
+		$(OPENMSX) -machine turbor $(EMUEXT) -diska $(DSKDIR) $(EMUSCRIPTS) \
 	; fi'
 
 testrom: rom
-	$(OPEMNSX) -machine msx1_eu -ext gfx9000 -ext fmpac -cartb $(ROMNAME) $(EMUSCRIPTS)
+	$(OPENMSX) -machine msx1_eu -ext gfx9000 -ext fmpac -cartb $(ROMNAME) $(EMUSCRIPTS)
 
 resview:
 	@$(JAVA) -jar $(BINDIR)/imgWizard.jar l $(DSKDIR)/sdkuland.res
