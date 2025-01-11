@@ -60,6 +60,11 @@ namespace eval ocm_ioports {
 #	set ioports_array(78) 0b00100111
 #	set ioports_array(79) 0b10101011
 
+	# I/O 4
+#	set ioports_array(79) 0b10100100
+
+	# I/O 10
+#	set ioports_array(79) 0b10101010
 
 	variable cmd
 	array set cmd {

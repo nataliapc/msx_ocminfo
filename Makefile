@@ -115,8 +115,8 @@ $(OBJDIR)/$(PROGRAM): $(REL_LIBS) $(wildcard $(INCDIR)/*.h) $(SRCDIR)/ocminfo.c
 	@$(CC) $(CCFLAGS) $(FULLOPT) -I$(INCDIR) -L$(LIBDIR) $(REL_LIBS) $(subst .com,.c,$(SRCDIR)/ocminfo.c) -o $(subst .com,.ihx,$@) ;
 	@$(HEX2BIN) -e com $(subst .com,.ihx,$@) ;
 
-release:
-	@echo "$(COL_WHITE)**** Copying .COM file to $(DSKDIR)$(COL_RESET)"
+release: $(OBJDIR)/$(PROGRAM)
+	@echo "$(COL_WHITE)**** Copying $^ file to $(DSKDIR)$(COL_RESET)"
 	@cp $(OBJDIR)/$(PROGRAM) $(DSKDIR)
 
 $(DSKNAME): all
