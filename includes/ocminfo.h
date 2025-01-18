@@ -52,6 +52,7 @@ extern OCM_P49_SysInfo2_t   sysInfo2;
 extern OCM_P4A_SysInfo3_t   sysInfo3;
 extern OCM_P4B_SysInfo4_0_t sysInfo4_0;
 extern OCM_P4B_SysInfo4_1_t sysInfo4_1;
+extern OCM_P4B_SysInfo4_2_t sysInfo4_2;
 extern OCM_P4C_SysInfo5_t   sysInfo5;
 extern OCM_P4E_Version0_t   pldVers0;
 extern OCM_P4F_Version1_t   pldVers1;
@@ -74,7 +75,7 @@ static const uint8_t customSlots12Map[8] = { 0, 1, 4, 5, 2, 3, 6, 7 };
 
 
 // ========================================================
-// Text constants
+// ANCHOR: Text constants
 
 static const char *ocminfoVersionStr = "\x13 ocminfo v"VERSION" \x14";
 
@@ -130,6 +131,9 @@ static const char *verticalOffsetStr[9] = {
 static const char *scanlinesStr[4] = {
 	"0% ", "25%", "50%", "75%"
 };
+static const char *spriteLimitStr[2] = {
+	"4/8", "8/8"
+};
 static const char *audioPresetStr[7] = {
 	"#Custom         ", "#1 Mute Sound   ", "#2 Middle Sound ", "#3 High Sound   ",
 	"#4 Emphasis PSG ", "#5 Emphasis SCC+", "#6 Emphasis OPLL"
@@ -158,7 +162,7 @@ static const char *dipMapperStr[2] = {
 
 
 // ========================================================
-// PanelElements constants
+// ANCHOR: Elements for System Info panel
 
 static const Element_t elemSystem[] = {
 	// 0
@@ -272,24 +276,15 @@ static const Element_t elemSystem[] = {
 	{ END }
 };
 
+// ========================================================
+// ANCHOR: Elements for Video panel
+
 static const Element_t elemVideo[] = {
 	// 0
 	{
 		SLIDER,
-		3,6, " VDP Speed ",
-		5, 1, 0, 0,
-		&(sysInfo0.raw), 0b00100000, 0,1, vdpSpeedStr, 25,
-		CMDTYPE_STANDARD,
-		{ OCM_SMART_VDPNormal, OCM_SMART_VDPFast },
-		ATR_SAVEINPROFILE,
-		desc_vdpSpeed,
-		IOREV_2, M_ALL
-	},
-	// 1
-	{
-		SLIDER,
-		3,8, " Video Mode ",
-		-1, 1, 0, 0,
+		3,6, " Video Mode ",
+		6, 1, 0, 0,
 		&customVideoModeValue, 0b00000011, 0,2, videoModeStr, 24,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_ForcePAL, OCM_SMART_VideoAuto, OCM_SMART_ForceNTSC },
@@ -297,10 +292,10 @@ static const Element_t elemVideo[] = {
 		desc_videoMode,
 		IOREV_4, M_ALL
 	},
-	// 2
+	// 1
 	{
 		SLIDER,
-		3,10, " Legacy Output ",
+		3,8, " Legacy Output ",
 		-1, 1, 0, 0,
 		&(sysInfo3.raw), 0b00100000, 0,1, legacyVgaStr, 25,
 		CMDTYPE_STANDARD,
@@ -309,10 +304,22 @@ static const Element_t elemVideo[] = {
 		desc_legacyOutput,
 		IOREV_7, M_ALL
 	},
+	// 2
+	{
+		SLIDER,
+		3,9, " Scanlines VGA/VGA+ ",
+		-1, 1, 0, 0,
+		&(sysInfo4_0.raw), 0b00000011, 0,3, scanlinesStr, 23,
+		CMDTYPE_STANDARD,
+		{ OCM_SMART_Scanlines00, OCM_SMART_Scanlines25, OCM_SMART_Scanlines50, OCM_SMART_Scanlines75 },
+		ATR_SAVEINPROFILE,
+		desc_scanlines,
+		IOREV_10, M_SECOND_GEN
+	},
 	// 3
 	{
 		SLIDER,
-		3,12, " Vertical offset ",
+		3,11, " Vertical offset ",
 		-1, 1, 0, 0,
 		&(customVerticalOffsetValue), 0b00001111, 0,8, verticalOffsetStr, 18,
 		CMDTYPE_STANDARD,
@@ -326,6 +333,18 @@ static const Element_t elemVideo[] = {
 	// 4
 	{
 		SLIDER,
+		3,13, " VDP Speed ",
+		-1, 1, 0, 0,
+		&(sysInfo0.raw), 0b00100000, 0,1, vdpSpeedStr, 25,
+		CMDTYPE_STANDARD,
+		{ OCM_SMART_VDPNormal, OCM_SMART_VDPFast },
+		ATR_SAVEINPROFILE,
+		desc_vdpSpeed,
+		IOREV_2, M_ALL
+	},
+	// 5
+	{
+		SLIDER,
 		3,14, " Center YJK modes ",
 		-1, 1, 0, 0,
 		&(sysInfo3.raw), 0b00010000, 0,1, onOffStr, 25,
@@ -335,21 +354,24 @@ static const Element_t elemVideo[] = {
 		desc_centerYJKmodes,
 		IOREV_7, M_ALL
 	},
-	// 5
+	// 6
 	{
 		SLIDER,
-		3,16, " Scanlines VGA/VGA+ ",
-		-1, -5, 0, 0,
-		&(sysInfo4_0.raw), 0b00000011, 0,3, scanlinesStr, 23,
+		3,15, " Sprite Limit ",
+		-1, -6, 0, 0,
+		&(sysInfo4_2.raw), 0b00000001, 0,1, spriteLimitStr, 25,
 		CMDTYPE_STANDARD,
-		{ OCM_SMART_Scanlines00, OCM_SMART_Scanlines25, OCM_SMART_Scanlines50, OCM_SMART_Scanlines75 },
+		{ OCM_SMART_SpriteLimit48, OCM_SMART_SpriteLimit88 },
 		ATR_SAVEINPROFILE,
-		desc_scanlines,
-		IOREV_10, M_SECOND_GEN
+		desc_spriteLimit,
+		IOREV_12, M_ALL
 	},
 	// END
 	{ END }
 };
+
+// ========================================================
+// ANCHOR: Elements for Audio panel
 
 static const Element_t elemAudio[] = {
 	// 0
@@ -480,6 +502,9 @@ static const Element_t elemAudio[] = {
 	// END
 	{ END }
 };
+
+// ========================================================
+// ANCHOR: Elements for DIPs panels
 
 static const Element_t elemDIPs[] = {
 	// 0
@@ -646,6 +671,9 @@ static const Element_t elemDIPs[] = {
 	{ END }
 };
 
+// ========================================================
+// ANCHOR: Elements for locks panel
+
 static const Element_t elemLocks[] = {
 	// 0
 	{
@@ -759,6 +787,9 @@ static const Element_t elemLocks[] = {
 	{ END }
 };
 
+// ========================================================
+// ANCHOR: Elements for Help panel
+
 static const Element_t elemHelp[] = {
 	{ LABEL, 3,5,  "    --==[ OCMINFO conio.lib dos.lib ]==--  by "AUTHOR"    ",
 		0, 0, 0, 0, NULL, 0, 0,0, NULL, 0, CMDTYPE_NONE,{ 0x00 }, false, 
@@ -781,7 +812,7 @@ static const Element_t elemHelp[] = {
 
 
 // ========================================================
-// Element descriptions
+// ANCHOR: String descriptions
 
 const char *desc_cpuClock[] = {
 	"Currently active CPU clock frequency (read only).",
@@ -824,11 +855,6 @@ const char *desc_currentKeyboard[] = {
 	"available are BR, ES, FR, IT, US)."
 };
 
-const char *desc_vdpSpeed[] = {
-	"VDP Speed: Normal (default) or Fast (V9958 only).",
-	"Normal: Works like real hardware.",
-	"Fast:   The VDP works faster."
-};
 const char *desc_videoMode[] = {
 	"Video output mode (Auto/PAL/NTSC)",
 	"Auto:     Set to auto (default) that is bound by VDP Control Register #9.",
@@ -838,19 +864,29 @@ const char *desc_legacyOutput[] = {
 	"Assign Legacy Output to VGA or VGA+ (default).",
 	NULL
 };
+const char *desc_scanlines[] = {
+	"Visualization of scanlines for VGA/VGA+ (mainly for 2nd Gen machines).",
+	NULL
+};
 const char *desc_verticalOffset[] = {
 	"Changes the vertical offset.",
 	"Default is 19; value 16 is useful for Ark-A-Noah; value 24 is useful",
 	"for Space Manbow. Modify only in special cases, not permanently."
+};
+const char *desc_vdpSpeed[] = {
+	"VDP Speed: Normal (default) or Fast (V9958 only).",
+	"Normal: Works like real hardware.",
+	"Fast:   The VDP works faster."
 };
 const char *desc_centerYJKmodes[] = {
 	"Allows forcing the centering of YJK modes and VDP R#25 mask, useful for",
 	"MSX2+ games. Default is OFF.",
 	NULL
 };
-const char *desc_scanlines[] = {
-	"Visualization of scanlines for VGA/VGA+ (mainly for 2nd Gen machines).",
-	NULL
+const char *desc_spriteLimit[] = {
+	"Sets sprite limit per line.",
+	"4/8: Standard mode. 4 for MSX1 screens, 8 for MSX2 and above (default).",
+	"8/8: Enhanced mode. Force MSX1 screens to allow 8 sprites per line."
 };
 
 const char *desc_audioPresets[] = {

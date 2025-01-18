@@ -197,6 +197,17 @@ typedef union {							// [OCM] Get System Info #4(b)  (read only) [if port 0x44 
 	};
 } OCM_P4B_SysInfo4_1_t;
 
+typedef union {							// [OCM] Get System Info #4(b)  (read only) [if port 0x44 == 2]
+	struct {
+		unsigned spriteLimit: 1;		// bit 0   Sprite Limit                    | 0=4/8 (standard), 1=8/8 (non-standard)
+		unsigned free: 7;				// bit 1-7 Free/Unused                     |
+	};
+	struct {
+		uint8_t raw;
+		uint8_t errorFlag;
+	};
+} OCM_P4B_SysInfo4_2_t;
+
 typedef union {							// [OCM] Get System Info #5     (read only)
 	struct {
 		unsigned cpuClock: 1;			// bit 0    CPU Clock                      | Hard DIP-SW1
@@ -389,7 +400,10 @@ typedef enum {
 /*
 0x58	// Set Extended MegaROM Reading OFF (default for compatibility)
 0x59	// Set Extended MegaROM Reading ON (ASCII-8K/16K max size playable)
-...
+*/
+#define OCM_SMART_SpriteLimit48	0x5a	// Set Sprite Limit 4/8 (standard mode) (default)
+#define OCM_SMART_SpriteLimit88	0x5b	// Set Sprite Limit 8/8 (force MSX1 screens to use 8 sprites per line)
+/*
 0x7f	// Pixel Ratio 1:1 for LED Display (default is 0) (range 0-7) (60Hz only)
 */
 #define OCM_SMART_NullCommand	0x80	// Null Command (useful for programming)

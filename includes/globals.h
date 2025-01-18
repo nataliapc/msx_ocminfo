@@ -8,6 +8,6 @@
 
 
 #define VERSION		"0.9.9"
-#define AUTHOR		"NataliaPC'2024 (@ishwin74)"
+#define AUTHOR		"NataliaPC'2025 (@ishwin74)"
 
 #define MAX_PROFILES	50

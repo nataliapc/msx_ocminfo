@@ -29,6 +29,7 @@ namespace eval ocm_ioports {
 	# 0x4a(74)	[R] InverseAudio(1) / Pixel 1:1(3) / CenterYJK(1) / LEgacyOutput(1) / ...
 	# 0x4b(0)	[R] Scanlines(2) / PSG2(1) / SDRAM(2) / ...
 	# 0x4b(1)	[R] Extended megarom reading (1) / Ext.SDRAM(3) / Vertical offset(4)
+	# 0x4b(2)	[R] Sprite limit
 	# 0x4c(76)	[R] Hard DIP-SW
 	# 0x4d(77)	[R/Wn] VRAM slots
 	# 0x4e(78)	[R] OCM-PLD version(8)
@@ -45,6 +46,7 @@ namespace eval ocm_ioports {
 		74	0b00010000
 		 0	0b00010000
 		 1	0b01110000
+		 2  0b00000000
 		76	0b11010110
 		77  0b00000000
 		78	0b00100111
@@ -133,6 +135,8 @@ namespace eval ocm_ioports {
 		80	{  0 0b00000011 0b00000000 } 81	{  0 0b00000011 0b00000001 }
 		82	{  0 0b00000011 0b00000010 } 83	{  0 0b00000011 0b00000011 }
 		84	{  0 0b00000100 0b00000000 } 85	{  0 0b00000100 0b00000100 }
+		90	{  2 0b00000001 0b00000000 }
+		91	{  2 0b00000001 0b00000001 }
 		128	{ 0 0 0 }
 		129	{ 74 0b00100000 0b00000000 }
 		130	{ 74 0b00100000 0b00100000 }

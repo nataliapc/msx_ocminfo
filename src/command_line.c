@@ -146,7 +146,7 @@ uint16_t commandLine(char **argv, int argc)
 	if (showHelp) {
 		printHelp();
 	} else {
-		cputs("\n");
+		if (verbose) cputs("\n");
 		if (listProfiles) {
 			doListProfiles();
 		} else

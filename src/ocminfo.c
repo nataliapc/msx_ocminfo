@@ -46,6 +46,7 @@ OCM_P49_SysInfo2_t   sysInfo2;
 OCM_P4A_SysInfo3_t   sysInfo3;
 OCM_P4B_SysInfo4_0_t sysInfo4_0;
 OCM_P4B_SysInfo4_1_t sysInfo4_1;
+OCM_P4B_SysInfo4_2_t sysInfo4_2;
 OCM_P4C_SysInfo5_t   sysInfo5;
 OCM_P4E_Version0_t   pldVers0;
 OCM_P4F_Version1_t   pldVers1;
@@ -160,6 +161,7 @@ static uint8_t getOcmData()
 	sysInfo3.raw = ocm_getPortValue(OCM_SYSINFO3_PORT);
 	sysInfo4_0.raw = ocm_getDynamicPortValue(0);
 	sysInfo4_1.raw = ocm_getDynamicPortValue(1);
+	sysInfo4_2.raw = ocm_getDynamicPortValue(2);
 	sysInfo5.raw = ocm_getPortValue(OCM_SYSINFO5_PORT);
 	pldVers0.raw = ocm_getPortValue(OCM_PLDVERS0_PORT);
 	pldVers1.raw = ocm_getPortValue(OCM_PLDVERS1_PORT);
@@ -184,7 +186,8 @@ static uint8_t getOcmData()
 	// Checksum
 	portsChecksum = virtualDIPs.raw ^ lockToggles.raw ^ ledLights.raw ^ audioVols0.raw ^ 
 					audioVols1.raw ^ sysInfo0.raw ^ sysInfo1.raw ^ sysInfo2.raw ^ sysInfo3.raw ^ 
-					sysInfo4_0.raw ^ sysInfo4_1.raw ^ sysInfo5.raw ^ pldVers0.raw ^ pldVers1.raw;
+					sysInfo4_0.raw ^ sysInfo4_1.raw ^ sysInfo4_2.raw ^ sysInfo5.raw ^ 
+					pldVers0.raw ^ pldVers1.raw;
 	return portsChecksum;
 }
 
