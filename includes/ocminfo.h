@@ -89,7 +89,7 @@ static const char *sdramSizeStr[4] = {
 	"8", "16", "32", "? "
 };
 static const char *sdramSizeAuxStr[8] = {
-	"64", "128", "192", "256", "320", "384", "448", "512"
+	"64", "128", "192", "256", "384", "512", "768", "1024"
 };
 static const char *onOffStr[2] = {
 	"OFF", "ON "
