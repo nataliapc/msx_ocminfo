@@ -38,9 +38,8 @@ OPENMSX = openmsx
 
 EMUEXT = -ext debugdevice
 EMUEXT1 = $(EMUEXT) -ext Mitsubishi_ML-30DC_ML-30FD
-EMUEXT2 = $(EMUEXT)
-EMUEXT2P = $(EMUEXT)
-# -ext msxdos2
+EMUEXT2 = $(EMUEXT) -ext msxdos2
+EMUEXT2P = $(EMUEXT) -ext msxdos2
 EMUSCRIPTS = -script ./emulation/ocm_ioports.tcl -script ./emulation/boot.tcl
 
 

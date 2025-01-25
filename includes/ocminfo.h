@@ -871,7 +871,7 @@ const char *desc_scanlines[] = {
 const char *desc_verticalOffset[] = {
 	"Changes the vertical offset.",
 	"Default is 19; value 16 is useful for Ark-A-Noah; value 24 is useful",
-	"for Space Manbow. Modify only in special cases, not permanently."
+	"for Space Manbow. Modify it only in special cases, not permanently."
 };
 const char *desc_vdpSpeed[] = {
 	"VDP Speed: Normal (default) or Fast (V9958 only).",
@@ -881,7 +881,7 @@ const char *desc_vdpSpeed[] = {
 const char *desc_centerYJKmodes[] = {
 	"Allows forcing the centering of YJK modes and VDP R#25 mask, useful for",
 	"MSX2+ games. Default is OFF.",
-	NULL
+	"Enable it only in special cases, not permanently."
 };
 const char *desc_spriteLimit[] = {
 	"Sets sprite limit per line.",

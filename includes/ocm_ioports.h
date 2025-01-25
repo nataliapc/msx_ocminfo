@@ -200,11 +200,11 @@ typedef union {							// [OCM] Get System Info #4(b)  (read only) [if port 0x44 
 typedef union {							// [OCM] Get System Info #4(b)  (read only) [if port 0x44 == 2]
 	struct {
 		unsigned spriteLimit: 1;		// bit 0   Sprite Limit                    | 0=4/8 (standard), 1=8/8 (non-standard)
-		unsigned free: 3;				// bit 1-3 Free/Unused                     |
-		unsigned safeMode: 1;			// bit 4   Safe Mode                       | Status
-		unsigned cbiosMode: 1;			// bit 5   CBios Mode                      | Status
-		unsigned extraMaper4096ack: 1;	// bit 6   Extra-Mapper 4096KB Ack         | Status
-		unsigned currentSlot0Mode:1;	// bit 7   Current Slot-0 Mode             | 0=Primary, 1=Expanded
+		unsigned safeMode: 1;			// bit 1   Safe Mode                       | Status
+		unsigned cbiosMode: 1;			// bit 2   CBios Mode                      | Status
+		unsigned extraMaper4096ack: 1;	// bit 3   Extra-Mapper 4096KB Ack         | Status
+		unsigned currentSlot0Mode:1;	// bit 4   Current Slot-0 Mode             | 0=Primary, 1=Expanded
+		unsigned free: 3;				// bit 5-7 Free/Unused                     |
 	};
 	struct {
 		uint8_t raw;
