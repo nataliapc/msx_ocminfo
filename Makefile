@@ -61,6 +61,7 @@ REL_LIBS = $(addprefix $(OBJDIR)/, \
 				command_line.rel \
 				profiles_api.rel \
 				profiles_ui.rel \
+				ocminfo.rel \
 			) \
 			$(addprefix $(LIBDIR)/, $(LIBS))
 
@@ -108,11 +109,17 @@ $(OBJDIR)/%.s.rel: $(SRCLIB)/%.s
 	@$(DIR_GUARD)
 	@$(AS) -go $@ $^ ;
 
-$(OBJDIR)/$(PROGRAM): $(REL_LIBS) $(wildcard $(INCDIR)/*.h) $(SRCDIR)/ocminfo.c
+$(OBJDIR)/ocminfo.rel: $(SRCDIR)/ocminfo.c $(wildcard $(INCDIR)/*.h)
+	@echo "$(COL_BLUE)######## Compiling $@$(COL_RESET)"
+	@$(DIR_GUARD)
+	@$(CC) $(CCFLAGS) $(FULLOPT) -I$(INCDIR) -c -o $@ $< ;
+
+$(OBJDIR)/$(PROGRAM): $(REL_LIBS) $(wildcard $(INCDIR)/*.h)
 	@echo "$(COL_YELLOW)######## Compiling $@$(COL_RESET)"
 	@$(DIR_GUARD)
-	@$(CC) $(CCFLAGS) $(FULLOPT) -I$(INCDIR) -L$(LIBDIR) $(REL_LIBS) $(subst .com,.c,$(SRCDIR)/ocminfo.c) -o $(subst .com,.ihx,$@) ;
-	@$(HEX2BIN) -e com $(subst .com,.ihx,$@) ;
+	@$(CC) $(CCFLAGS) $(FULLOPT) -I$(INCDIR) -L$(LIBDIR) $(REL_LIBS) -o $(subst .com,.ihx,$@) ;
+	@$(HEX2BIN) -e com $(subst .com,.ihx,$@)
+
 
 release: $(OBJDIR)/$(PROGRAM)
 	@echo "$(COL_WHITE)**** Copying $^ file to $(DSKDIR)$(COL_RESET)"

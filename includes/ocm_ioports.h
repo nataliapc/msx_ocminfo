@@ -487,8 +487,8 @@ typedef enum {
 #define OCM_SMART_WarmReset		0xfd	// Warm Reset
 /*
 0xfe	// Warm Reset w/ Mapper 4096KB (RAM size 8192KB if Extra-Mapper is ON)
-0xff	// Restore All Default + Reserve Default Mapper & MegaSD
 */
+#define OCM_SMART_ResetDefaults	0xff	// Restore All Defaults + Reserve Default Mapper & MegaSD
 
 
 // ========================================================

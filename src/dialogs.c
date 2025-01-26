@@ -9,8 +9,9 @@
 #include <stdbool.h>
 #include <string.h>
 #include "dialogs.h"
-#include "conio.h"
 #include "heap.h"
+#include "conio.h"
+#include "utils.h"
 
 
 // ========================================================
@@ -88,7 +89,7 @@ uint8_t showDialog(Dialog_t *dlg)
 	// Dialog loop
 	textblink(btnX[selectedBtn],auxY, btnLen[selectedBtn], false);
 	while (!end) {
-		while (!kbhit()) { ASM_EI; ASM_HALT; }
+		while (!kbhit()) { waitVBLANK(); }
 		textblink(btnX[selectedBtn],auxY, btnLen[selectedBtn], true);
 		key = getch();
 		if (dlg->buttons[0] == NULL) {
@@ -114,8 +115,7 @@ uint8_t showDialog(Dialog_t *dlg)
 	}
 
 	// Restore background
-	ASM_EI;
-	ASM_HALT;
+	waitVBLANK();
 	_fillBlink(dx1, dy1, dlgHeight, dx2-dx1+1, false);
 	puttext(dx1,dy1, dx2,dy2, scrBackup);
 	free(dlgBytes);

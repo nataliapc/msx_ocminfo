@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 
+void waitVBLANK(void);
 void die(const char *s, ...);
 void exit(void);
 

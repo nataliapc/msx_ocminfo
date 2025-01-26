@@ -236,13 +236,37 @@ static void printHeader()
 
 }
 
+static void drawDescription(char **description)
+{
+	waitVBLANK();
+
+	// Clear Description zone
+	puttext(2,21, 79,23, emptyArea);
+
+	// Print new Description
+	for (uint8_t i = 0; i < ELEMENT_MAX_DESC ; i++) {
+		if (description[i] == NULL) break;
+		putstrxy(3,21+i, description[i]);
+	}
+}
+
+static void drawSetSmartText()
+{
+	if (lastCmdSent != OCM_SMART_NullCommand) {
+		csprintf(heap_top, "setsmart -%x%x", lastCmdSent/16, lastCmdSent%16);
+		putlinexy(SETSMART_X,SETSMART_Y, SETSMART_SIZE, heap_top);
+		isVisibleSetSmartText = true;
+	}
+}
+
+
 // ========================================================
-inline bool isIOrevisionSupported(Element_t *element)
+bool isIOrevisionSupported(Element_t *element)
 {
 	return pldVers1.ioRevision >= element->ioRevNeeded;
 }
 
-inline bool isMachineSupported(Element_t *element)
+bool isMachineSupported(Element_t *element)
 {
 	return ((1<<sysInfo2.machineTypeId) & element->supportedBy) != 0;
 }
@@ -294,11 +318,7 @@ static bool changeCurrentValue(int8_t increase)
 		
 		if (sendCommand(currentElement)) {
 			// Display setsmart text
-			if (lastCmdSent != OCM_SMART_NullCommand) {
-				csprintf(heap_top, "setsmart -%x%x", lastCmdSent/16, lastCmdSent%16);
-				putlinexy(SETSMART_X,SETSMART_Y, SETSMART_SIZE, heap_top);
-				isVisibleSetSmartText = true;
-			}
+			drawSetSmartText();
 		} else {
 			// Element disabled
 			currentElement->supportedBy = M_NONE;
@@ -386,22 +406,6 @@ void getPanelsCmds(uint8_t *cmd)
 
 
 // ========================================================
-static void drawDescription(char **description)
-{
-	ASM_EI;
-	ASM_HALT;
-
-	// Clear Description zone
-	puttext(2,21, 79,23, emptyArea);
-
-	// Print new Description
-	for (uint8_t i = 0; i < ELEMENT_MAX_DESC ; i++) {
-		if (description[i] == NULL) break;
-		putstrxy(3,21+i, description[i]);
-	}
-}
-
-// ========================================================
 static void drawWidget_slider(Element_t *element)
 {
 	uint8_t posx = wherex();
@@ -480,6 +484,7 @@ static bool drawElement(Element_t *element)
 
 	switch (element->type) {
 		case LABEL:
+		case BUTTON:
 			break;
 		case VALUE:
 			drawWidget_value(element);
@@ -505,6 +510,35 @@ static void selectCurrentElement(bool enable)
 		enable);
 	if (enable) {
 		drawDescription(currentElement->description);
+	}
+}
+
+static void pressedElement(uint8_t increment)
+{
+	bool changeResult = true;
+	bool dlgResult = BTN_YES;
+
+	if (currentElement->areYouSure) {
+		dlgResult = showDialog(&dlg_confirm);
+		selectCurrentElement(true);
+	}
+
+	if (dlgResult == BTN_YES) {
+		if (currentElement->type == BUTTON) {
+			sendCommand(currentElement);
+			drawSetSmartText();
+		} else {
+			changeResult = changeCurrentValue(increment);
+			drawElement(currentElement);
+		}
+	} else {
+		changeResult = false;
+	}
+
+	if (changeResult) {
+		beep_advice();
+	} else {
+		beep_fail();
 	}
 }
 
@@ -534,8 +568,7 @@ static void selectPanel(Panel_t *panel)
 	// Refresh I/O ext values
 	getOcmData();
 
-	ASM_EI;
-	ASM_HALT;
+	waitVBLANK();
 
 	// Update blinks
 	selectPanelTitle(panel);
@@ -621,10 +654,9 @@ void menu_panels()
 	// Main loop panels
 	lastExtraKeys = getExtraKeysOCM().raw;
 	currentExtraKeys = lastExtraKeys;
-	bool changeResult;
 	do {
 		while (!kbhit() && lastExtraKeys == currentExtraKeys) {
-			ASM_EI; ASM_HALT;
+			waitVBLANK();
 			currentExtraKeys = getExtraKeysOCM().raw;
 		}
 
@@ -643,7 +675,7 @@ void menu_panels()
 				beep_fail();
 			}
 			while (lastExtraKeys != currentExtraKeys) {
-				ASM_EI; ASM_HALT;
+				waitVBLANK();
 				currentExtraKeys = getExtraKeysOCM().raw;
 				getOcmData();
 				drawCurrentPanel();
@@ -668,23 +700,11 @@ void menu_panels()
 			case KEY_SPACE:
 			case KEY_ENTER:
 			case '+':
-				changeResult = changeCurrentValue(1);
-				drawElement(currentElement);
-				if (changeResult) {
-					beep_advice();
-				} else {
-					beep_fail();
-				}
+				pressedElement(1);
 				break;
 			case KEY_BS:
 			case '-':
-				changeResult = changeCurrentValue(-1);
-				drawElement(currentElement);
-				if (changeResult) {
-					beep_advice();
-				} else {
-					beep_fail();
-				}
+				pressedElement(-1);
 				break;
 			case '1':
 				selectPanel(&pPanels[PANEL_SYSTEM]);

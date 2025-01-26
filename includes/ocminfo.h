@@ -223,7 +223,7 @@ static const Element_t elemSystem[] = {
 	{
 		SLIDER,
 		3,12, " T. Pana redir. ",
-		-1, 1, 4, 4,
+		-1, 1, 6, 6,
 		&(sysInfo0.raw), 0b00010000, 0,1, onOffStr, 20,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_TPanaRedOFF, OCM_SMART_TPanaRedON },
@@ -235,7 +235,7 @@ static const Element_t elemSystem[] = {
 	{
 		SLIDER,
 		3,13, " Turbo MegaSD ",
-		-1, -5, 3, 3,
+		-1, -5, 5, 5,
 		&(sysInfo0.raw), 0b00001000, 0,1, onOffStr, 20,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_TMegaSDOFF, OCM_SMART_TMegaSDON },
@@ -252,7 +252,7 @@ static const Element_t elemSystem[] = {
 	{
 		VALUE,
 		42,7, " Default Keyboard ",
-		1, 1, -7, -7,
+		3, 1, -7, -7,
 		&(pldVers1.raw), 0b10000000, 0,1, keyboardStr, 27,
 		CMDTYPE_NONE,
 		{ 0x00 },
@@ -264,12 +264,29 @@ static const Element_t elemSystem[] = {
 	{
 		SLIDER,
 		42,8, " Current Keyboard ",
-		-1, -1, -7, -7,
+		-1, 2, -7, -7,
 		&(sysInfo1.raw), 0b00000010, 0,1, keyboardStr, 20,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_KBLayoutJP, OCM_SMART_KBLayoutNJP },
 		ATR_SAVEINPROFILE,
 		desc_currentKeyboard,
+		IOREV_1, M_ALL
+	},
+	// 10
+	{
+		LABEL, 
+		42,11, "\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x13 System \x14\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17\x17"
+	},
+	// 11
+	{
+		BUTTON,
+		42,13, " Reset to default settings ",
+		-2, -3, -5, -5,
+		NULL, 0, 0,0, NULL, 0,
+		CMDTYPE_STANDARD,
+		{ OCM_SMART_ResetDefaults },
+		ATR_AREYOUSURE,
+		desc_restoreDefaults,
 		IOREV_1, M_ALL
 	},
 	// END
@@ -854,6 +871,11 @@ const char *desc_currentKeyboard[] = {
 	"Values can be Japanese, or non-Japanese (a core layout variant, currently",
 	"available are BR, ES, FR, IT, US)."
 };
+const char *desc_restoreDefaults[] = {
+	"Pressing this button will reset all settings to their default values.",
+	"All current user-changed settings will be lost.",
+	"Profiles will not be affected."
+};
 
 const char *desc_videoMode[] = {
 	"Video output mode (Auto/PAL/NTSC)",
@@ -1102,8 +1124,8 @@ const Dialog_t dlg_exit = {
 	0,0,
 	dlg_exitStr,
 	dlg_yesNoBtn,
-	0,	//defaultButton
-	1,	//cancelButton
+	BTN_YES,	//defaultButton
+	BTN_NO,		//cancelButton
 	DLG_DEFAULT
 };
 
@@ -1114,8 +1136,19 @@ const Dialog_t dlg_reset = {
 	0,0,
 	dlg_resetStr,
 	dlg_yesNoBtn,
-	1,	//defaultButton
-	1,	//cancelButton
+	BTN_YES,	//defaultButton
+	BTN_YES,	//cancelButton
 	DLG_DEFAULT
 };
 
+const char *dlg_confirmStr[] = {
+	"Confirm", "", "Are you sure?", NULL
+};
+const Dialog_t dlg_confirm = {
+	0,0,
+	dlg_confirmStr,
+	dlg_yesNoBtn,
+	BTN_YES,	//defaultButton
+	BTN_NO,		//cancelButton
+	DLG_DEFAULT
+};

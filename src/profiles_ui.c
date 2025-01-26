@@ -13,6 +13,7 @@
 #include "globals.h"
 #include "types.h"
 #include "ocm_ioports.h"
+#include "profiles_ui.h"
 #include "profiles_api.h"
 #include "dialogs.h"
 
@@ -90,8 +91,8 @@ const Dialog_t dlg_fileNotFound = {
 	0,0,
 	dlg_fileNotFoundStr,
 	dlg_yesNoBtn,
-	0,	//defaultButton
-	1,	//cancelButton
+	BTN_YES,	//defaultButton
+	BTN_NO,		//cancelButton
 	DLG_DEFAULT
 };
 
@@ -100,8 +101,8 @@ const Dialog_t dlg_errorSaving = {
 	0,0,
 	dlg_errorSavingStr,
 	dlg_continueBtn,
-	0,	//defaultButton
-	1,	//cancelButton
+	BTN_CONTINUE,	//defaultButton
+	BTN_CONTINUE,	//cancelButton
 	DLG_DEFAULT
 };
 
@@ -110,8 +111,8 @@ const Dialog_t dlg_noProfiles = {
 	0,0,
 	dlg_noProfilesStr,
 	dlg_continueBtn,
-	0,	//defaultButton
-	0,	//cancelButton
+	BTN_CONTINUE,	//defaultButton
+	BTN_CONTINUE,	//cancelButton
 	DLG_DEFAULT
 };
 
@@ -122,8 +123,8 @@ const Dialog_t dlg_saveChanges = {
 	0,0,
 	dlg_saveChangesStr,
 	dlg_yesNoBtn,
-	0,	//defaultButton
-	1,	//cancelButton
+	BTN_YES,	//defaultButton
+	BTN_NO,		//cancelButton
 	DLG_DEFAULT
 };
 
@@ -132,8 +133,8 @@ const Dialog_t dlg_deleteProfile = {
 	0,0,
 	dlg_deleteProfileStr,
 	dlg_yesNoBtn,
-	0,	//defaultButton
-	1,	//cancelButton
+	BTN_YES,	//defaultButton
+	BTN_NO,		//cancelButton
 	DLG_DEFAULT
 };
 
@@ -142,8 +143,8 @@ const Dialog_t dlg_profileApplied = {
 	0,0,
 	dlg_profileAppliedStr,
 	dlg_continueBtn,
-	0,	//defaultButton
-	0,	//cancelButton
+	BTN_CONTINUE,	//defaultButton
+	BTN_CONTINUE,	//cancelButton
 	DLG_DEFAULT
 };
 
@@ -152,8 +153,8 @@ const Dialog_t dlg_mutedSound = {
 	0,0,
 	dlg_mutedSoundStr,
 	dlg_continueBtn,
-	0,	//defaultButton
-	0,	//cancelButton
+	BTN_CONTINUE,	//defaultButton
+	BTN_CONTINUE,	//cancelButton
 	DLG_DEFAULT
 };
 
@@ -162,8 +163,8 @@ const Dialog_t dlg_unmutedSound = {
 	0,0,
 	dlg_unmutedSoundStr,
 	dlg_continueBtn,
-	0,	//defaultButton
-	0,	//cancelButton
+	BTN_CONTINUE,	//defaultButton
+	BTN_CONTINUE,	//cancelButton
 	DLG_DEFAULT
 };
 
@@ -184,8 +185,8 @@ const Dialog_t dlg_help = {
 	0,0,
 	dlg_helpStr,
 	dlg_closeBtn,
-	0,	//defaultButton
-	0,	//cancelButton
+	BTN_CLOSE,		//defaultButton
+	BTN_CLOSE,		//cancelButton
 	DLG_DEFAULT
 };
 
@@ -203,7 +204,7 @@ void drawProfilesCounter()
 
 void drawHeader()
 {
-	ASM_EI; ASM_HALT;
+	waitVBLANK();
 
 	// Clear panel
 	textblink(1,3, 80, false);
@@ -411,7 +412,7 @@ void profiles_menu(Panel_t *panel)
 	if (!profile_loadFile()) {
 		printLog("\x84 WARNING: Profiles file not found, unreadable, or corrupted.");
 		beep_fail();
-		if (showDialog(&dlg_fileNotFound) == 0) {
+		if (showDialog(&dlg_fileNotFound) == BTN_YES) {
 			profile_init();
 			if (!profile_saveFile()) {
 				printLog("\x85 ERROR: Can't create a new profiles file!");
@@ -437,7 +438,7 @@ void profiles_menu(Panel_t *panel)
 	// Main loop profiles list
 	end = false;
 	do {
-		while (!kbhit()) { ASM_EI; ASM_HALT; }
+		while (!kbhit()) { waitVBLANK(); }
 		// Manage pressed key
 		key = getch();
 		if (key == KEY_UP) {						// Move up selection
@@ -534,7 +535,7 @@ void profiles_menu(Panel_t *panel)
 				showDialogNoProfiles();
 			} else {
 				selectPanel(PANEL_DELETE, true);
-				if (showDialog(&dlg_deleteProfile) == 0) {
+				if (showDialog(&dlg_deleteProfile) == BTN_YES) {
 					deleteProfile();
 					printLogIdx("\x85 Deleted profile at #%u.");
 					changedProfiles = true;
@@ -573,7 +574,7 @@ void profiles_menu(Panel_t *panel)
 		}
 		// Update selection or full list if necessary
 		if (redrawList || redrawSelection) {
-			ASM_EI; ASM_HALT;
+			waitVBLANK();
 			selectCurrentLine(false);
 			topLine = newTopLine;
 			currentLine = newCurrentLine;
@@ -608,7 +609,7 @@ void profiles_menu(Panel_t *panel)
 	// Check if profiles have changed and prompt for saving
 	if (changedProfiles) {
 		selectPanel(PANEL_BACK, true);
-		if (showDialog(&dlg_saveChanges) == 0) {
+		if (showDialog(&dlg_saveChanges) == BTN_YES) {
 			printLog("\x85 Saving modified configuration...");
 			if (!profile_saveFile()) {
 				showDialog(&dlg_errorSaving);

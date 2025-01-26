@@ -49,6 +49,7 @@ typedef enum {
 	LABEL,									// No widget, just label
 	VALUE,									// Show numeric value
 	SLIDER,									// Slider with ranges of 0 to 2/4/8 values
+	BUTTON,									// Button to execute a command
 	END,									// **End of Elements array
 	// Custom widgets
 	CUSTOM_CPUCLOCK_VALUE,
@@ -62,12 +63,13 @@ typedef enum {
 	CMDTYPE_CUSTOM_SLOTS12,
 } CmdType_t;
 
-enum {										// Masks for Element_t.attribs.raw
-	ATR_FORCEPANELRELOAD = 1,
-	ATR_NEEDRESETTOAPPLY = 2,
-	ATR_SAVEINPROFILE    = 4,
-	ATR_USELASTSTRFORNA  = 8,
-	ATR_UNUSED4          = 16,
+enum										// Masks for Element_t.attribs.raw
+{
+	ATR_FORCEPANELRELOAD = 1,				// Force full panel reload when value changes
+	ATR_NEEDRESETTOAPPLY = 2,				// Need a Cold/Warm reset to apply
+	ATR_SAVEINPROFILE    = 4,				// Allowed to be saved to a profile
+	ATR_USELASTSTRFORNA  = 8,				// Use last valueStr when N/A
+	ATR_AREYOUSURE       = 16,				// When changing a value first ask for confirmation
 	ATR_UNUSED3          = 32,
 	ATR_UNUSED2          = 64,
 	ATR_UNUSED1          = 128,
@@ -93,7 +95,8 @@ typedef struct {
 			unsigned needResetToApply: 1;	// Need a Cold/Warm reset to apply
 			unsigned saveToProfile:1;		// Elegible to be saved to profile
 			unsigned useLastStrForNA:1;		// Use last valueStr for N/A
-			unsigned reserved: 4;			// Not used flags [reserved]
+			unsigned areYouSure: 1;			// Ask for confirmation when changing value
+			unsigned reserved: 3;			// Not used flags [reserved]
 		};
 	};
 	char **description;						// Description lines
