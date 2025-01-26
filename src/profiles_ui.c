@@ -8,6 +8,7 @@
 #include <string.h>
 #include "msx_const.h"
 #include "conio.h"
+#include "dos.h"
 #include "heap.h"
 #include "utils.h"
 #include "globals.h"
@@ -440,7 +441,7 @@ void profiles_menu(Panel_t *panel)
 	do {
 		while (!kbhit()) { waitVBLANK(); }
 		// Manage pressed key
-		key = getch();
+		key = dos2_toupper(getch());
 		if (key == KEY_UP) {						// Move up selection
 			if (*itemsCount) {
 				if (topLine + currentLine > 0) {
@@ -511,7 +512,7 @@ void profiles_menu(Panel_t *panel)
 			}
 			redrawList++;
 		} else
-		if (key == 'a' || key == 'A') {				// Add new profile
+		if (key == 'A') {							// Add new profile
 			if (*itemsCount < MAX_PROFILES) {
 				editPanelIdx = PANEL_ADD;
 				newProfile();
@@ -521,7 +522,7 @@ void profiles_menu(Panel_t *panel)
 				beep_error();
 			}
 		} else
-		if (key =='u' || key == 'U') {				// Update selection
+		if (key == 'U') {							// Update selection
 			if (*itemsCount == 0) {
 				showDialogNoProfiles();
 			} else {
@@ -555,21 +556,20 @@ void profiles_menu(Panel_t *panel)
 				redrawSelection++;
 			}
 		} else
-		if (key == 'm' || key == 'M') {				// Mute/unmute menu sounds
+		if (key == 'M') {							// Mute/unmute menu sounds
 			ProfileHeaderData_t *headerData = profile_getHeaderData();
 			headerData->muteSound = !(headerData->muteSound);
 			changedProfiles = true;
 			beep_ok();
 			showDialog(headerData->muteSound ? &dlg_mutedSound : &dlg_unmutedSound);
 		} else
-		if (key == 'h' || key == 'H') {				// Show help dialog
+		if (key == 'H') {							// Show help dialog
 			selectPanel(PANEL_HELP, true);
 			showDialog(&dlg_help);
 			selectPanel(PANEL_HELP, false);
 			redrawSelection++;
 		} else
-		if (key == KEY_ESC ||						// Go back to panels
-			key == 'b' || key == 'B') {
+		if (key == KEY_ESC || key == 'B') {			// Go back to panels
 			end++;
 		}
 		// Update selection or full list if necessary

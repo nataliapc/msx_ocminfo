@@ -684,7 +684,7 @@ void menu_panels()
 		}
 
 		// Manage pressed key
-		switch(getch()) {
+		switch(dos2_toupper(getch())) {
 			case KEY_UP:
 				nextElement = currentElement + currentElement->goUp;
 				break;
@@ -721,7 +721,6 @@ void menu_panels()
 			case '5':
 				selectPanel(&pPanels[PANEL_LOCKS]);
 				break;
-			case 'a':
 			case 'A':
 				selectPanel(&pPanels[PANEL_HELP]);
 				break;
@@ -740,14 +739,12 @@ void menu_panels()
 				}
 				selectPanel(nextPanel);
 				break;
-			case 'p':
 			case 'P':
 				selectCurrentElement(false);
 				profiles_menu(&pPanels[PANEL_PROFILES]);
 				printHeader();
 				selectPanel(currentPanel);
 				break;
-			case 'x':
 			case 'X':
 			case KEY_ESC:
 				selectCurrentElement(false);

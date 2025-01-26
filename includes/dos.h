@@ -113,6 +113,8 @@ typedef uint8_t  FILEH;
 
 #define GETCD   0x59		// Get current directory		         NEW
 #define PARSE   0x5B		// Parse pathname				         NEW
+#define PFILE   0x5C		// Parse filename				         NEW
+#define CHKCHR  0x5D		// Check character				         NEW
 
 #define TERM    0x62		// Terminate with error code	         NEW
 #define DEFAB   0x63		// Define Abort exit routine	         NEW
@@ -183,7 +185,21 @@ typedef uint8_t  FILEH;
 #define DRVSTAT_RAMDISK      4
 
 /*
+	MSX-DOS Call Errors (Nextor)
+*/
+#define ERR_FIRST   ERR_ICLUS
+#define ERR_ICLUS   0xb0	//Invalid cluster number or sequence: The cluster number supplied to the _GETCLUS function doesn't exist in the drive, or a file was supplied to _MAPDRV to be mounted but the file is not stored across consecutive sectors in its host filesystem.
+#define ERR_BFSZ    0xb1	//Bad file size: Attempt to mount a file that is smaller than 512 bytes or larger than 32 MBytes.
+#define ERR_FMNT    0xb2	//File is mounted: An attempt to open or alter a mounted file, or to perform any other disallowed operation involving a mounted file, has been made.
+#define ERR_PUSED   0xb3	//Partition is already in use: An attempt has made to map a drive to a driver, device and starting sector number; but there is already another drive which is mapped to the same combination of driver, device, logical unit, and starting sector number.
+#define ERR_IPART   0xb4	//Invalid partition number: Information about a disk partition on a device has been requested, but the specified partition does not exist in the device.
+#define ERR_IDEVL   0xb5	//Invalid device or LUN: An operation involving a device on a device-based driver has been requested but the specified device does not exist in the driver, or the specified logical unit does not exist in the specified device.
+#define ERR_IDRVR   0xb6	//Invalid device driver: An operation involving a device driver has been requested but the specified driver does not exist, or is not of the valid type (for example, the driver is a MSX-DOS or drive-based driver but a device-based driver is required).
+/*
 	MSX-DOS Call Errors
+	The following errors are those which are normally returned from MSX-DOS function calls.
+	See the Function Specification document for details of errors from particular MSX-DOS
+	functions.
 */
 #define ERR_ISBFN   0xb8	//Invalid sub-function number: The sub-function number passed to the IOCTL function (function 4Bh) was invalid.
 #define ERR_EOL     0xb9	//Internal error should never occur.
@@ -224,7 +240,30 @@ typedef uint8_t  FILEH;
 #define ERR_IBDOS   0xdc	//Invalid MSX-DOS call: An MSX-DOS call was made with an illegal function number. Most illegal function calls return no error, but this error may be returned if a "get previous error code" function call is made.
 #define ERR_NORAM   0xde	//Not enough memory: MSX-DOS has run out of memory in its 16k kernel data segment. Try reducing the number of sector buffers or removing some environment strings. Also occurs if there are no free segments for creating the RAMdisk.
 #define ERR_INTER   0xdf	//Internal error: Should never occur.
-#define ERR_FIRST   ERR_ISBFN
+/*
+	Disk Errors
+	The errors in this group are those which are usually passed to disk error handling routines.
+	By default they will be reported as "Abort, Retry" errors. These errors except the one from
+	"format disk" will be passed to the error handling routine, so they will not be returned as
+	the return value from BDOS.
+*/
+#define ERR_IFORM   0xf0	//Cannot format this drive: Attempt to format a drive which does not allow formatting. Usually as a result of trying to format the RAM disk.
+#define ERR_NOUPB   0xf1	//This error has no message because it is always trapped internally in MSX-DOS as part of the disk change handling.
+#define ERR_IFAT    0xf2	//Bad file allocation table: The file allocation table on the disk has got corrupted. CHKDSK may be able to recover some of the data on the disk.
+#define ERR_SEEK    0xf3	//Seek error: The required track of the disk could not be found.
+#define ERR_WFILE   0xf4	//Wrong disk for file: The disk has been changed while there is an open file on it. Must replace the correct disk.
+#define ERR_WDISK   0xf5	//Wrong disk: The disk has been changed while MSX-DOS was accessing it. Must replace the correct disk.
+#define ERR_NDOS    0xf6	//Not a DOS disk: The disk is formatted for another operating system and cannot be accessed by MSX-DOS.
+#define ERR_UFORM   0xf7	//Unformatted disk: The disk has not been formatted, or it is a disk using a different recording technique.
+#define ERR_WPROT   0xf8	//Write protected disk: Attempt to write to a disk with the write protect tab on.
+#define ERR_RNF     0xf9	//Sector not found: The required sector could not be found on the disk, usually means a damaged disk.
+#define ERR_DATA    0xfa	//Data error: A disk sector could not be read because the CRC error checking was incorrect, usually indicating a damaged disk.
+#define ERR_VERFY   0xfb	//Verify error: With VERIFY enabled, a sector could not be read correctly after being written.
+#define ERR_NRDY    0xfc	//Not ready: Disk drive did not respond, usually means there is no disk in the drive.
+#define ERR_DISK    0xfd	//Disk error: General unknown disk error occurred.
+#define ERR_WRERR   0xfe	//Write error: General error occurred during a disk write.
+#define ERR_NCOMP   0xff	//Incompatible disk: The disk cannot be accessed in that drive (eg. a double sided disk in a single sided drive).
+
 
 typedef struct {			// Off ID  Siz CP/M Function           MSXDOS Function
 	uint8_t  drvNum;		//  0 [DR] 1   Drive number containing the file (0:default drive, 1:A, 2:B, ..., 8:H)
@@ -297,7 +336,8 @@ typedef struct {
 		};
 		uint8_t raw;
 	} flags;
-	char     unused[4];		// +12-+15: Unused, always zero
+	char     unused[4];			// +12-+15: Unused, always zero
+	char     workaround[48];	// Bug: GETCLUS are filling 64 bytes instead of 16 (Nextor 2.1.2 and earlier)
 } CLUSTER_info;	// Used by GETCLUS function (Nextor only)
 
 typedef struct {
@@ -359,7 +399,6 @@ typedef struct {
 	uint16_t  cluini;		// 0x01A [2]  Initial cluster for this file
 	uint32_t  fsize;		// 0x01C [4]  File size in bytes
 } DIRENTRY;
-
 
 typedef struct {			// Returned data by parse_pathname(...)
 	uint8_t   drive;		// Logical drive number (1=A: etc)
@@ -448,6 +487,9 @@ ERRB writeAbsoluteSector(uint8_t drive, uint16_t startsec, uint8_t nsec);
 ERRB dos2_getDriveParams(char drive, DPARM_info *param) __sdcccall(1);
 ERRB dos2_getCurrentDirectory(char drive, char *path) __sdcccall(1);
 ERRB dos2_parsePathname(char* str, PATH_parsed *info) __sdcccall(1);
+char* dos2_filenameToDOS(char *sourceStr, char *target11) __sdcccall(1);
+char dos2_toupper(char c) __sdcccall(1);
+char* dos2_strupr(char *str);
 
 FILEH dos2_fopen(char *filename, char mode) __sdcccall(0);
 FILEH dos2_fcreate(char *filename, char mode, char attributes) __sdcccall(0);
