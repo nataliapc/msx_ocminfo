@@ -285,7 +285,7 @@ static const Element_t elemSystem[] = {
 		NULL, 0, 0,0, NULL, 0,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_ResetDefaults },
-		ATR_AREYOUSURE,
+		ATR_FORCEPANELRELOAD | ATR_AREYOUSURE,
 		desc_restoreDefaults,
 		IOREV_1, M_ALL
 	},

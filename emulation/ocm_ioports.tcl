@@ -154,6 +154,7 @@ namespace eval ocm_ioports {
 		210	{ 73 0b11000000 0b10000000 }
 		214	{ 74 0b00010000 0b00000000 }
 		215	{ 74 0b00010000 0b00010000 }
+		255 { 0 0 0 }
 	}
 
 	proc ocm_ioports_start {} {

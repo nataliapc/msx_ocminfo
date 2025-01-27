@@ -324,20 +324,6 @@ static bool changeCurrentValue(int8_t increase)
 			currentElement->supportedBy = M_NONE;
 			return false;
 		}
-
-		getOcmData();
-		if (currentElement->forcePanelReload) {
-			drawCurrentPanel();
-			value = getValue(currentElement);
-		}
-
-		// Requested Reset management
-		if (sysInfo1.resetReqFlag && currentElement->needResetToApply) {
-			if (showDialog(&dlg_reset) == 0) {
-				ocm_sendSmartCmd(sysInfo1.lastResetFlag ? OCM_SMART_WarmReset : OCM_SMART_ColdReset);
-			}
-		}
-
 		return true;
 	}
 	return false;
@@ -373,7 +359,9 @@ bool sendCommand(Element_t *elem)
 	lastCmdSent = cmd;
 
 	// Send Command
-	return ocm_sendSmartCmd(cmd);
+	bool result = ocm_sendSmartCmd(cmd);
+	getOcmData();
+	return result;
 }
 
 void getPanelsCmds(uint8_t *cmd)
@@ -513,30 +501,40 @@ static void selectCurrentElement(bool enable)
 	}
 }
 
-static void pressedElement(uint8_t increment)
+static void pressedCurrentElement(uint8_t increment)
 {
-	bool changeResult = true;
-	bool dlgResult = BTN_YES;
+	bool changeResult = false;
+	bool commandToSend = true;
 
 	if (currentElement->areYouSure) {
-		dlgResult = showDialog(&dlg_confirm);
+		commandToSend = (showDialog(&dlg_confirm) == BTN_YES);
 		selectCurrentElement(true);
 	}
 
-	if (dlgResult == BTN_YES) {
+	if (commandToSend) {
 		if (currentElement->type == BUTTON) {
-			sendCommand(currentElement);
+			changeResult = sendCommand(currentElement);
 			drawSetSmartText();
 		} else {
 			changeResult = changeCurrentValue(increment);
 			drawElement(currentElement);
 		}
-	} else {
-		changeResult = false;
 	}
 
 	if (changeResult) {
 		beep_advice();
+
+		// Force Panel Reload management
+		if (currentElement->forcePanelReload) {
+			drawCurrentPanel();
+		}
+
+		// Requested Reset management
+		if (sysInfo1.resetReqFlag && currentElement->needResetToApply) {
+			if (showDialog(&dlg_reset) == 0) {
+				ocm_sendSmartCmd(sysInfo1.lastResetFlag ? OCM_SMART_WarmReset : OCM_SMART_ColdReset);
+			}
+		}
 	} else {
 		beep_fail();
 	}
@@ -700,11 +698,11 @@ void menu_panels()
 			case KEY_SPACE:
 			case KEY_ENTER:
 			case '+':
-				pressedElement(1);
+				pressedCurrentElement(1);
 				break;
 			case KEY_BS:
 			case '-':
-				pressedElement(-1);
+				pressedCurrentElement(-1);
 				break;
 			case '1':
 				selectPanel(&pPanels[PANEL_SYSTEM]);
