@@ -622,10 +622,6 @@ void menu_panels()
 		setKanjiMode(0);
 	}
 
-	// A way to avoid using low memory when using BIOS calls from DOS
-	if (heap_top < (void*)0x8000)
-		heap_top = (void*)0x8000;
-
 	// Initialize empty panel
 	emptyArea = malloc(78*21);
 	memset(emptyArea, ' ', 78*21);
@@ -818,6 +814,10 @@ void restoreScreen()
 // ========================================================
 int main(char **argv, int argc) __sdcccall(0)
 {
+	// A way to avoid using low memory when using BIOS calls from DOS
+	if (heap_top < (void*)0x8000)
+		heap_top = (void*)0x8000;
+
 	if (argc != 0) {
 		return commandLine(argv, argc);
 	}

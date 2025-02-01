@@ -76,7 +76,7 @@ void profile_init()
 	_headerData.itemsCount = 0;
 	_headerData.itemLength = sizeof(ProfileItem_t);
 	_header.checksum = _calculateChecksum();
-	
+
 	original_heaptop = heap_top;
 	_profiles = (ProfileItem_t*)heap_top;
 }
@@ -95,31 +95,32 @@ bool profile_loadFile()
 	if (!_setFilenameWithBootDrive()) return false;
 
 	FILEH fh = dos2_fopen(filename, O_RDONLY);
-	if (fh >= ERR_FIRST)
+	if (fh >= ERR_FIRST) {
 		goto load_end;
+	}
 
 	// Read header
-	if (dos2_fread((char*)&_header, sizeof(ProfileHeader_t), fh) != sizeof(ProfileHeader_t))
+	if (dos2_fread((char*)&_header, sizeof(ProfileHeader_t), fh) != sizeof(ProfileHeader_t)) {
 		goto load_end;
+	}
 
 	// Read header data
-	if (dos2_fread((char*)&_headerData, _header.headerLength, fh) != _header.headerLength)
+	if (dos2_fread((char*)&_headerData, _header.headerLength, fh) != _header.headerLength) {
 		goto load_end;
+	}
 
 	// Read profile items
 	profilesTotalLen = sizeof(ProfileItem_t) * _headerData.itemsCount;
 	_profiles = malloc(profilesTotalLen);
-	if (!_profiles || dos2_fread((char*)_profiles, profilesTotalLen, fh) != profilesTotalLen)
-		goto load_release;
-
-	if (!_isValidChecksum())
-		goto load_release;
+	if (!_profiles || 
+		dos2_fread((char*)_profiles, profilesTotalLen, fh) != profilesTotalLen ||
+		!_isValidChecksum())
+	{
+		if (profilesTotalLen) profile_init();
+		goto load_end;
+	}
 
 	result = true;
-	goto load_end;
-
-load_release:
-	if (profilesTotalLen) profile_init();
 
 load_end:
 	dos2_fclose(fh);

@@ -32,8 +32,8 @@
 // Struct & Enums
 
 typedef struct {
-	uint32_t magic;					// "PROF" chars
-	uint8_t  revision;				// Current Profiles file revision (1)
+	uint32_t magic;					// "PROF_MAGIC" chars
+	uint8_t  revision;				// Current Profiles file revision (PROF_REV)
 	uint16_t headerLength;			// SizeOf(ProfileHeaderData)
 	uint8_t  checksum;				// HeaderData + Items checksum
 } ProfileHeader_t;
