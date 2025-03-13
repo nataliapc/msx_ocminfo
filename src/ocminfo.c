@@ -87,13 +87,13 @@ static void checkPlatformSystem()
 	#ifndef _DEBUG_
 		// Check for OCM-PLD Device
 		if (!ocm_detectDevice(DEVID_OCMPLD)) {
-			die("ERROR: OCM-PLD not detected!\n\r");
+			die("OCM-PLD not detected!\n\r");
 		}
 	#endif
 
 	// Check MSX2 ROM or higher
 	if (!msxVersionROM) {
-		die("This don't works on MSX1!");
+		die("MSX1 not supported!");
 	}
 
 	// Check MSX-DOS 2 or higher
@@ -170,7 +170,7 @@ static uint8_t getOcmData()
 	customCpuClockValue = (!virtualDIPs.cpuClock ? 7 + sysInfo1.turboPana : sysInfo0.cpuCustomSpeed - 1 );
 	customCpuModeValue = (!virtualDIPs.cpuClock ? sysInfo1.turboPana : 2 );
 	customVideoOutputValue = customVideoOutputMap[virtualDIPs.videoOutput_raw];
-	customSlots12Value = customSlots12Map[virtualDIPs.raw >> 3 & 0b111 ];
+	customSlots12Value = customSlots12Map[(virtualDIPs.raw >> 3) & 0b111];
 	customLockAllToggles = lockToggles.raw == 255 ? 1 : 0;
 
 	// Additional customs
@@ -366,30 +366,56 @@ bool sendCommand(Element_t *elem)
 
 void getPanelsCmds(uint8_t *cmd)
 {
+	#define LASTCMDS_SIZE 40
+
 	Panel_t *panel = &pPanels[PANEL_FIRST];
 	Element_t *element;
-	uint8_t *ptr, cmdToAdd;
+	uint8_t *lastCmds = malloc(LASTCMDS_SIZE), *lastPtr;
+	uint8_t *ptr = cmd, cmdToAdd;
 
-	*cmd = 0x00;
+	*cmd = OCM_SMART_ResetDefaults;
+	*++cmd = 0x00;
 	while (panel->title != NULL) {
 		element = panel->elements;
+		*(lastPtr = lastCmds) = 0x00;
 		while (element->type != END) {
 			if (element->saveToProfile && 
 				isMachineSupported(element) && 
 				isIOrevisionSupported(element))
 			{
 				cmdToAdd = getActiveCommand(element);
-				ptr = cmd;
-				while (*ptr && *ptr != cmdToAdd) ptr++;
-				if (!*ptr) {
-					*ptr = cmdToAdd;
-					*++ptr = 0x00;
+				if (element->sendSmartLast) {
+					// Add command to lastCmds
+					*lastPtr++ = cmdToAdd;
+					*lastPtr = 0x00;
+				} else {
+					// Add command to cmd
+					ptr = cmd;
+					while (*ptr && *ptr != cmdToAdd) ptr++;
+					if (!*ptr) {
+						*ptr = cmdToAdd;
+						*++ptr = 0x00;
+					}
 				}
 			}
 			element++;
 		}
+		// Dump elements with sendSmartLast enabled
+		if (*lastCmds) {
+			lastPtr = lastCmds;
+			while (*lastPtr) {
+				ptr = cmd;
+				while (*ptr && *ptr != *lastPtr) ptr++;
+				if (!*ptr) {
+					*ptr = *lastPtr;
+					*++ptr = 0x00;
+				}
+				lastPtr++;
+			}
+		}
 		panel++;
 	}
+	free(LASTCMDS_SIZE);
 }
 
 
@@ -549,7 +575,6 @@ static void drawCurrentPanel()
 	}
 }
 
-// ========================================================
 static void selectPanelTitle(Panel_t *panel)
 {
 	if (currentPanel != NULL) {

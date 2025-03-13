@@ -70,7 +70,7 @@ enum										// Masks for Element_t.attribs.raw
 	ATR_SAVEINPROFILE    = 4,				// Allowed to be saved to a profile
 	ATR_USELASTSTRFORNA  = 8,				// Use last valueStr when N/A
 	ATR_AREYOUSURE       = 16,				// When changing a value first ask for confirmation
-	ATR_UNUSED3          = 32,
+	ATR_SENDSMARTLAST    = 32,				// Send smart command at the end of panel
 	ATR_UNUSED2          = 64,
 	ATR_UNUSED1          = 128,
 };
@@ -96,7 +96,8 @@ typedef struct {
 			unsigned saveToProfile:1;		// Elegible to be saved to profile
 			unsigned useLastStrForNA:1;		// Use last valueStr for N/A
 			unsigned areYouSure: 1;			// Ask for confirmation when changing value
-			unsigned reserved: 3;			// Not used flags [reserved]
+			unsigned sendSmartLast: 1;		// Send smart command at the end of panel
+			unsigned reserved: 2;			// Not used flags [reserved]
 		};
 	};
 	char **description;						// Description lines

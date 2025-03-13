@@ -120,11 +120,11 @@ uint16_t commandLine(char **argv, int argc)
 			if (isdigit(*arg)) {		// '/n'
 				do {
 					profileToApply *= 10;
+					profileToApply += *arg - '0';
 					if (!isdigit(*arg) || profileToApply>MAX_PROFILES) {
 						profileToApply = 0;
 						break;
 					}
-					profileToApply += *arg - '0';
 				} while(*(++arg));
 				if (!profileToApply) {
 					cputs("ERROR: Invalid profile index!\n\n");

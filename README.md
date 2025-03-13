@@ -23,7 +23,7 @@ To mute/unmute the program sounds press _'M'_.
 
 Press _'P'_ to get access to the Profiles panel, where you can create user profiles with different settings.
 
-You can also using **OCMINFO** like command line program with parameters:
+You can also use **OCMINFO** like command line program with parameters:
 
 	Usage: OCMINFO [/n|/L] [/Q] [/?]
 	

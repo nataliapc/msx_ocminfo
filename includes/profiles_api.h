@@ -26,6 +26,7 @@
 
 #define PROF_MAGIC		{ 0x464f5250 }	//"PROF"
 #define PROF_REV		2
+#define PROF_CMDSIZE	40
 
 
 // ========================================================
@@ -49,7 +50,7 @@ typedef struct {
 	uint16_t modifYear;				// Modification date: Year
 	uint8_t  modifMonth;			// Modification date: Month
 	uint8_t  modifDay;				// Modification date: Day
-	uint8_t  cmd[40];				// SetSmart commands
+	uint8_t  cmd[PROF_CMDSIZE];		// SetSmart commands
 	uint8_t  reserved[24];			// Reserved
 } ProfileItem_t;
 
