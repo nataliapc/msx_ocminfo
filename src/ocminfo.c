@@ -384,17 +384,19 @@ void getPanelsCmds(uint8_t *cmd)
 				isIOrevisionSupported(element))
 			{
 				cmdToAdd = getActiveCommand(element);
-				if (element->sendSmartLast) {
-					// Add command to lastCmds
-					*lastPtr++ = cmdToAdd;
-					*lastPtr = 0x00;
-				} else {
-					// Add command to cmd
-					ptr = cmd;
-					while (*ptr && *ptr != cmdToAdd) ptr++;
-					if (!*ptr) {
-						*ptr = cmdToAdd;
-						*++ptr = 0x00;
+				if (cmdToAdd != OCM_SMART_NullCommand) {
+					if (element->sendSmartLast) {
+						// Add command to lastCmds
+						*lastPtr++ = cmdToAdd;
+						*lastPtr = 0x00;
+					} else {
+						// Add command to cmd
+						ptr = cmd;
+						while (*ptr && *ptr != cmdToAdd) ptr++;
+						if (!*ptr) {
+							*ptr = cmdToAdd;
+							*++ptr = 0x00;
+						}
 					}
 				}
 			}
