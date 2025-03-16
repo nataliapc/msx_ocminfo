@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <ctype.h>
 #include "msx_const.h"
+#include "dos.h"
 #include "conio.h"
 #include "globals.h"
 #include "ocm_ioports.h"
@@ -32,6 +33,7 @@ void printHelp()
 		"Options:\n"
 		"  /n    Apply the user profile 'n'.\n"
 		"  /L    List the user profiles.\n"
+		"  /R    Reset OCM to default values.\n"
 		"  /Q    Quiet mode (no verbose).\n"
 		"  /?    Show this help.\n"
 	);
@@ -44,6 +46,13 @@ bool readProfilesFile()
 	}
 	cputs("ERROR: No profiles file to read!\n");
 	return false;
+}
+
+void doResetToDefaults()
+{
+	if (verbose) cputs("Reset OCM to default values.\n"
+					   "setsmart -FF\n\n");
+	ocm_sendSmartCmd(OCM_SMART_ResetDefaults);
 }
 
 void doListProfiles()
@@ -95,16 +104,20 @@ uint16_t commandLine(char **argv, int argc)
 	uint16_t profileToApply = 0;
 	bool listProfiles = false;
 	bool paramDetected = false;
+	bool resetDetected = false;
 	uint8_t i = 0;
 	char *arg;
 
 	while(i < argc) {
 		arg = argv[i++];
-		if (islower(arg[1])) {
-			arg[1] -= 'a'-'A';
-		}
+		arg[1] = dos2_toupper(arg[1]);
 		if (*arg++ != '/') {
+			showHelp = true;
 			break;
+		} else
+		if (*arg == 'R') {				// '/R'
+			resetDetected++;
+			showHelp = false;
 		} else
 		if (*arg =='Q') {				// '/Q'
 			if (!listProfiles) {
@@ -147,6 +160,9 @@ uint16_t commandLine(char **argv, int argc)
 		printHelp();
 	} else {
 		if (verbose) cputs("\n");
+		if (resetDetected) {
+			doResetToDefaults();
+		}
 		if (listProfiles) {
 			doListProfiles();
 		} else

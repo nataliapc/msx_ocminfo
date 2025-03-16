@@ -373,8 +373,7 @@ void getPanelsCmds(uint8_t *cmd)
 	uint8_t *lastCmds = malloc(LASTCMDS_SIZE), *lastPtr;
 	uint8_t *ptr = cmd, cmdToAdd;
 
-	*cmd = OCM_SMART_ResetDefaults;
-	*++cmd = 0x00;
+	*cmd = 0x00;
 	while (panel->title != NULL) {
 		element = panel->elements;
 		*(lastPtr = lastCmds) = 0x00;
