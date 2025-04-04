@@ -26,7 +26,7 @@ void printHelp()
 	cputs(
 		"https://github.com/nataliapc/msx_ocminfo\n"
 		"\n"
-		"Usage: OCMINFO [/n|/L] [/Q] [/?]\n"
+		"Usage: OCMINFO [/n|/L] [/R] [/Q] [/?]\n"
 		"\n"
 		"Use without parameters to open the configuration panels.\n"
 		"\n"

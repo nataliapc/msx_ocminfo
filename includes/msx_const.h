@@ -66,6 +66,7 @@ __sfr __at (0x99) IO_VDP2;
 #define CLSSCR	0x0c3		// Clears the screen [Changes: AF, BC, DE] Zero flag must be set to be able to run this routine. XOR A will do fine most of the time
 #define POSIT	0x0c6		// Moves cursor to the specified position [Input: H-Y pos | L-X pos]
 // MSX2
+#define EXTROM	0x15f		// Calls a routine in the extended BIOS ROM [Input: IX-Address of routine in SUB-ROM][Output: Depends on the routine
 #define BIGFIL	0x16b		// Same function as FILVRM with 16-bit VRAM-address [Input: A-Data|BC-Length|HL-VRAM address][Changes: AF,BC]
 #define NSETRD	0x16e		// Same function as SETRD with 16-bit VRAM-address [Input: HL-VRAM address (00000h~0FFFFh)][Changes: AF]
 #define NSTWRT	0x171		// Same function as SETWRT with 16-bit VRAM-address [Input: HL-VRAM address (00000h~0FFFFh)][Changes: AF]
@@ -170,6 +171,7 @@ __sfr __at (0x99) IO_VDP2;
 #define SCRMOD		0xfcaf	// (BYTE) Current BASIC screen mode number
 #define EXPTBL		0xfcc1	// (BYTE) BIOS slot
 #define H_TIMI		0xfd9a	// (WORD) Interrupt Hook
+#define H_NMI		0xfdd6	// (...) At the beginning of non-maskable interrupts routine (Main-ROM at 0066h)
 #define EXTBIO		0xffca	// (...) Extended BIOS call
 #define RG8SAV		0xffe7	// (BYTE) Mirror Of VDP Register 8 (R#8)
 

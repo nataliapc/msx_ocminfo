@@ -30,7 +30,6 @@ bool detectKanjiDriver() __z88dk_fastcall;
 char getKanjiMode() __sdcccall(1);
 void setKanjiMode(uint8_t mode) __z88dk_fastcall;
 
-
 typedef union {
 	uint16_t raw;
 	struct {

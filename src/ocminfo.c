@@ -786,11 +786,29 @@ void menu_panels()
 	} while (!end);
 }
 
+void restoreOriginalScreenMode() __naked
+{
+	// Restore original screen mode
+	__asm
+		ld   a, (_originalSCRMOD)
+		or   a
+		jr   nz, .screen1
+		ld   ix, #INITXT				; Restore SCREEN 0
+		jr   .bioscall
+	.screen1:
+		ld   ix, #INIT32				; Restore SCREEN 1
+	.bioscall:
+		JP_BIOSCALL
+	__endasm;
+}
+
 void restoreScreen()
 {
-	// Clean & restore original screen parameters & colors
+	// Clear & restore original screen parameters & colors
 	__asm
-		ld   ix, #DISSCR
+		ld   ix, #DISSCR				; Disable screen
+		BIOSCALL
+		ld   ix, #INIFNK				; Restore function keys
 		BIOSCALL
 	__endasm;
 
@@ -801,34 +819,16 @@ void restoreScreen()
 	varFORCLR = originalFORCLR;
 	varBAKCLR = originalBAKCLR;
 	varBDRCLR = originalBDRCLR;
-	clrscr();
 
-	// Restore original screen mode
-	__asm
-		push ix
-		ld  a, (_originalSCRMOD)
-		or  a
-		jr  nz, .screen1
-		ld  ix, #INITXT				; Restore SCREEN 0
-		jr  .bioscall
-	.screen1:
-		ld  ix, #INIT32				; Restore SCREEN 1
-	.bioscall:
-		BIOSCALL
-		ld  ix, #INIFNK				; Restore function keys
-		BIOSCALL
-		pop ix
-	__endasm;
-
-	// Restore kanji mode if needed
 	if (kanjiMode) {
+		// Restore kanji mode if needed
 		setKanjiMode(kanjiMode);
+	} else {
+		// Restore original screen mode
+		restoreOriginalScreenMode();
 	}
 
 	__asm
-		ld   ix, #CLSSCR
-		xor  a
-		BIOSCALL
 		ld   ix, #ENASCR
 		BIOSCALL
 	__endasm;

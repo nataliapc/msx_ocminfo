@@ -2,6 +2,9 @@
 	Based in MC. MSX Commander source code.
 	Thanks to Retro Canada (retrocanada76@gmail.com)
 	...and to KdL for giving me the clue
+
+	More info:
+	https://www.msxcomputermagazine.nl/mccw/91/KANJI-stuff/en.html
 */
 #include <stdint.h>
 #include <stdbool.h>
