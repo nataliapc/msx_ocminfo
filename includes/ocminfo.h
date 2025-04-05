@@ -81,7 +81,7 @@ static const char *ocminfoVersionStr = "\x13 ocminfo v"VERSION" \x14";
 
 #define MACHINETYPE_UNKNOWN	 	15		// Unknown machine
 static const char *machineTypeStr[16] = {
-	"1chipMSX", "Zemmix Neo/SX-1", "SM-X/MC2P", "SX-2", "SM-X Mini/SM-X HB",
+	"1chipMSX", "Zemmix Neo/SX-1", "SM-X/MC2P", "SX-2", "SM-X Mini/SM-X HB/u2-SX",
 	"DE0CV+DEOCM", "SX-E/SX-Lite", "Unknown", "Unknown", "Unknown", "Unknown",
 	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown"
 };
