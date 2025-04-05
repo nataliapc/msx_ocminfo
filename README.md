@@ -2,7 +2,7 @@
 
 
 This program aims to be a helpful tool for configuring and maintaining MSX++ (OCM-PLD) FPGA-based systems.\
-Currently supported devices: _1ChipMSX_, _Zemmix Neo_, _SX-1_, _SM-X_, _MCP2_, _SX-2_, _SM-X Mini_, _SM-X HB_, _DE0CV_, _SX-E_, _SX-Lite_.
+Currently supported devices: _1ChipMSX_, _Zemmix Neo_, _SX-1_, _SM-X_, _MCP2_, _SX-2_, _SM-X Mini_, _SM-X HB_, _u2-SX_, _DE0CV_, _SX-E_, _SX-Lite_.
 
 The program is using the [sdcc_msxconio](https://github.com/nataliapc/sdcc_msxconio) library as a git submodule. It is based in the old _'conio'_ library from _Turbo C_.
 
@@ -25,13 +25,14 @@ Press _'P'_ to get access to the Profiles panel, where you can create user profi
 
 You can also use **OCMINFO** like command line program with parameters:
 
-	Usage: OCMINFO [/n|/L] [/Q] [/?]
+	Usage: OCMINFO [/n|/L] [/R] [/Q] [/?]
 	
 	Use without parameters to open the configuration panels.
 	
 	Options:
 	  /n    Apply the user profile number 'n'.
 	  /L    List the user profiles.
+	  /R    Reset OCM to default values.
 	  /Q    Quiet mode (no verbose).
 	  /?    Show this help.
 
