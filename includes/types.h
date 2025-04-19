@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-
 #define ELEMENT_MAX_DESC		3
 
 // ========================================================
@@ -78,13 +77,13 @@ enum										// Masks for Element_t.attribs.raw
 typedef struct {
 	Widget_t type;							// Widget type
 	uint8_t posX, posY;						// Element position
-	char *label;							// Element text label
+	uint16_t label;							// Element text label
 	int8_t goUp, goDown, goLeft, goRight;	// Navigation to indexes (relative offset)
 	uint8_t *value;							// Cached full byte for value
 	uint8_t valueMask;						// Mask for value
 	uint8_t minValue;						// Min value
 	uint8_t maxValue;						// Max value
-	uint8_t **valueStr;						// Array with labels for each value
+	uint16_t *valueStr;						// Array with labels for each value
 	uint8_t valueOffsetX;					// Offset X for value widget
 	CmdType_t cmdType;						// OCM Smart Cmd type mode
 	uint8_t cmd[9];							// OCM Smart Cmd to set each value
@@ -100,13 +99,13 @@ typedef struct {
 			unsigned reserved: 2;			// Not used flags [reserved]
 		};
 	};
-	char **description;						// Description lines
+	uint16_t description[ELEMENT_MAX_DESC];	// Description lines
 	IOrev_t ioRevNeeded;					// I/O Revision needed [0x00:all 0xff:n/a]
 	MachineMask_t supportedBy;				// Supported machines
 } Element_t;
 
 typedef struct {
-	char *title;							// Panel name at top header
+	uint16_t title;							// Panel name at top header
 	uint8_t titlex, titley, titlelen;		// Position & llength at top header
 	Element_t *elements;					// Array of elements
 } Panel_t;

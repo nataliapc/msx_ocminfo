@@ -10,13 +10,13 @@
 
 #define BTN_YES			0
 #define BTN_NO			1
-extern const char *dlg_yesNoBtn[];
+extern const uint16_t dlg_yesNoBtn[];
 
 #define BTN_CONTINUE	0
-extern const char *dlg_continueBtn[];
+extern const uint16_t dlg_continueBtn[];
 
 #define BTN_CLOSE		0
-extern const char *dlg_closeBtn[];
+extern const uint16_t dlg_closeBtn[];
 
 
 void profiles_menu(Panel_t *panel);

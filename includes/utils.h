@@ -18,6 +18,11 @@ void exit(void);
 
 uint8_t getRomByte(uint16_t address) __sdcccall(1);
 
+void dzx0_standard(void *src, void *dst) __sdcccall(1);
+
+void stringsInit();
+char *getString(uint16_t pos);
+
 void basic_play(void *parameters) __sdcccall(1);
 
 

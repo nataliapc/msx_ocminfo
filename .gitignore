@@ -9,4 +9,6 @@ dsk
 externals
 *.class
 _*
-
+res/out
+includes/strings_index.h
+src/libs/utils_strings_zx0.c

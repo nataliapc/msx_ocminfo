@@ -7,7 +7,6 @@
 #pragma once
 
 
-#define VERSION		"1.0.0"
-#define AUTHOR		"NataliaPC'2025 (@ishwin74)"
+#define ARRAYEND				-1
 
 #define MAX_PROFILES	50

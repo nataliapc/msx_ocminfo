@@ -17,6 +17,7 @@
 #include "profiles_ui.h"
 #include "profiles_api.h"
 #include "dialogs.h"
+#include "strings_index.h"
 
 
 // ========================================================
@@ -26,6 +27,8 @@
 #define str(a) #a
 
 #define MAX_LINES		15
+
+#define NO_LOG			-1
 
 // ========================================================
 // Variables
@@ -37,7 +40,7 @@ static uint8_t *itemsCount;
 static uint8_t editPanelIdx;
 static uint8_t topLine = 0, currentLine = 0;
 static uint8_t newTopLine = 0, newCurrentLine = 0;
-static char *logIdx = NULL;
+static uint16_t logIdx = NO_LOG;
 static uint8_t key;
 static bool redrawList, redrawSelection, doEditText;
 static bool changedProfiles;
@@ -68,25 +71,25 @@ enum {
 };
 
 static const Panel_t pPanels[] = {
-	{ " [A]dd new ",	2,3, 	11 },
-	{ " [U]pdate ",		13,3, 	10 },
-	{ " [DEL]ete ",		23,3,	10 },
-	{ " [H]elp ",		33,3,	8  },
-	{ " [P]rofiles ",	61,3,	12 },
-	{ " [B]ack ",		72,3,	8  },
-	{ NULL }
+	{ MENUPROF_ADDNEW,		2,3, 	11 },
+	{ MENUPROF_UPDATE,		13,3, 	10 },
+	{ MENUPROF_DELETE,		23,3,	10 },
+	{ MENUPROF_HELP,		33,3,	8  },
+	{ MENUPROF_PROFILES,	61,3,	12 },
+	{ MENUPROF_BACK,		72,3,	8  },
+	{ ARRAYEND }
 };
 
 
 // ========================================================
 // Dialogs
 
-const char *dlg_yesNoBtn[] = { "  Yes  ", "  No   ", NULL };
-const char *dlg_continueBtn[] = { "  Continue  ", NULL };
-const char *dlg_closeBtn[] = { "  Close  ", NULL };
+const uint16_t dlg_yesNoBtn[] = { DLG_BTN_YES, DLG_BTN_NO, ARRAYEND };
+const uint16_t dlg_continueBtn[] = { DLG_BTN_CONTINUE, ARRAYEND };
+const uint16_t dlg_closeBtn[] = { DLG_BTN_CLOSE, ARRAYEND };
 
-const char *dlg_fileNotFoundStr[] = {
-	"Profiles file not found", "or unreadable...", "", "Create a new file?", NULL
+const uint16_t dlg_fileNotFoundStr[] = {
+	DLG_FILENOTFOUND_TITLE, DLG_FILENOTFOUND_TEXT1, DLG_FILENOTFOUND_TEXT2, DLG_FILENOTFOUND_TEXT3, ARRAYEND
 };
 const Dialog_t dlg_fileNotFound = {
 	0,0,
@@ -97,7 +100,7 @@ const Dialog_t dlg_fileNotFound = {
 	DLG_DEFAULT
 };
 
-const char *dlg_errorSavingStr[] = { "Error saving profiles file!", NULL };
+const uint16_t dlg_errorSavingStr[] = { DLG_ERRORSAVINGPROFILE_TITLE, ARRAYEND };
 const Dialog_t dlg_errorSaving = {
 	0,0,
 	dlg_errorSavingStr,
@@ -107,7 +110,7 @@ const Dialog_t dlg_errorSaving = {
 	DLG_DEFAULT
 };
 
-const char *dlg_noProfilesStr[] = { "Profile list is empty!", NULL };
+const uint16_t dlg_noProfilesStr[] = { DLG_NOPROFILES_TITLE, ARRAYEND };
 const Dialog_t dlg_noProfiles = {
 	0,0,
 	dlg_noProfilesStr,
@@ -117,9 +120,7 @@ const Dialog_t dlg_noProfiles = {
 	DLG_DEFAULT
 };
 
-const char *dlg_saveChangesStr[] = {
-	"Configuration modified.", "Do you want to save changes?", NULL
-};
+const uint16_t dlg_saveChangesStr[] = { DLG_SAVECHANGES_TITLE, DLG_SAVECHANGES_TEXT1, ARRAYEND };
 const Dialog_t dlg_saveChanges = {
 	0,0,
 	dlg_saveChangesStr,
@@ -129,7 +130,7 @@ const Dialog_t dlg_saveChanges = {
 	DLG_DEFAULT
 };
 
-const char *dlg_deleteProfileStr[] = { "Remove selected profile?", NULL };
+const uint16_t dlg_deleteProfileStr[] = { DLG_DELETEPROFILE_TITLE, ARRAYEND };
 const Dialog_t dlg_deleteProfile = {
 	0,0,
 	dlg_deleteProfileStr,
@@ -139,7 +140,7 @@ const Dialog_t dlg_deleteProfile = {
 	DLG_DEFAULT
 };
 
-const char *dlg_profileAppliedStr[] = { "    Profile applied    ", NULL };
+const uint16_t dlg_profileAppliedStr[] = { DLG_PROFILEAPPLIED_TITLE, ARRAYEND };
 const Dialog_t dlg_profileApplied = {
 	0,0,
 	dlg_profileAppliedStr,
@@ -149,7 +150,7 @@ const Dialog_t dlg_profileApplied = {
 	DLG_DEFAULT
 };
 
-const char *dlg_mutedSoundStr[] = { "   Menu sounds muted   ", NULL };
+const uint16_t dlg_mutedSoundStr[] = { DLG_MUTESOUND_TITLE, ARRAYEND };
 const Dialog_t dlg_mutedSound = {
 	0,0,
 	dlg_mutedSoundStr,
@@ -159,7 +160,7 @@ const Dialog_t dlg_mutedSound = {
 	DLG_DEFAULT
 };
 
-const char *dlg_unmutedSoundStr[] = { "   Menu sounds enabled   ", NULL };
+const uint16_t dlg_unmutedSoundStr[] = { DLG_UNMUTESOUND_TITLE, ARRAYEND };
 const Dialog_t dlg_unmutedSound = {
 	0,0,
 	dlg_unmutedSoundStr,
@@ -169,18 +170,10 @@ const Dialog_t dlg_unmutedSound = {
 	DLG_DEFAULT
 };
 
-const char *dlg_helpStr[] = {
-	"Up/Down "                  "\x7f\x7f\x7f\x7f\x7f\x7f\x7f Move selection         ",
-	"Right/Left "                           "\x7f\x7f\x7f\x7f Next/Previous page     ",
-	"RETURN "               "\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Apply current profile  ",
-	"A ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Add new profile        ",
-	"U ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Update name & values   ",
-	"DEL "      "\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Delete selection       ",
-	"Ctrl+Up/Down "                                 "\x7f\x7f Move selected item     ",
-	"M ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Mute/Unmute menu sounds",
-	"H ""\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Show this help         ",
-	"ESC/B "            "\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f\x7f Go back to panels      ",
-	NULL
+const uint16_t dlg_helpStr[] = {
+	DLG_PROFILESHELP_TITLE, DLG_PROFILESHELP_TEXT1, DLG_PROFILESHELP_TEXT2, DLG_PROFILESHELP_TEXT3,
+	DLG_PROFILESHELP_TEXT4, DLG_PROFILESHELP_TEXT5, DLG_PROFILESHELP_TEXT6, DLG_PROFILESHELP_TEXT7,
+	DLG_PROFILESHELP_TEXT8, DLG_PROFILESHELP_TEXT9, ARRAYEND
 };
 const Dialog_t dlg_help = {
 	0,0,
@@ -213,8 +206,8 @@ void drawHeader()
 
 	// Panel keys topbar
 	Panel_t *panel = &pPanels[0];
-	while (panel->title != NULL) {
-		putlinexy(panel->titlex,panel->titley, panel->titlelen, panel->title);
+	while (panel->title != -1) {
+		putlinexy(panel->titlex,panel->titley, panel->titlelen, getString(panel->title));
 		panel++;
 	}
 
@@ -229,19 +222,25 @@ void drawHeader()
 	drawProfilesCounter();
 }
 
-void printLog(char *log)
+void scrollupLog()
 {
 	gettext(5,7+MAX_LINES, 79,23, heap_top);
 	puttext(5,6+MAX_LINES, 79,22, heap_top);
 	_fillVRAM(4+22*80, 75, ' ');
-	putstrxy(5,23, log);
 }
 
-void printLogIdx(char *logPattern)
+void printLog(uint16_t log)
+{
+	scrollupLog();
+	putstrxy(5,23, getString(log));
+}
+
+void printLogIdx(uint16_t logPattern)
 {
 	char *ptr = malloc(80);
-	csprintf(ptr, logPattern, topLine + currentLine + 1);
-	printLog(ptr);
+	csprintf(ptr, getString(logPattern), topLine + currentLine + 1);
+	scrollupLog();
+	putstrxy(5,23, ptr);
 	free(80);
 }
 
@@ -409,14 +408,14 @@ void profiles_menu(Panel_t *panel)
 	textblink(panel->titlex, panel->titley, panel->titlelen, true);
 
 	// Read profile file & ask for creation if missing or corrupted
-	printLog("\x85 Reading profiles file...");
+	printLog(LOG_PROF_READINGFILE);
 	if (!profile_loadFile()) {
-		printLog("\x84 WARNING: Profiles file not found, unreadable, or corrupted.");
+		printLog(LOG_PROF_NOTFOUND);
 		beep_fail();
 		if (showDialog(&dlg_fileNotFound) == BTN_YES) {
 			profile_init();
 			if (!profile_saveFile()) {
-				printLog("\x85 ERROR: Can't create a new profiles file!");
+				printLog(LOG_PROF_CANTCREATEFILE);
 				beep_error();
 				showDialog(&dlg_errorSaving);
 				goto end_profile_menu;
@@ -424,9 +423,9 @@ void profiles_menu(Panel_t *panel)
 		} else {
 			goto end_profile_menu;
 		}
-		printLog("\x84 New profiles file created.");
+		printLog(LOG_PROF_FILECREATED);
 	} else {
-		printLog("\x84 Profiles readed.");
+		printLog(LOG_PROF_FILEREADED);
 	}
 
 	// Draw profiles & select first line if any
@@ -456,7 +455,7 @@ void profiles_menu(Panel_t *panel)
 					}
 					if (isCtrlKeyPressed()) {
 						moveCurrentProfile(-1);
-						logIdx = "\x84 Profile moved up to #%u.";
+						logIdx = LOG_PROF_MOVEDUP;
 					}
 				} else beep_fail();
 			} else {
@@ -478,7 +477,7 @@ void profiles_menu(Panel_t *panel)
 					}
 					if (isCtrlKeyPressed()) {
 						moveCurrentProfile(1);
-						logIdx = "\x84 Profile moved down to #%u.";
+						logIdx = LOG_PROF_MOVEDOWN;
 					}
 				} else beep_fail();
 			} else {
@@ -516,9 +515,9 @@ void profiles_menu(Panel_t *panel)
 			if (*itemsCount < MAX_PROFILES) {
 				editPanelIdx = PANEL_ADD;
 				newProfile();
-				logIdx = "\x85 Added new profile #%u values.";
+				logIdx = LOG_PROF_ADDEDNEW;
 			} else {
-				printLog("\x85 WARNING: Profiles limit reached ("xstr(MAX_PROFILES)").");
+				printLog(LOG_PROF_LIMITERROR);
 				beep_error();
 			}
 		} else
@@ -528,7 +527,7 @@ void profiles_menu(Panel_t *panel)
 			} else {
 				editPanelIdx = PANEL_UPDATE;
 				updateProfile();
-				logIdx = "\x85 Profile #%u values updated.";
+				logIdx = LOG_PROF_UPDATED;
 			}
 		} else 
 		if (key == KEY_DELETE) {					// Delete selection
@@ -538,7 +537,7 @@ void profiles_menu(Panel_t *panel)
 				selectPanel(PANEL_DELETE, true);
 				if (showDialog(&dlg_deleteProfile) == BTN_YES) {
 					deleteProfile();
-					printLogIdx("\x85 Deleted profile at #%u.");
+					printLogIdx(LOG_PROF_DELETED);
 					changedProfiles = true;
 				}
 				selectPanel(PANEL_DELETE, false);
@@ -551,7 +550,7 @@ void profiles_menu(Panel_t *panel)
 			} else {
 				applyProfileCmds();
 				beep_ok();
-				printLogIdx("\x85 Profile #%u values applied.");
+				printLogIdx(LOG_PROF_APPLIED);
 				showDialog(&dlg_profileApplied);
 				redrawSelection++;
 			}
@@ -581,20 +580,20 @@ void profiles_menu(Panel_t *panel)
 			if (redrawList) drawProfiles();
 			if (*itemsCount) selectCurrentLine(true);
 			redrawList = redrawSelection = false;
-			if (logIdx != NULL) {
+			if (logIdx != NO_LOG) {
 				printLogIdx(logIdx);
-				logIdx = NULL;
+				logIdx = NO_LOG;
 			}
 		}
 		// Handle description editing if necessary
 		if (doEditText) {
-			printLogIdx("\x84 Editing profile #%u description...");
+			printLogIdx(LOG_PROF_EDITING);
 			selectPanel(editPanelIdx, true);
 			beep_advice();
 			editText(topLine + currentLine);
 			selectPanel(editPanelIdx, false);
 			drawProfiles();
-			printLog("\x84 Profile modified.");
+			printLog(LOG_PROF_MODIFIED);
 			beep_advice();
 			doEditText = false;
 			changedProfiles = true;
@@ -610,7 +609,7 @@ void profiles_menu(Panel_t *panel)
 	if (changedProfiles) {
 		selectPanel(PANEL_BACK, true);
 		if (showDialog(&dlg_saveChanges) == BTN_YES) {
-			printLog("\x85 Saving modified configuration...");
+			printLog(LOG_PROF_SAVINGCFG);
 			if (!profile_saveFile()) {
 				showDialog(&dlg_errorSaving);
 			}

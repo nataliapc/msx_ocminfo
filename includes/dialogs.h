@@ -31,8 +31,8 @@ typedef enum {
 
 typedef struct {
 	uint8_t posX, posY;			// 0,0 -> dialog centered
-	char **text;				// Dialog text lines (max:DLG_MAX_TXT) [NULL for last line]
-	char **buttons;				// Button texts (max:DLG_MAX_BTN) [NULL for last button/no buttons]
+	uint16_t *text;				// Dialog text lines (max:DLG_MAX_TXT) [NULL for last line]
+	uint16_t *buttons;			// Button texts (max:DLG_MAX_BTN) [NULL for last button/no buttons]
 	uint8_t defaultButton;		// Index for default button
 	uint8_t cancelButton;		// Index for cancel button
 	DlgAttrib_t attrib;			// Attributes bitmask

@@ -77,13 +77,6 @@ static bool drawElement(Element_t *element);
 // ========================================================
 static void checkPlatformSystem()
 {
-	msxVersionROM = getRomByte(MSXVER);
-	originalLINL40 = varLINL40;
-	originalSCRMOD = varSCRMOD;
-	originalFORCLR = varFORCLR;
-	originalBAKCLR = varBAKCLR;
-	originalBDRCLR = varBDRCLR;
-
 	#ifndef _DEBUG_
 		// Check for OCM-PLD Device
 		if (!ocm_detectDevice(DEVID_OCMPLD)) {
@@ -92,6 +85,7 @@ static void checkPlatformSystem()
 	#endif
 
 	// Check MSX2 ROM or higher
+	msxVersionROM = getRomByte(MSXVER);
 	if (!msxVersionROM) {
 		die("MSX1 not supported!");
 	}
@@ -103,6 +97,13 @@ static void checkPlatformSystem()
 
 	// Set abort exit routine
 	dos2_setAbortRoutine((void*)abortRoutine);
+
+	// Backup original values
+	originalLINL40 = varLINL40;
+	originalSCRMOD = varSCRMOD;
+	originalFORCLR = varFORCLR;
+	originalBAKCLR = varBAKCLR;
+	originalBDRCLR = varBDRCLR;
 }
 
 char *play_fail = "\"v12l64o2b\"";
@@ -110,28 +111,30 @@ char *play_error = "\"v12l64o2br64b\"";
 char *play_ok = "\"v12l64o4ar64o5c\"";
 char *play_advice = "\"v12l64o4a\"";
 
-void beep_ok()
+static void beep_sound(char *sound)
 {
 	if (!profile_getHeaderData()->muteSound)
-		basic_play(play_ok);
+		basic_play(sound);
+}
+
+void beep_ok()
+{
+	beep_sound(play_ok);
 }
 
 void beep_advice()
 {
-	if (!profile_getHeaderData()->muteSound)
-		basic_play(play_advice);
+	beep_sound(play_advice);
 }
 
 void beep_fail()
 {
-	if (!profile_getHeaderData()->muteSound)
-		basic_play(play_fail);
+	beep_sound(play_fail);
 }
 
 void beep_error()
 {
-	if (!profile_getHeaderData()->muteSound)
-		basic_play(play_error);
+	beep_sound(play_error);
 }
 
 void abortRoutine()
@@ -194,21 +197,23 @@ static uint8_t getOcmData()
 // ========================================================
 static void printHeader()
 {
-	char *sdram = pldVers1.ioRevision < IOREV_11 ?
-		sdramSizeStr[3] :
-		sysInfo4_0.sdramSize != 3 ? sdramSizeStr[sysInfo4_0.sdramSize] : sdramSizeAuxStr[sysInfo4_1.sdramSizeAux];
+	char *sdram = getString(
+		pldVers1.ioRevision < IOREV_11 ?
+			sdramSizeStr[3] :
+			sysInfo4_0.sdramSize != 3 ? sdramSizeStr[sysInfo4_0.sdramSize] : sdramSizeAuxStr[sysInfo4_1.sdramSizeAux]
+	);
 
 	textblink(1,1, 80, true);
 
-	csprintf(heap_top, "Model: %s   SDRAM: %sMB",
-		machineTypeStr[pldVers1.ioRevision < IOREV_4 ? MACHINETYPE_UNKNOWN : sysInfo2.machineTypeId], 
+	csprintf(heap_top, getString(HEADER_MODEL_SDRAM),
+		getString(machineTypeStr[pldVers1.ioRevision < IOREV_4 ? MACHINETYPE_UNKNOWN : sysInfo2.machineTypeId]), 
 		sdram);
 	putstrxy(3,1, heap_top);
 	if (pldVers1.ioRevision < IOREV_5) {
-		csprintf(heap_top, "PLD v3.3.3 or earlier   I/O rev.%u",
+		csprintf(heap_top, getString(HEADER_PLD_LEGACY),
 			pldVers1.ioRevision);
 	} else {
-		csprintf(heap_top, "PLD v%u.%u.%u   I/O rev.%u",
+		csprintf(heap_top, getString(HEADER_PLD_CURRENT),
 			pldVers0.pldVersion / 10, 
 			pldVers0.pldVersion % 10, 
 			pldVers1.pldSubversion, 
@@ -219,8 +224,8 @@ static void printHeader()
 	// Function keys topbar
 	drawFrame(1,2, 80,24);
 	Panel_t *panel = &pPanels[PANEL_FIRST];
-	while (panel->title != NULL) {
-		putlinexy(panel->titlex,panel->titley, panel->titlelen, panel->title);
+	while (panel->title != -1) {
+		putlinexy(panel->titlex,panel->titley, panel->titlelen, getString(panel->title));
 		panel++;
 	}
 
@@ -231,12 +236,12 @@ static void printHeader()
 	chlinexy(2,20, 78);
 
 	// Version
-	uint16_t verLen = strlen(ocminfoVersionStr);
-	putlinexy(78-verLen, 24, verLen, ocminfoVersionStr);
-
+	csprintf(heap_top, getString(HEADER_NAME), getString(HEADER_VERSION));
+	uint16_t verLen = strlen(heap_top);
+	putlinexy(78-verLen, 24, verLen, heap_top);
 }
 
-static void drawDescription(char **description)
+static void drawDescription(uint16_t *description)
 {
 	waitVBLANK();
 
@@ -245,15 +250,15 @@ static void drawDescription(char **description)
 
 	// Print new Description
 	for (uint8_t i = 0; i < ELEMENT_MAX_DESC ; i++) {
-		if (description[i] == NULL) break;
-		putstrxy(3,21+i, description[i]);
+		if (description[i] == ARRAYEND) break;
+		putstrxy(3,21+i, getString(description[i]));
 	}
 }
 
 static void drawSetSmartText()
 {
 	if (lastCmdSent != OCM_SMART_NullCommand) {
-		csprintf(heap_top, "setsmart -%x%x", lastCmdSent/16, lastCmdSent%16);
+		csprintf(heap_top, getString(INFO_SETSMART_CMD), lastCmdSent/16, lastCmdSent%16);
 		putlinexy(SETSMART_X,SETSMART_Y, SETSMART_SIZE, heap_top);
 		isVisibleSetSmartText = true;
 	}
@@ -430,7 +435,7 @@ static void drawWidget_slider(Element_t *element)
 	sliderStr[element->maxValue - element->minValue + 1] = '\0';
 	sliderStr[value - element->minValue] = '\x83';
 	if (element->valueStr != NULL) {
-		csprintf(heap_top, "-\x80%s\x82+  %s", sliderStr, element->valueStr[value]);
+		csprintf(heap_top, "-\x80%s\x82+  %s", sliderStr, getString(element->valueStr[value]));
 	} else {
 		csprintf(heap_top, "-\x80%s\x82+  %u  ", sliderStr, value);
 	}
@@ -443,7 +448,7 @@ static void drawWidget_value(Element_t *element)
 	if (element->valueStr == NULL) {
 		csprintf(heap_top, "%u", value);
 	} else {
-		csprintf(heap_top, "%s", element->valueStr[value]);
+		csprintf(heap_top, "%s", getString(element->valueStr[value]));
 	}
 	putstrxy(wherex() + element->maxValue, wherey(), heap_top);
 }
@@ -454,7 +459,7 @@ static void drawCustom_cpuSpeed(Element_t *element)
 	if (!virtualDIPs.cpuClock) {
 		// Standard / TurboPana speed
 		elemChange->supportedBy = M_NONE;		// Element 'Custom speed' disabled
-		putlinexy(elemChange->posX + strlen(elemChange->label), elemChange->posY, 12, emptyArea);
+		putlinexy(elemChange->posX + strlen(getString(elemChange->label)), elemChange->posY, 12, emptyArea);
 	} else {
 		// Custom speed
 		elemChange->supportedBy = M_ALL;		// Element 'Custom speed' enabled
@@ -478,13 +483,13 @@ static bool drawElement(Element_t *element)
 	uint8_t posx = element->posX;
 	uint8_t posy = element->posY;
 
-	putstrxy(posx, posy, element->label);
+	putstrxy(posx, posy, getString(element->label));
 
 	if (element->type == LABEL) return true;
 
 	posx += element->valueOffsetX;
 	if (!isIOrevisionSupported(element) || !isMachineSupported(element)) {
-		char *text = element->useLastStrForNA ? element->valueStr[element->maxValue+1] : "n/a     ";
+		char *text = getString(element->useLastStrForNA ? element->valueStr[element->maxValue+1] : LABEL_NA);
 		putlinexy(posx, posy, element->maxValue + 6, emptyArea);
 		putstrxy(
 			posx + element->maxValue + 7,
@@ -520,8 +525,8 @@ static bool drawElement(Element_t *element)
 static void selectCurrentElement(bool enable)
 {
 	textblink(
-		currentElement->posX, currentElement->posY, 
-		strlen(currentElement->label), 
+		currentElement->posX, currentElement->posY,
+		strlen(getString(currentElement->label)),
 		enable);
 	if (enable) {
 		drawDescription(currentElement->description);
@@ -654,6 +659,8 @@ void menu_panels()
 
 	//Platform system checks
 	checkPlatformSystem();
+
+	// Load profile file
 	profile_loadFile();
 
 	// Initialize screen 0[80]
@@ -784,6 +791,8 @@ void menu_panels()
 		varPUTPNT = varGETPNT;
 		varREPCNT = 0;
 	} while (!end);
+
+	restoreScreen();
 }
 
 void restoreOriginalScreenMode() __naked
@@ -844,10 +853,12 @@ int main(char **argv, int argc) __sdcccall(0)
 	if (heap_top < (void*)0x8000)
 		heap_top = (void*)0x8000;
 
+	// Initialize compressed strings
+	stringsInit();
+
 	if (argc != 0) {
 		return commandLine(argv, argc);
 	}
 	menu_panels();
-	restoreScreen();
 	return 0;
 }

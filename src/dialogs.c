@@ -12,6 +12,7 @@
 #include "heap.h"
 #include "conio.h"
 #include "utils.h"
+#include "globals.h"
 
 
 // ========================================================
@@ -36,14 +37,15 @@ uint8_t showDialog(Dialog_t *dlg)
 	bool end = false;
 
 	// Calculate dialog sizes
-	for (numLines=0; ; numLines++) {
-		if (dlg->text[numLines] == NULL) break;
-		linesLen[numLines] = strlen(dlg->text[numLines]);
+	for (numLines=0; numLines<DLG_MAX_TXT; numLines++) {
+		if (dlg->text[numLines] == ARRAYEND) break;
+		linesLen[numLines] = strlen(getString(dlg->text[numLines]));
 		if (linesLen[numLines] > maxLineLen) maxLineLen = linesLen[numLines];
 	}
-	for (numBtn=0; ; numBtn++) {
-		if (dlg->buttons[numBtn] == NULL) break;
-		btnLen[numBtn] = strlen(dlg->buttons[numBtn]);
+
+	for (numBtn=0; numBtn<DLG_MAX_BTN; numBtn++) {
+		if (dlg->buttons[numBtn] == ARRAYEND) break;
+		btnLen[numBtn] = strlen(getString(dlg->buttons[numBtn]));
 		totalBtnLen += btnLen[numBtn] + 1;
 	}
 	if (numBtn) totalBtnLen--;
@@ -74,13 +76,13 @@ uint8_t showDialog(Dialog_t *dlg)
 	drawFrame(dx1+1,dy1, dx2-1,dy2);					// Draw frame
 	_fillBlink(dx1, dy1, dlgHeight, dx2-dx1+1, true);
 	for (i = 0; i<numLines; i++) {
-		putlinexy(dx1 + (dx2-dx1-linesLen[i])/2 + 1, dy1+i+1, linesLen[i], dlg->text[i]);
+		putlinexy(dx1 + (dx2-dx1-linesLen[i])/2 + 1, dy1+i+1, linesLen[i], getString(dlg->text[i]));
 	}
 
 	auxX = dx1 + (dx2-dx1-totalBtnLen)/2 + 1;
 	auxY = dy1 + numLines + 2;
 	for (i = 0; i<numBtn; i++) {
-		putlinexy(auxX, auxY, btnLen[i], dlg->buttons[i]);
+		putlinexy(auxX, auxY, btnLen[i], getString(dlg->buttons[i]));
 		btnX[i] = auxX;
 		auxX += btnLen[i];
 		auxX++;
@@ -92,7 +94,7 @@ uint8_t showDialog(Dialog_t *dlg)
 		while (!kbhit()) { waitVBLANK(); }
 		textblink(btnX[selectedBtn],auxY, btnLen[selectedBtn], true);
 		key = getch();
-		if (dlg->buttons[0] == NULL) {
+		if (dlg->buttons[0] == 0) {
 			end++;
 		} else
 		if (key == KEY_LEFT || key == KEY_UP) {

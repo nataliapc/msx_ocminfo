@@ -10,9 +10,11 @@
 #include "msx_const.h"
 #include "dos.h"
 #include "conio.h"
+#include "utils.h"
 #include "globals.h"
 #include "ocm_ioports.h"
 #include "profiles_api.h"
+#include "strings_index.h"
 
 
 // ========================================================
@@ -44,14 +46,13 @@ bool readProfilesFile()
 	if (profile_loadFile()) {
 		return true;
 	}
-	cputs("ERROR: No profiles file to read!\n");
+	cputs(getString(CMD_ERROR_NOTFOUND));
 	return false;
 }
 
 void doResetToDefaults()
 {
-	if (verbose) cputs("Reset OCM to default values.\n"
-					   "setsmart -FF\n\n");
+	if (verbose) cputs(getString(CMD_RESET));
 	ocm_sendSmartCmd(OCM_SMART_ResetDefaults);
 }
 
@@ -70,7 +71,7 @@ void doListProfiles()
 				}
 			}
 		} else {
-			cputs("ERROR: No profiles to list!\n");
+			cputs(getString(CMD_ERROR_NOITEMS));
 		}
 	}
 }
@@ -81,8 +82,7 @@ void doApplyProfile(uint8_t idx)
 		if (item = profile_getItem(idx-1)) {
 			uint8_t *cmd = item->cmd;
 			if (verbose) {
-				cprintf("Applying Profile #%u: \"%s\"\n"
-						"setsmart -", idx, item->description);
+				cprintf(getString(CMD_APPLYING), idx, item->description);
 			}
 			while (*cmd) {
 				ocm_sendSmartCmd(*cmd);
@@ -93,7 +93,7 @@ void doApplyProfile(uint8_t idx)
 				cmd++;
 			}
 		} else {
-			cprintf("ERROR: Profile #%u not found!", idx);
+			cprintf(getString(CMD_ERROR_NOPROFILE), idx);
 		}
 	}
 }
@@ -140,7 +140,7 @@ uint16_t commandLine(char **argv, int argc)
 					}
 				} while(*(++arg));
 				if (!profileToApply) {
-					cputs("ERROR: Invalid profile index!\n\n");
+					cputs(getString(CMD_ERROR_INVALID));
 					break;
 				}
 				paramDetected++;
@@ -153,7 +153,7 @@ uint16_t commandLine(char **argv, int argc)
 	}
 
 	if (showHelp || verbose) {
-		cputs("OCMINFO "VERSION" by "AUTHOR"\n");
+		cprintf(getString(CMD_HEADER), getString(HEADER_VERSION), getString(HEADER_AUTHOR));
 	}
 
 	if (showHelp) {
