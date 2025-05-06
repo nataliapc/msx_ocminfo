@@ -335,8 +335,8 @@ static const Element_t elemVideo[] = {
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_Scanlines00, OCM_SMART_Scanlines25, OCM_SMART_Scanlines50, OCM_SMART_Scanlines75 },
 		ATR_SAVEINPROFILE,
-		{ DESC_SCANLINES_L1, ARRAYEND },
-		IOREV_10, M_SECOND_GEN
+		{ DESC_SCANLINES_L1, DESC_SCANLINES_L2, ARRAYEND },
+		IOREV_10, M_ALL
 	},
 	// 3
 	{

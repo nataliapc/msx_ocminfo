@@ -21,6 +21,7 @@ SRCDIR = $(ROOTDIR)/src
 SRCLIB = $(SRCDIR)/libs
 LIBDIR = $(ROOTDIR)/libs
 INCDIR = $(ROOTDIR)/includes
+RESDIR = $(ROOTDIR)/res
 OBJDIR = $(ROOTDIR)/obj
 DSKDIR = $(ROOTDIR)/dsk
 EXTERNALS = $(ROOTDIR)/externals
@@ -45,7 +46,7 @@ EMUSCRIPTS = -script ./emulation/ocm_ioports.tcl -script ./emulation/boot.tcl
 
 DEFINES := -D_DOSLIB_
 #DEBUG := -D_DEBUG_
-FULLOPT :=  --max-allocs-per-node 2000000
+#FULLOPT :=  --max-allocs-per-node 200000
 LDFLAGS = -rc
 OPFLAGS = --std-sdcc2x --less-pedantic --opt-code-size -pragma-define:CRT_ENABLE_STDIO=0
 WRFLAGS = --disable-warning 196 --disable-warning 84
@@ -53,7 +54,8 @@ CCFLAGS = --code-loc 0x0180 --data-loc 0 -mz80 --no-std-crt0 --out-fmt-ihx $(OPF
 
 
 LIBS = conio.lib dos.lib utils.lib
-REL_LIBS = $(addprefix $(OBJDIR)/, \
+REL_LIBS = 	$(addprefix $(LIBDIR)/, $(LIBS)) \
+			$(addprefix $(OBJDIR)/, \
 				crt0msx_msxdos_advanced.rel \
 				heap.rel \
 				ocm_ioports.rel \
@@ -62,29 +64,33 @@ REL_LIBS = $(addprefix $(OBJDIR)/, \
 				profiles_api.rel \
 				profiles_ui.rel \
 				ocminfo.rel \
-			) \
-			$(addprefix $(LIBDIR)/, $(LIBS))
+			)
 
 PROGRAM = ocminfo.com
 DSKNAME = ocminfo.dsk
 
 all: res $(OBJDIR)/$(PROGRAM) release
 
+res: $(RESDIR)/strings.ini
+	@echo "$(COL_WHITE)######## Resources$(COL_RESET)"
+	@$(MAKE) -C res
 
 $(LIBDIR)/conio.lib:
-	$(MAKE) -C $(EXTERNALS)/sdcc_msxconio all SDCC_VER=$(SDCC_VER) DEFINES=-DXXXXX
+	@$(MAKE) -C $(EXTERNALS)/sdcc_msxconio all SDCC_VER=$(SDCC_VER) DEFINES=-DXXXXX
+	@$(LIB_GUARD)
 	@cp $(EXTERNALS)/sdcc_msxconio/lib/conio.lib $@
 	@cp $(EXTERNALS)/sdcc_msxconio/include/conio.h $(INCDIR)
 #	@sdar -d $@ dos_cputs.c.rel
 
 $(LIBDIR)/dos.lib:
-	$(MAKE) -C $(EXTERNALS)/sdcc_msxdos all SDCC_VER=$(SDCC_VER) DEFINES=-DDISABLE_CONIO
+	@$(MAKE) -C $(EXTERNALS)/sdcc_msxdos all SDCC_VER=$(SDCC_VER) DEFINES=-DDISABLE_CONIO
+	@$(LIB_GUARD)
 	@cp $(EXTERNALS)/sdcc_msxdos/lib/dos.lib $@
 	@cp $(EXTERNALS)/sdcc_msxdos/include/dos.h $(INCDIR)
 	@sdar -d $@ dos_cputs.c.rel dos_kbhit.c.rel
 
 $(LIBDIR)/utils.lib: $(patsubst $(SRCLIB)/%, $(OBJDIR)/%.rel, $(wildcard $(SRCLIB)/utils_*))
-	@echo "$(COL_WHITE)######## Compiling $@$(COL_RESET)"
+	@echo "$(COL_WHITE)######## Creating $@$(COL_RESET)"
 	@$(LIB_GUARD)
 	@$(AR) $(LDFLAGS) $@ $^ ;
 	@sdar -d $@ utils_exit.c.rel
@@ -110,7 +116,7 @@ $(OBJDIR)/%.s.rel: $(SRCLIB)/%.s
 	@$(AS) -go $@ $^ ;
 
 $(OBJDIR)/ocminfo.rel: $(SRCDIR)/ocminfo.c $(wildcard $(INCDIR)/*.h)
-	@echo "$(COL_BLUE)######## Compiling $@$(COL_RESET)"
+	@echo "$(COL_BLUE)#### CC $@$(COL_RESET)"
 	@$(DIR_GUARD)
 	@$(CC) $(CCFLAGS) $(FULLOPT) -I$(INCDIR) -c -o $@ $< ;
 
@@ -137,9 +143,13 @@ dsk: $(DSKNAME)
 
 ###################################################################################################
 
-clean: cleanobj cleanlibs
+clean: cleanobj cleanlibs cleanres
 	@rm -f $(OBJDIR)/$(PROGRAM) $(DSKDIR)/$(PROGRAM) \
 	       $(DSKNAME)
+
+cleanres: cleanprogram
+	@echo "$(COL_ORANGE)##  Cleaning resources$(COL_RESET)"
+	@$(MAKE) -C res clean
 
 cleanprogram:
 	@echo "$(COL_ORANGE)##  Cleaning program files$(COL_RESET)"
@@ -172,12 +182,3 @@ test: all
 #		$(OPENMSX) -machine Toshiba_HX-10 $(EMUEXT1) -diska $(DSKDIR) $(EMUSCRIPTS) \
 		$(OPENMSX) -machine turbor $(EMUEXT) -diska $(DSKDIR) $(EMUSCRIPTS) \
 	; fi'
-
-testrom: rom
-	$(OPENMSX) -machine msx1_eu -ext gfx9000 -ext fmpac -cartb $(ROMNAME) $(EMUSCRIPTS)
-
-resview:
-	@$(JAVA) -jar $(BINDIR)/imgWizard.jar l $(DSKDIR)/sdkuland.res
-
-imxview:
-	@$(JAVA) -jar $(BINDIR)/imgWizard.jar l $(DSKDIR)/loading.imx
