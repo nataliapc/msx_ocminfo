@@ -1,0 +1,13 @@
+--- contrib/ZX0.git/src/Makefile	2025-05-06 15:09:37.613332868 +0200
+@@ -1,7 +1,7 @@
+-CC = owcc
+-CFLAGS  = -ox -ob -ol+ -onatx -oh -zp8 -fp6 -g0 -Ot -oe -ot -Wall -xc -s -finline-functions -finline-intrinsics -finline-math -floop-optimize -frerun-optimizer -fno-stack-check -march=i386 -mtune=i686
+-RM = del
+-EXTENSION = .exe
++CC = gcc
++CFLAGS  = -ox -ob -ol+ -onatx -oh -zp8 -g0 -O3 -oe -ot -Wall -xc -s
++RM = rm
++EXTENSION = 
+ 
+ all: zx0 dzx0
+ 
