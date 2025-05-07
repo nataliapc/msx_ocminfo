@@ -45,14 +45,42 @@ const server = http.createServer((req, res) => {
 			// if file exists, read and send it
 			console.log(`${getDate()} << Start: ${requestedPath} [${stats.size} bytes]`);
 			let startTime = Date.now();
-			res.setHeader('Content-Length', stats.size);
+
+			// Handle Range header for partial content
+			const range = req.headers.range;
+			let start = 0;
+			let end = stats.size - 1;
+
+			if (range) {
+				const match = range.match(/bytes=(\d+)-(\d*)/);
+				if (match) {
+					start = parseInt(match[1], 10);
+					end = match[2] ? parseInt(match[2], 10) : end;
+
+					if (start >= stats.size || end >= stats.size || start > end) {
+						res.statusCode = 416; // Range Not Satisfiable
+						res.setHeader('Content-Range', `bytes */${stats.size}`);
+						res.end();
+						console.log(`${getDate()} << #### 416 Range Not Satisfiable: ${range}`);
+						return;
+					}
+
+					res.statusCode = 206; // Partial Content
+					res.setHeader('Content-Range', `bytes ${start}-${end}/${stats.size}`);
+				}
+			}
+
+			const chunkSize = end - start + 1;
+			res.setHeader('Content-Length', chunkSize);
 			res.setHeader('Content-Type', 'application/octet-stream');
+
 			res.on('finish', () => {
 				let elapsedTime = (Date.now() - startTime); // time in ms
-				let speed = (stats.size * 1000 / elapsedTime / 1024).toFixed(2); // speed in Kb/s
+				let speed = (chunkSize * 1000 / elapsedTime / 1024).toFixed(2); // speed in Kb/s
 				console.log(`${getDate()} << End: ${speed} Kb/s`);
-			})
-			fs.createReadStream(filePath).pipe(res);
+			});
+
+			fs.createReadStream(filePath, { start, end }).pipe(res);
 		}
 	});
 });
