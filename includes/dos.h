@@ -112,6 +112,7 @@ typedef uint8_t  FILEH;
 #define DELETE  0x4D		// Delete file or subdirectory	         NEW
 
 #define GETCD   0x59		// Get current directory		         NEW
+#define CHDIR   0x5A		// Change current directory		         NEW
 #define PARSE   0x5B		// Parse pathname				         NEW
 #define PFILE   0x5C		// Parse filename				         NEW
 #define CHKCHR  0x5D		// Check character				         NEW
@@ -141,48 +142,59 @@ typedef uint8_t  FILEH;
 #define GETCLUS 0x7E		// Get information for a cluster on a FAT drive
 
 /* MSX DOS versions from dosVersion() */
-#define VER_UNKNOWN     0
-#define VER_MSXDOS1x    1
-#define VER_MSXDOS2x    2
-#define VER_NextorDOS   3
+#define VER_UNKNOWN     0	// Unknown version
+#define VER_MSXDOS1x    1	// MSX-DOS 1.x
+#define VER_MSXDOS2x    2	// MSX-DOS 2.x
+#define VER_NextorDOS   3	// Nextor
 
-/* open/create flags */
-#define O_RDWR     0x00
-#define O_RDONLY   0x01
-#define O_WRONLY   0x02
-#define O_INHERIT  0x04
+/* Open/Create flags */
+#define O_RDWR       0x00	// Read and write
+#define O_RDONLY     0x01	// Read only
+#define O_WRONLY     0x02	// Write only
+#define O_INHERIT    0x04	// Inheritable
 
-/* file attributes */
-#define ATTR_NONE      0		// None.
-#define ATTR_READONLY  1		// If set then the file cannot be written to or deleted, but can be read, renamed or moved.
-#define ATTR_HIDDEN    2		// If set then the file will only be found by the FFIRST function if ATTR_HIDDEN bit is set in attributes byte.
-#define ATTR_SYSTEM    4		// For MSX-DOS functions, this bit has exactly the same effect as ATTR_HIDDEN bit except that the FNEW and CREATE calls will not automatically delete a SYSTEM file.
-#define ATTR_VOLUME    8		// If set then this entry defines the name of the volume. Only occur in the root directory, and only once. Rest of bits are ignored.
-#define ATTR_DIRECTORY 16		// The entry is a subdirectory and cannot be opened for reading and writing. Only the hidden bit has any meaning for sub-directories.
-#define ATTR_ARCHIVE   32		// Is set when a file was written to and closed. This bit can be examined by, for example, the XCOPY command to determine whether the file has been changed.
-#define ATTR_RESERVED  64		// Reserved (always 0).
-#define ATTR_DEVICE    128		// This is set to indicate that the FIB refers to a character device (eg. "CON") rather than a disk file. All of the other attributes bits are ignored.
+/* File attributes */
+#define ATTR_NONE       0x00	// None.
+#define ATTR_READONLY   0x01	// If set then the file cannot be written to or deleted, but can be read, renamed or moved.
+#define ATTR_HIDDEN     0x02	// If set then the file will only be found by the FFIRST function if ATTR_HIDDEN bit is set in attributes byte.
+#define ATTR_SYSTEM     0x04	// For MSX-DOS functions, this bit has exactly the same effect as ATTR_HIDDEN bit except that the FNEW and CREATE calls will not automatically delete a SYSTEM file.
+#define ATTR_VOLUME     0x08	// If set then this entry defines the name of the volume. Only occur in the root directory, and only once. Rest of bits are ignored.
+#define ATTR_DIRECTORY  0x10	// The entry is a subdirectory and cannot be opened for reading and writing. Only the hidden bit has any meaning for sub-directories.
+#define ATTR_ARCHIVE    0x20	// Is set when a file was written to and closed. This bit can be examined by, for example, the XCOPY command to determine whether the file has been changed.
+#define ATTR_RESERVED   0x40	// Reserved (always 0).
+#define ATTR_DEVICE     0x80	// This is set to indicate that the FIB refers to a character device (eg. "CON") rather than a disk file. All of the other attributes bits are ignored.
 
-/* seek modes */
-#define SEEK_SET	0	// Beginning of file
-#define SEEK_CUR	1	// Current position of the file pointer
-#define SEEK_END	2	// End of file
+/* Seek modes */
+#define SEEK_SET        0		// Beginning of file
+#define SEEK_CUR        1		// Current position of the file pointer
+#define SEEK_END        2		// End of file
 
 /* DPARM.fsType filesystem types */
-#define FS_FAT12		0x00
-#define FS_FAT16		0x01
-#define FS_UNKNOWN		0xff
+#define FS_FAT12		0x00	// FAT12
+#define FS_FAT16		0x01	// FAT16
+#define FS_UNKNOWN		0xff	// Unknown
 
 /* FOUT set_fast_out() constants */
-#define FASTOUT_OFF   0x00
-#define FASTOUT_ON    0xff
+#define FASTOUT_OFF     0x00	// Disable fast output
+#define FASTOUT_ON      0xff	// Enable fast output
+
+/* IOCTL command codes */
+#define IOCTL_FILESTATUS    0	// Get file handle status
+#define IOCTL_SETMODE       1	// Get ASCII/binary mode
+#define IOCTL_TESTINREADY   2	// Test input ready
+#define IOCTL_TESTOUTREADY  3	// Test output ready
+#define IOCTL_GETSCRSIZE    4	// Get screen size
+
+/* FEOF values */
+#define NOFEOF          0		// EOF not set
+#define FEOF            1		// EOF set
 
 /* GDLI Drive Status values */
-#define DRVSTAT_UNASSIGNED   0
-#define DRVSTAT_ASSIGNED     1
+#define DRVSTAT_UNASSIGNED   0	// Drive letter is not assigned to any driver
+#define DRVSTAT_ASSIGNED     1	// Drive letter is assigned to a driver
 #define DRVSTAT_UNUSED       2
-#define DRVSTAT_FILEMOUNTED  3
-#define DRVSTAT_RAMDISK      4
+#define DRVSTAT_FILEMOUNTED  3	// Drive letter is assigned to a driver and a file is mounted on it
+#define DRVSTAT_RAMDISK      4	// Drive letter is assigned to a driver and a RAM disk is mounted on it
 
 /*
 	MSX-DOS Call Errors (Nextor)
@@ -421,6 +433,39 @@ typedef struct {			// Returned data by parse_pathname(...)
 
 typedef struct {
 	union {
+		/* Device format (bit 7 set) */
+		struct {
+			unsigned int console_in   : 1;	// b0: is console input device
+			unsigned int console_out  : 1;	// b1: is console output device
+			unsigned int reserved1    : 3;	// b2-b4: reserved
+			unsigned int ascii_mode   : 1;	// b5: ASCII(1)/Binary(0) mode
+			unsigned int eof          : 1;	// b6: end of file
+			unsigned int is_device    : 1;	// b7: always set for device (1)
+			unsigned int reserved2    : 8;	// b8-b15: reserved
+		} device;
+		/* Disk file format (bit 7 clear) */
+		struct {
+			unsigned int drive_number : 6;	// b0-b5: drive number (0=A:, etc)
+			unsigned int eof          : 1;	// b6: end of file
+			unsigned int is_device    : 1;	// b7: always clear for disk file (0)
+			unsigned int reserved     : 8;	// b8-b15: reserved
+		} file;
+		/* Screen size return structure for IOCTL_GETSCRSIZE */
+		struct {
+			uint8_t columns;				// E: Number of columns
+			uint8_t rows;					// D: Number of rows
+		} screen_size;
+		/* Error info */
+		struct {
+			uint8_t code;					// L: DOS error code
+			uint8_t mark;					// H: Always 0xff if error
+		} error;
+		uint16_t raw_value;					// Raw value for direct access
+	};
+} IOCTL_t;
+
+typedef struct {
+	union {
 		uint16_t raw;
 		struct {
 			unsigned driveA: 1;
@@ -486,10 +531,15 @@ ERRB writeAbsoluteSector(uint8_t drive, uint16_t startsec, uint8_t nsec);
 // MSX-DOS 2.x
 ERRB dos2_getDriveParams(char drive, DPARM_info *param) __sdcccall(1);
 ERRB dos2_getCurrentDirectory(char drive, char *path) __sdcccall(1);
+ERRB dos2_setCurrentDirectory(char *path) __sdcccall(1);
 ERRB dos2_parsePathname(char* str, PATH_parsed *info) __sdcccall(1);
 char* dos2_filenameToDOS(char *sourceStr, char *target11) __sdcccall(1);
 char dos2_toupper(char c) __sdcccall(1);
 char* dos2_strupr(char *str);
+RETW dos2_ioctl(uint8_t fh, uint8_t cmd, IOCTL_t *arg) __naked __sdcccall(0);
+RETB dos2_feof(FILEH fh);
+RETDW dos2_filesize(char *filename);
+bool dos2_fileexists(char *filename);
 
 FILEH dos2_fopen(char *filename, char mode) __sdcccall(0);
 FILEH dos2_fcreate(char *filename, char mode, char attributes) __sdcccall(0);
