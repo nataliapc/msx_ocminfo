@@ -1,4 +1,4 @@
-.PHONY: clean test release res resview imxview dsk rom
+.PHONY: clean test release contrib res resview imxview dsk rom
 
 SDCC_VER := 4.2.0
 DOCKER_IMG = nataliapc/sdcc:$(SDCC_VER)
@@ -31,7 +31,7 @@ LIB_GUARD=@mkdir -p $(LIBDIR)
 AS = $(DOCKER_RUN) sdasz80
 AR = $(DOCKER_RUN) sdar
 CC = $(DOCKER_RUN) sdcc
-HEX2BIN = $(DOCKER_RUN) hex2bin
+HEX2BIN = $(BINDIR)/hex2bin
 MAKE = make -s --no-print-directory
 JAVA = java
 DSKTOOL = $(BINDIR)/dsktool
@@ -69,7 +69,11 @@ REL_LIBS = 	$(addprefix $(LIBDIR)/, $(LIBS)) \
 PROGRAM = ocminfo.com
 DSKNAME = ocminfo.dsk
 
-all: res $(OBJDIR)/$(PROGRAM) release
+all: contrib res $(OBJDIR)/$(PROGRAM) release
+
+contrib:
+	@echo "$(COL_WHITE)######## Contrib$(COL_RESET)"
+	@$(MAKE) -C contrib
 
 res: $(RESDIR)/strings.ini
 	@echo "$(COL_WHITE)######## Resources$(COL_RESET)"

@@ -1,9 +1,10 @@
 .PHONY: all clean clean_h
 
-BINDIR = ../bin
-CONTRIBDIR = ../contrib
-INCDIR = ../includes
-UTILSDIR = ../src/libs
+ROOTDIR = ..
+BINDIR = $(ROOTDIR)/bin
+CONTRIBDIR = $(ROOTDIR)/contrib
+INCDIR = $(ROOTDIR)/includes
+UTILSDIR = $(ROOTDIR)/src/libs
 OUTDIR = ./out
 OUT_GUARD=@mkdir -p $(OUTDIR)
 
@@ -14,20 +15,7 @@ STRINGS_ZX0 := strings.bin.zx0
 STRINGS_ZX0_C := utils_strings_zx0.c
 
 
-all: bin $(OUTDIR)/$(STRINGS_ZX0_C)
-
-bin: $(BINDIR)/zx0
-
-$(BINDIR)/zx0:
-	@echo "$(COL_WHITE)######## ZX0$(COL_RESET)"
-	@if cd $(CONTRIBDIR)/ZX0.git; then \
-		git pull; \
-	else \
-		git clone https://github.com/einar-saukas/ZX0 $(CONTRIBDIR)/ZX0.git && \
-		patch --merge -i $(CONTRIBDIR)/zx0.diff $(CONTRIBDIR)/ZX0.git/src/Makefile ; \
-	fi
-	@$(MAKE) -C $(CONTRIBDIR)/ZX0.git/src
-	@cp $(CONTRIBDIR)/ZX0.git/src/zx0 $@
+all: $(OUTDIR)/$(STRINGS_ZX0_C)
 
 $(OUTDIR)/$(STRINGS_BIN): $(STRINGS_INI)
 	@$(OUT_GUARD)
@@ -36,6 +24,7 @@ $(OUTDIR)/$(STRINGS_BIN): $(STRINGS_INI)
 	@find ../src -name "*.c" -exec grep -l "$(STRINGS_IDX_H)" {} \; | xargs -r touch
 
 $(OUTDIR)/$(STRINGS_ZX0): $(OUTDIR)/$(STRINGS_BIN)
+	@$(MAKE) -C $(CONTRIBDIR) $(BINDIR)/zx0
 	@$(BINDIR)/zx0 -f $< $@
 
 $(OUTDIR)/$(STRINGS_ZX0_C): $(OUTDIR)/$(STRINGS_ZX0)

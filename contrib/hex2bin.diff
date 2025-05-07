@@ -1,0 +1,15 @@
+3c3
+< CPFLAGS = -std=c99 -O2 -Wall -pedantic
+---
+> CPFLAGS = -std=c99 -O2 -Wall -pedantic -fcommon
+23c23,25
+< 	gcc -O2 -Wall -o hex2bin hex2bin.o common.o libcrc.o binary.o
+---
+> 	gcc -O2 -Wall -fcommon -o hex2bin hex2bin.o common.o libcrc.o binary.o
+> 	strip $@
+> 
+26c28,29
+< 	gcc -O2 -Wall -o mot2bin mot2bin.o common.o libcrc.o binary.o
+---
+> 	gcc -O2 -Wall -fcommon -o mot2bin mot2bin.o common.o libcrc.o binary.o
+> 	strip $@
