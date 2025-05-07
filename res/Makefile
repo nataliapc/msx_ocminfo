@@ -39,6 +39,7 @@ $(OUTDIR)/$(STRINGS_ZX0): $(OUTDIR)/$(STRINGS_BIN)
 	@$(BINDIR)/zx0 -f $< $@
 
 $(OUTDIR)/$(STRINGS_ZX0_C): $(OUTDIR)/$(STRINGS_ZX0)
+	@which xxd > /dev/null || { echo "Installing xxd..."; sudo apt-get update -qq && sudo apt-get install -qq -y xxd; }
 	@xxd -i $< | sed '/_len = /d' | sed 's/unsigned char/const unsigned char/' > $@
 	@cp $@ $(UTILSDIR)/
 

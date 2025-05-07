@@ -31,7 +31,7 @@ LIB_GUARD=@mkdir -p $(LIBDIR)
 AS = $(DOCKER_RUN) sdasz80
 AR = $(DOCKER_RUN) sdar
 CC = $(DOCKER_RUN) sdcc
-HEX2BIN = hex2bin
+HEX2BIN = $(DOCKER_RUN) hex2bin
 MAKE = make -s --no-print-directory
 JAVA = java
 DSKTOOL = $(BINDIR)/dsktool
@@ -80,20 +80,20 @@ $(LIBDIR)/conio.lib:
 	@$(LIB_GUARD)
 	@cp $(EXTERNALS)/sdcc_msxconio/lib/conio.lib $@
 	@cp $(EXTERNALS)/sdcc_msxconio/include/conio.h $(INCDIR)
-#	@sdar -d $@ dos_cputs.c.rel
+#	@$(AR) -d $@ dos_cputs.c.rel ;
 
 $(LIBDIR)/dos.lib:
 	@$(MAKE) -C $(EXTERNALS)/sdcc_msxdos all SDCC_VER=$(SDCC_VER) DEFINES=-DDISABLE_CONIO
 	@$(LIB_GUARD)
 	@cp $(EXTERNALS)/sdcc_msxdos/lib/dos.lib $@
 	@cp $(EXTERNALS)/sdcc_msxdos/include/dos.h $(INCDIR)
-	@sdar -d $@ dos_cputs.c.rel dos_kbhit.c.rel
+	@$(AR) -d $@ dos_cputs.c.rel dos_kbhit.c.rel ;
 
 $(LIBDIR)/utils.lib: $(patsubst $(SRCLIB)/%, $(OBJDIR)/%.rel, $(wildcard $(SRCLIB)/utils_*))
 	@echo "$(COL_WHITE)######## Creating $@$(COL_RESET)"
 	@$(LIB_GUARD)
 	@$(AR) $(LDFLAGS) $@ $^ ;
-	@sdar -d $@ utils_exit.c.rel
+	@$(AR) -d $@ utils_exit.c.rel ;
 
 $(OBJDIR)/%.rel: $(SRCDIR)/%.s
 	@echo "$(COL_BLUE)#### ASM $@$(COL_RESET)"
@@ -124,7 +124,7 @@ $(OBJDIR)/$(PROGRAM): $(REL_LIBS) $(wildcard $(INCDIR)/*.h)
 	@echo "$(COL_YELLOW)######## Compiling $@$(COL_RESET)"
 	@$(DIR_GUARD)
 	@$(CC) $(CCFLAGS) $(FULLOPT) -I$(INCDIR) -L$(LIBDIR) $(REL_LIBS) -o $(subst .com,.ihx,$@) ;
-	@$(HEX2BIN) -e com $(subst .com,.ihx,$@)
+	@$(HEX2BIN) -e com $(subst .com,.ihx,$@) ;
 
 
 release: $(OBJDIR)/$(PROGRAM)
