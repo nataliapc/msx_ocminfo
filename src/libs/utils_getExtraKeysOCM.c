@@ -8,7 +8,7 @@
 --       +-----+-----+-----+-----+-----+-----+-----+-----+
 --  ---- | N/A |PrtSc|PgUp |PgDn | F9  | F10 | F11 | F12 |  F
 --       +-----+-----+-----+-----+-----+-----+-----+-----+
--- bit     7 F   6 E   5 D   4 C   3 B   2 A   1 9   0 8
+--  bit    7 F   6 E   5 D   4 C   3 B   2 A   1 9   0 8
 */
 #include <stdint.h>
 #include "msx_const.h"
@@ -18,20 +18,26 @@ uint16_t getExtraKeysOCM() __naked __sdcccall(1)
 {
 	__asm
 		di
-		in   a, (0xaa)		; PPI-register A: Primary slot select register
-		and  #0xf0
-
-		or   #0x0e			; Row 'E' of Key matrix table
-		out  (0xaa), a		; PPI-register C: Keyboard and cassette interface
-		in   a, (0xa9)		; PPI-register B: Keyboard matrix row input register
+		push bc
+		// Get row E
+		ld   b, #0x0e		; Row 'E' of Key matrix table
+		call get_row
 		ld   e, a
-							; Clear low nibble not needed, just to set bit #0
-		or   #0x0f			; Row 'F' of Key matrix table
-		out  (0xaa), a		; PPI-register C: Keyboard and cassette interface
-		ei
-		in   a, (0xa9)		; PPI-register B: Keyboard matrix row input register
+		// Get row F
+		inc  b				; Row 'F' of Key matrix table
+		call get_row
 		ld   d, a
+		pop  bc
+		ei
+		ret					; Returns DE: E=row E, D=row F
 
-		ret					; Returns DE: rows E (low nibble) & F (high nibble)
+	get_row:	; IN: b = row number | OUT: a = row value
+		in   a, (0xaa)		; in  PPI-register C: Keyboard and cassette interface
+		and  #0xf0
+		add  a, b
+		out  (0xaa), a		; out PPI-register C: Keyboard and cassette interface
+		in   a, (0xa9)		; in  PPI-register B: Keyboard matrix row input register
+		ret
+
 	__endasm;
 }
