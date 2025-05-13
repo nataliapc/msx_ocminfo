@@ -346,7 +346,7 @@ static const Element_t elemVideo[] = {
 		SLIDER,
 		3,10, LABEL_VID_VGAINTERLACE,
 		-1, 1, 0, 0,
-		&(sysInfo4_2.raw), 0b00100000, 0,1, interlaceFieldStr, 25,
+		&(sysInfo4_2.raw), 0b00000010, 0,1, interlaceFieldStr, 25,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_VGAInterlOFF, OCM_SMART_VGAInterlON },
 		ATR_SAVEINPROFILE,
