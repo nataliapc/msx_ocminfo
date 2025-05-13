@@ -29,7 +29,7 @@ namespace eval ocm_ioports {
 	# 0x4a(74)	[R] InverseAudio(1) / Pixel 1:1(3) / CenterYJK(1) / LEgacyOutput(1) / ...
 	# 0x4b(0)	[R] Scanlines(2) / PSG2(1) / SDRAM(2) / ...
 	# 0x4b(1)	[R] Extended megarom reading (1) / Ext.SDRAM(3) / Vertical offset(4)
-	# 0x4b(2)	[R] Sprite limit
+	# 0x4b(2)	[R] VGA Interlace Field / Sprite limit
 	# 0x4c(76)	[R] Hard DIP-SW
 	# 0x4d(77)	[R/Wn] VRAM slots
 	# 0x4e(78)	[R] OCM-PLD version(8)
@@ -137,6 +137,8 @@ namespace eval ocm_ioports {
 		84	{  0 0b00000100 0b00000000 } 85	{  0 0b00000100 0b00000100 }
 		90	{  2 0b00000001 0b00000000 }
 		91	{  2 0b00000001 0b00000001 }
+		92	{  2 0b00100000 0b00000000 }
+		93	{  2 0b00100000 0b00100000 }
 		128	{ 0 0 0 }
 		129	{ 74 0b00100000 0b00000000 }
 		130	{ 74 0b00100000 0b00100000 }
@@ -269,6 +271,7 @@ namespace eval ocm_ioports {
 		74 "4Ah SysInfo3"
 		0  "4Bh#0 SysInfo4#0"
 		1  "4Bh#1 SysInfo4#1"
+		2  "4Bh#2 SysInfo4#2"
 		76 "4Ch SysInfo5"
 		78 "4Eh Version0"
 		79 "4Fh Version1"
@@ -290,7 +293,7 @@ namespace eval ocm_ioports {
 		]
 
 		set row 1
-		foreach port {64 66 67 68 69 70 71 72 73 74 0 1 76 78 79} {
+		foreach port {64 66 67 68 69 70 71 72 73 74 0 1 2 76 78 79} {
 			set label $flaglabels($port)
 			set col 0x000000cc
 			dict append panel_info \

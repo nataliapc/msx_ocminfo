@@ -407,6 +407,8 @@ typedef enum {
 */
 #define OCM_SMART_SpriteLimit48	0x5a	// Set Sprite Limit 4/8 (standard mode) (default)
 #define OCM_SMART_SpriteLimit88	0x5b	// Set Sprite Limit 8/8 (force MSX1 screens to use 8 sprites per line)
+#define OCM_SMART_VGAInterlOFF	0x5c	// Set VGA Interlace Single Field (not affected by scanlines) (default)
+#define OCM_SMART_VGAInterlON	0x5d	// Set VGA Interlace Duplicate Field
 /*
 0x7e	// Reserve System Logo ON (warm reset only) (old revisions had $FA (250))
 0x7f	// Pixel Ratio 1:1 for LED Display (default is 0) (range 0-7) (60Hz only)

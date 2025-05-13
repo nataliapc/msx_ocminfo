@@ -136,6 +136,9 @@ static const uint16_t verticalOffsetStr[9] = {
 static const uint16_t scanlinesStr[4] = {
 	VALUE_SCANLINES_0, VALUE_SCANLINES_1, VALUE_SCANLINES_2, VALUE_SCANLINES_3
 };
+static const uint16_t interlaceFieldStr[2] = {
+	VALUE_VGAINTERLACE_0, VALUE_VGAINTERLACE_1
+};
 static const uint16_t spriteLimitStr[2] = {
 	VALUE_SPRITELIM_0, VALUE_SPRITELIM_1
 };
@@ -341,7 +344,19 @@ static const Element_t elemVideo[] = {
 	// 3
 	{
 		SLIDER,
-		3,11, LABEL_VID_VERTICAL_OFFSET,
+		3,10, LABEL_VID_VGAINTERLACE,
+		-1, 1, 0, 0,
+		&(sysInfo4_2.raw), 0b00100000, 0,1, interlaceFieldStr, 25,
+		CMDTYPE_STANDARD,
+		{ OCM_SMART_VGAInterlOFF, OCM_SMART_VGAInterlON },
+		ATR_SAVEINPROFILE,
+		{ DESC_VGAINTERLACE_L1, DESC_VGAINTERLACE_L2, DESC_VGAINTERLACE_L3 },
+		IOREV_12, M_ALL
+	},
+	// 4
+	{
+		SLIDER,
+		3,12, LABEL_VID_VERTICAL_OFFSET,
 		-1, 1, 0, 0,
 		&(customVerticalOffsetValue), 0b00001111, 0,8, verticalOffsetStr, 18,
 		CMDTYPE_STANDARD,
@@ -352,10 +367,10 @@ static const Element_t elemVideo[] = {
 		{ DESC_VERTICAL_OFFSET_L1, DESC_VERTICAL_OFFSET_L2, DESC_VERTICAL_OFFSET_L3 },
 		IOREV_8, M_ALL
 	},
-	// 4
+	// 5
 	{
 		SLIDER,
-		3,13, LABEL_VID_VDP_SPEED,
+		3,14, LABEL_VID_VDP_SPEED,
 		-1, 1, 0, 0,
 		&(sysInfo0.raw), 0b00100000, 0,1, vdpSpeedStr, 25,
 		CMDTYPE_STANDARD,
@@ -364,10 +379,10 @@ static const Element_t elemVideo[] = {
 		{ DESC_VDP_SPEED_L1, DESC_VDP_SPEED_L2, DESC_VDP_SPEED_L3 },
 		IOREV_2, M_ALL
 	},
-	// 5
+	// 6
 	{
 		SLIDER,
-		3,14, LABEL_VID_CENTER_YJK,
+		3,15, LABEL_VID_CENTER_YJK,
 		-1, 1, 0, 0,
 		&(sysInfo3.raw), 0b00010000, 0,1, onOffStr, 25,
 		CMDTYPE_STANDARD,
@@ -376,10 +391,10 @@ static const Element_t elemVideo[] = {
 		{ DESC_CENTER_YJK_MODES_L1, DESC_CENTER_YJK_MODES_L2, DESC_CENTER_YJK_MODES_L3 },
 		IOREV_7, M_ALL
 	},
-	// 6
+	// 7
 	{
 		SLIDER,
-		3,15, LABEL_VID_SPRITE_LIMIT,
+		3,16, LABEL_VID_SPRITE_LIMIT,
 		-1, -6, 0, 0,
 		&(sysInfo4_2.raw), 0b00000001, 0,1, spriteLimitStr, 25,
 		CMDTYPE_STANDARD,
