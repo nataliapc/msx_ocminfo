@@ -30,7 +30,7 @@ You can also use **OCMINFO** like command line program with parameters:
 	Use without parameters to open the configuration panels.
 	
 	Options:
-	  /n    Apply the user profile number 'n'.
+	  /n    Apply the user profile 'n'.
 	  /L    List the user profiles.
 	  /R    Reset OCM to default values.
 	  /Q    Quiet mode (no verbose).
