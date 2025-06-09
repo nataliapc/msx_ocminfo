@@ -46,11 +46,11 @@ EMUSCRIPTS = -script ./emulation/ocm_ioports.tcl -script ./emulation/boot.tcl
 
 DEFINES := -D_DOSLIB_
 #DEBUG := -D_DEBUG_
-#FULLOPT :=  --max-allocs-per-node 200000
+FULLOPT :=  --max-allocs-per-node 200000
 LDFLAGS = -rc
 OPFLAGS = --std-sdcc2x --less-pedantic --opt-code-size -pragma-define:CRT_ENABLE_STDIO=0
 WRFLAGS = --disable-warning 196 --disable-warning 84
-CCFLAGS = --code-loc 0x0180 --data-loc 0 -mz80 --no-std-crt0 --out-fmt-ihx $(OPFLAGS) $(WRFLAGS) $(DEFINES) $(DEBUG)
+CCFLAGS = --code-loc 0x0200 --data-loc 0 -mz80 --no-std-crt0 --out-fmt-ihx $(OPFLAGS) $(WRFLAGS) $(DEFINES) $(DEBUG)
 
 
 LIBS = conio.lib dos.lib utils.lib

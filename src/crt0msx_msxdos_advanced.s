@@ -18,9 +18,17 @@
 
 	.org    0x0100			;MSX-DOS .COM programs start address
 
+	;--- Basic support for TYPE A:\>FILENAME.COM
+
+	jr      init
+	.db     0x0d						;Move to line start
+	.ascii  "Type OCMINFO /? for help."	;Show message
+	.db     0x1a						;End TYPE command
+
 	;--- Step 1: Initialize globals
 
-init:   call    gsinit
+init:
+	call    gsinit
 
 	;--- Step 2: Build the parameter pointers table on 0x100,
 	;    and terminate each parameter with 0.
@@ -145,10 +153,17 @@ cont:
 	;* Place data after program code, and data init code after data
 
 	.area	_CODE
+	.area	_HOME
 	.area	_DATA
 _heap_top::
 	.dw 0
 
+	.area	_INITIALIZED
+
+	.area	_HEAP
+_HEAP_start::
+
+	.area	_INITIALIZER
 	.area   _GSINIT
 gsinit::
 	ld	bc,#l__INITIALIZER
@@ -165,9 +180,4 @@ gsinext:
 	;* These doesn't seem to be necessary... (?)
 
 	;.area  _OVERLAY
-	;.area	_HOME
 	;.area  _BSS
-
-	.area	_HEAP
-
-_HEAP_start::
