@@ -169,7 +169,7 @@ typedef union {							// [OCM] Get System Info #3     (read only)
 
 typedef union {							// [OCM] Get System Info #4     (read only) [if port 0x44 == 0]
 	struct {
-		unsigned scanlinesLvl: 2;		// bit 0-1 VGA Scanlines Level (SM-X/SX-2) | 0=0%, 1=25%, 2=50%, 3=75%
+		unsigned scanlinesLvl: 2;		// bit 0-1 VGA Scanlines Level             | 0=None, 1=Light, 2=Medium, 3=Heavy
 		unsigned intPSG2: 1;			// bit 2   Internal PSG2       (SM-X/SX-2) | Status
 		unsigned sdramSize: 2;			// bit 3-4 SDRAM Size                      | 
 										//            0=8MB, 1=16MB, 2=32MB, 3=Use sdramSizeAux
@@ -391,10 +391,10 @@ typedef enum {
 #define OCM_SMART_VertOffset23	0x4e	// Vertical Offset 23
 #define OCM_SMART_VertOffset24	0x4f	// Vertical Offset 24 (useful for Space Manbow)
 
-#define OCM_SMART_Scanlines00	0x50	// Set VGA Scanlines 0% (default) (only for SM-X / SX-2 / SX-E)
-#define OCM_SMART_Scanlines25	0x51	// Set VGA Scanlines 25% (only for SM-X / SX-2 / SX-E)
-#define OCM_SMART_Scanlines50	0x52	// Set VGA Scanlines 50% (only for SM-X / SX-2 / SX-E)
-#define OCM_SMART_Scanlines75	0x53	// Set VGA Scanlines 75% (only for SM-X / SX-2 / SX-E)
+#define OCM_SMART_Scanlines00	0x50	// Set VGA Scanlines None (default)
+#define OCM_SMART_Scanlines25	0x51	// Set VGA Scanlines Light
+#define OCM_SMART_Scanlines50	0x52	// Set VGA Scanlines Medium
+#define OCM_SMART_Scanlines75	0x53	// Set VGA Scanlines Heavy
 
 #define OCM_SMART_IntPSG2OFF	0x54	// Set Internal PSG2 OFF (default) (only for SM-X / SX-2 / SX-E)
 #define OCM_SMART_IntPSG2ON		0x55	// Set Internal PSG2 ON (this second PSG acts as an external PSG) (only for SM-X / SX-2 / SX-E)
