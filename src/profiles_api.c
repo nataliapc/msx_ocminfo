@@ -184,7 +184,6 @@ uint8_t profile_newItem()
 	// Set values
 	getSystemDate(&date);
 	getPanelsCmds(newProfile->cmd);
-	newProfile->cmd[0];
 	newProfile->modifYear = date.year;
 	newProfile->modifMonth = date.month;
 	newProfile->modifDay = date.day;
@@ -211,7 +210,7 @@ bool profile_updateItem(uint8_t idx)
 
 bool profile_deleteItem(uint8_t idx)
 {
-	if (_headerData.itemsCount) {
+	if (_headerData.itemsCount && idx < _headerData.itemsCount) {
 		if (idx+1 < _headerData.itemsCount) {
 			memcpy(
 				&_profiles[idx],
@@ -220,5 +219,7 @@ bool profile_deleteItem(uint8_t idx)
 		}
 		_headerData.itemsCount--;
 		free(sizeof(ProfileItem_t));
+		return true;
 	}
+	return false;
 }

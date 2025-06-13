@@ -224,7 +224,7 @@ static void printHeader()
 	// Function keys topbar
 	drawFrame(1,2, 80,24);
 	Panel_t *panel = &pPanels[PANEL_FIRST];
-	while (panel->title != -1) {
+	while (panel->title != ARRAYEND) {
 		putlinexy(panel->titlex,panel->titley, panel->titlelen, getString(panel->title));
 		panel++;
 	}
@@ -377,11 +377,15 @@ void getPanelsCmds(uint8_t *cmd)
 	Element_t *element;
 	uint8_t *lastCmds = malloc(LASTCMDS_SIZE), *lastPtr;
 	uint8_t *ptr = cmd, cmdToAdd;
+	uint8_t cmdCount = 0;
 
 	*cmd = 0x00;
-	while (panel->title != NULL) {
+	while (panel->title != ARRAYEND) {
 		element = panel->elements;
-		*(lastPtr = lastCmds) = 0x00;
+		panel++;
+		if (element == NULL) continue;
+		lastPtr = lastCmds;
+		*lastCmds = 0x00;
 		while (element->type != END) {
 			if (element->saveToProfile && 
 				isMachineSupported(element) && 
@@ -390,16 +394,19 @@ void getPanelsCmds(uint8_t *cmd)
 				cmdToAdd = getActiveCommand(element);
 				if (cmdToAdd != OCM_SMART_NullCommand) {
 					if (element->sendSmartLast) {
-						// Add command to lastCmds
-						*lastPtr++ = cmdToAdd;
-						*lastPtr = 0x00;
+						// Add command to lastCmds (check bounds)
+						if (lastPtr - lastCmds < LASTCMDS_SIZE - 1) {
+							*lastPtr++ = cmdToAdd;
+							*lastPtr = 0x00;
+						}
 					} else {
-						// Add command to cmd
+						// Add command to cmd (check bounds)
 						ptr = cmd;
 						while (*ptr && *ptr != cmdToAdd) ptr++;
-						if (!*ptr) {
-							*ptr = cmdToAdd;
-							*++ptr = 0x00;
+						if (!*ptr && cmdCount < PROF_CMDSIZE - 1) {
+							*ptr++ = cmdToAdd;
+							*ptr = 0x00;
+							cmdCount++;
 						}
 					}
 				}
@@ -409,17 +416,17 @@ void getPanelsCmds(uint8_t *cmd)
 		// Dump elements with sendSmartLast enabled
 		if (*lastCmds) {
 			lastPtr = lastCmds;
-			while (*lastPtr) {
+			while (*lastPtr && cmdCount < PROF_CMDSIZE - 1) {
 				ptr = cmd;
 				while (*ptr && *ptr != *lastPtr) ptr++;
 				if (!*ptr) {
-					*ptr = *lastPtr;
-					*++ptr = 0x00;
+					*ptr++ = *lastPtr;
+					*ptr = 0x00;
+					cmdCount++;
 				}
 				lastPtr++;
 			}
 		}
-		panel++;
 	}
 	free(LASTCMDS_SIZE);
 }

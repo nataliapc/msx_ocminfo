@@ -109,4 +109,3 @@ typedef struct {
 	uint8_t titlex, titley, titlelen;		// Position & llength at top header
 	Element_t *elements;					// Array of elements
 } Panel_t;
-

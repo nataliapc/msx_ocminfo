@@ -206,7 +206,7 @@ void drawHeader()
 
 	// Panel keys topbar
 	Panel_t *panel = &pPanels[0];
-	while (panel->title != -1) {
+	while (panel->title != ARRAYEND) {
 		putlinexy(panel->titlex,panel->titley, panel->titlelen, getString(panel->title));
 		panel++;
 	}
