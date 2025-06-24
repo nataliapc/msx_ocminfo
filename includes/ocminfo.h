@@ -332,19 +332,7 @@ static const Element_t elemVideo[] = {
 	// 2
 	{
 		SLIDER,
-		3,9, LABEL_VID_SCANLINES,
-		-1, 1, 0, 0,
-		&(sysInfo4_0.raw), 0b00000011, 0,3, scanlinesStr, 23,
-		CMDTYPE_STANDARD,
-		{ OCM_SMART_Scanlines00, OCM_SMART_Scanlines25, OCM_SMART_Scanlines50, OCM_SMART_Scanlines75 },
-		ATR_SAVEINPROFILE,
-		{ DESC_SCANLINES_L1, DESC_SCANLINES_L2, ARRAYEND },
-		IOREV_10, M_ALL
-	},
-	// 3
-	{
-		SLIDER,
-		3,10, LABEL_VID_VGAINTERLACE,
+		3,9, LABEL_VID_VGAINTERLACE,
 		-1, 1, 0, 0,
 		&(sysInfo4_2.raw), 0b00000010, 0,1, interlaceFieldStr, 25,
 		CMDTYPE_STANDARD,
@@ -352,6 +340,18 @@ static const Element_t elemVideo[] = {
 		ATR_SAVEINPROFILE,
 		{ DESC_VGAINTERLACE_L1, DESC_VGAINTERLACE_L2, DESC_VGAINTERLACE_L3 },
 		IOREV_12, M_ALL
+	},
+	// 3
+	{
+		SLIDER,
+		3,10, LABEL_VID_SCANLINES,
+		-1, 1, 0, 0,
+		&(sysInfo4_0.raw), 0b00000011, 0,3, scanlinesStr, 23,
+		CMDTYPE_STANDARD,
+		{ OCM_SMART_Scanlines00, OCM_SMART_Scanlines25, OCM_SMART_Scanlines50, OCM_SMART_Scanlines75 },
+		ATR_SAVEINPROFILE,
+		{ DESC_SCANLINES_L1, DESC_SCANLINES_L2, ARRAYEND },
+		IOREV_10, M_ALL
 	},
 	// 4
 	{
@@ -416,7 +416,7 @@ static const Element_t elemAudio[] = {
 		VALUE,
 		3,6, LABEL_AUD_PRESETS,
 		7, 1, 8, 8,
-		&customAudioPresetValue, 0b00000111, 0,6, audioPresetStr, 14,
+		&customAudioPresetValue, 0b00000111, 0,6, audioPresetStr, 12,
 		CMDTYPE_STANDARD,
 		{ OCM_SMART_NullCommand, OCM_SMART_AudioPreset1, OCM_SMART_AudioPreset2, OCM_SMART_AudioPreset3,
 		  OCM_SMART_AudioPreset4, OCM_SMART_AudioPreset5, OCM_SMART_AudioPreset6 },

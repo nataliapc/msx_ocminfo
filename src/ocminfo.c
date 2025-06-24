@@ -366,6 +366,11 @@ bool sendCommand(Element_t *elem)
 	// Send Command
 	bool result = ocm_sendSmartCmd(cmd);
 	getOcmData();
+	if (result) {
+		if (cmd == OCM_SMART_ResetDefaults) {
+			customAudioPresetValue = 0;
+		}
+	}
 	return result;
 }
 

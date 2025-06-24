@@ -65,9 +65,11 @@ try {
 		const key = trimmedLine.substring(0, separatorIndex).trim();
 		const rawValue = trimmedLine.substring(separatorIndex + 1).trim();
 
-		// Handle comments after value
-		const commentIndex = rawValue.indexOf(';');
-		const finalRawValue = commentIndex !== -1 ? rawValue.substring(0, commentIndex).trim() : rawValue;
+		// Handle comments after value (take care that ';' is not part of the value)
+		const commentIndex = rawValue.lastIndexOf(';');
+		const endValueIndex = rawValue.lastIndexOf('"');
+		const finalRawValue = commentIndex !== -1 && commentIndex > endValueIndex ? 
+			rawValue.substring(0, commentIndex).trim() : rawValue;
 
 		if (!key) {
 			console.warn(`Skipping line with empty key: ${line}`);
