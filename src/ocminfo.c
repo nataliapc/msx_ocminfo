@@ -194,6 +194,11 @@ static uint8_t getOcmData()
 	return portsChecksum;
 }
 
+void resetCustomValues()
+{
+	customAudioPresetValue = 0;
+}
+
 // ========================================================
 static void printHeader()
 {
@@ -368,7 +373,7 @@ bool sendCommand(Element_t *elem)
 	getOcmData();
 	if (result) {
 		if (cmd == OCM_SMART_ResetDefaults) {
-			customAudioPresetValue = 0;
+			resetCustomValues();
 		}
 	}
 	return result;

@@ -51,6 +51,7 @@ void beep_advice();
 void beep_fail();
 void beep_error();
 void putstrxy(uint8_t x, uint8_t y, char *str);
+void resetCustomValues();
 
 void setByteVRAM(uint16_t vram, uint8_t value) __sdcccall(0);
 void _fillVRAM(uint16_t vram, uint16_t len, uint8_t value) __sdcccall(0);
@@ -344,6 +345,7 @@ void applyProfileCmds()
 	while (*cmd) {
 		ocm_sendSmartCmd(*cmd++);
 	}
+	resetCustomValues();
 }
 
 // ========================================================
