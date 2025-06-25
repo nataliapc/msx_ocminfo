@@ -58,7 +58,7 @@ void printHelp()
 		"  OCMINFO /L      List the available profiles.\n"
 		"  OCMINFO /1      Apply the user profile #1\n"
 		"  OCMINFO /1 /B > PROFILE1.BTM\n"
-		"                  Creates a .BTM file from profile #1.\n"
+		"                  Creates a .BTM file to flash profile #1 into EPCS.\n"
 	);
 }
 

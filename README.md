@@ -42,7 +42,7 @@ You can also use **OCMINFO** like command line program with parameters:
 	  OCMINFO /L      List the available profiles.
 	  OCMINFO /1      Apply the user profile #1
 	  OCMINFO /1 /B > PROFILE1.BTM
-	                  Creates a .BTM file from profile #1.
+	                  Creates a .BTM file to flash profile #1 into EPCS.
 
 If you want to suggest improvements, feel free to create a github issue.
 
