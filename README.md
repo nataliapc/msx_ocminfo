@@ -25,16 +25,24 @@ Press _'P'_ to get access to the Profiles panel, where you can create user profi
 
 You can also use **OCMINFO** like command line program with parameters:
 
-	Usage: OCMINFO [/n|/L] [/R] [/Q] [/?]
+	Usage: OCMINFO [/n|/L] [/B] [/R] [/Q] [/?]
 	
-	Use without parameters to open the configuration panels.
+	Use without parameters to open the interactive panels mode.
 	
 	Options:
 	  /n    Apply the user profile 'n'.
 	  /L    List the user profiles.
+	  /B    Print a .BTM file for the selected profile.
 	  /R    Reset OCM to default values.
 	  /Q    Quiet mode (no verbose).
 	  /?    Show this help.
+	
+	Examples:\n"
+	  OCMINFO         Opens the interactive panels mode.
+	  OCMINFO /L      List the available profiles.
+	  OCMINFO /1      Apply the user profile #1
+	  OCMINFO /1 /B > PROFILE1.BTM
+	                  Creates a .BTM file from profile #1.
 
 If you want to suggest improvements, feel free to create a github issue.
 
