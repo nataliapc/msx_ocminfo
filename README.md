@@ -8,6 +8,8 @@ The program is using the [sdcc_msxconio](https://github.com/nataliapc/sdcc_msxco
 
 The core can be found at the [official MSX++ repository](https://github.com/gnogni/ocm-pld-dev) maintained by [@KdL](https://github.com/gnogni).
 
+**🌟 You can help to improve this project by [starring](#more-stars) it! 🌟**
+
 ![ocminfo panels](.images/panels.jpg)
 
 ----
@@ -52,3 +54,12 @@ If you want to suggest improvements, feel free to create a github issue.
 
 Thanks to [@KdL](https://github.com/gnogni), [@HRA!](https://github.com/hra1129), and [@ducasp](https://github.com/ducasp), for their core developments and support, and to [@cayce-msx](https://github.com/cayce-msx) for his useful [Wiki](https://github.com/cayce-msx/msxpp-quick-ref/wiki).
 
+----
+
+### More stars!
+
+Please give us a star on [GitHub](https://github.com/nataliapc/msx_ocminfo) if you like this project.
+
+[![Star History Chart](https://api.star-history.com/svg?repos=nataliapc/msx_ocminfo&type=Date)](https://www.star-history.com/#nataliapc/msx_ocminfo&Date)
+
+---
