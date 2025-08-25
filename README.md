@@ -60,6 +60,6 @@ Thanks to [@KdL](https://github.com/gnogni), [@HRA!](https://github.com/hra1129)
 
 Please give us a star on [GitHub](https://github.com/nataliapc/msx_ocminfo) if you like this project.
 
-[![Star History Chart](https://api.star-history.com/svg?repos=nataliapc/msx_ocminfo&type=Date)](https://www.star-history.com/#nataliapc/msx_ocminfo&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=nataliapc/msx_ocminfo&type=Date&theme=dark)](https://www.star-history.com/#nataliapc/msx_ocminfo&Date)
 
 ---
